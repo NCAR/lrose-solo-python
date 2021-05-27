@@ -3,13 +3,26 @@ import os
 import platform
 from copy import deepcopy
 
-from pysolo_package.radar_data import RadarData
+
+class RadarData:
+    """ This object contains fields 'data' and 'mask' of list types"""
+    def __init__(self, data, mask):
+        self.data = data
+        self.mask = mask
 
 
 dirname = os.path.dirname(os.path.abspath(__file__))
-libraryName = os.path.join(dirname, 'libs/libSolo_18.04.so')
-os.path.join(dirname, libraryName)
-c_lib = ctypes.CDLL(libraryName)
+
+if (platform.system() == "Windows"):
+    libraryName = os.path.join(dirname, 'libs/despeckle.dll')
+    os.path.join(dirname, libraryName)
+    c_lib = ctypes.CDLL(libraryName)
+    despeckle = c_lib.se_despeckle
+else:
+    libraryName = os.path.join(dirname, 'libs/libSolo_18.04.so')
+    os.path.join(dirname, libraryName)
+    c_lib = ctypes.CDLL(libraryName)
+    despeckle = c_lib._Z12se_despecklePKfPfmfimPb
 
 
 def array_to_list(input_array, size):
@@ -56,10 +69,9 @@ def se_despeckle(input_list, bad, a_speckle, dgi_clip_gate, boundary_mask_input,
     if (len(input_list) != len(boundary_mask_input)):
         raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list), len(boundary_mask_input)))
 
-
     # set return type and arg types
-    c_lib._Z12se_despecklePKfPfmfimPb.restype = None
-    c_lib._Z12se_despecklePKfPfmfimPb.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_size_t, ctypes.c_float, ctypes.c_int, ctypes.c_size_t, ctypes.POINTER(ctypes.c_bool)]
+    despeckle.restype = None
+    despeckle.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_size_t, ctypes.c_float, ctypes.c_int, ctypes.c_size_t, ctypes.POINTER(ctypes.c_bool)]
 
     boundary_mask_output = deepcopy(boundary_mask_input)
 
@@ -78,7 +90,7 @@ def se_despeckle(input_list, bad, a_speckle, dgi_clip_gate, boundary_mask_input,
         boundary_mask_input = [True] * data_length
 
     # run C function, output_array is updated with despeckle results
-    c_lib._Z12se_despecklePKfPfmfimPb(data_length_type(*input_list), output_array, ctypes.c_size_t(data_length), ctypes.c_float(bad), ctypes.c_int(a_speckle), ctypes.c_size_t(dgi_clip_gate), boundary_length_type(*boundary_mask_input))
+    despeckle(data_length_type(*input_list), output_array, ctypes.c_size_t(data_length), ctypes.c_float(bad), ctypes.c_int(a_speckle), ctypes.c_size_t(dgi_clip_gate), boundary_length_type(*boundary_mask_input))
 
     # convert ctypes array to python list
     output_list = array_to_list(output_array, data_length)
@@ -92,26 +104,20 @@ def se_despeckle(input_list, bad, a_speckle, dgi_clip_gate, boundary_mask_input,
     return RadarData(output_list, boundary_mask_output)
 
 
-def using_windows():
-    """ This is to detect if the computer running this package is using Windows, which will not be compatible. """
-    return platform.system() == "Windows"
-
-
 def main():
-    input_data = [1.0, 1.0, 1.0, 1.0, 1.0, 1000.0]
-    bad = 3.5
-    a_speckle = 80
-    dgi_clip_gate = 8
-    boundary_mask = [True, True, False, True, True, False]
+
+    input_data = [-3.0, -3.0, -3.0, 5.0, 5.0, 5.0, -3.0, 5.0, 5.0, -3.0]
+    bad = -3
+    a_speckle = 3
+    dgi_clip_gate = 10
+    boundary_mask = [False, False, False, False, False, False, True, True, True, True]
 
     output_data = se_despeckle(input_data, bad, a_speckle, dgi_clip_gate, boundary_mask)
-    print(output_data)
+    assert (output_data.data == [-3.0, -3.0, -3.0, 5.0, 5.0, 5.0, -3.0, -3.0, -3.0, -3])
+    print(output_data.mask)
 
 
 # If executing script from shell, run the following code.
 if __name__ == "__main__":
-    if (using_windows()):
-        raise OSError('This system is using Windows. Windows is not compatible with LROSE functions.')
-    else:
-        print("PySolo Package Loaded")
-        main()
+    print("PySolo Package Loaded")
+    main()

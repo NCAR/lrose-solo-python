@@ -1,1 +1,1 @@
-include src/pysolo_package/libs/*.so
+include src/pysolo_package/libs/*
