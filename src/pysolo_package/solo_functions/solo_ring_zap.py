@@ -1,7 +1,7 @@
 import ctypes
 from copy import deepcopy
 
-from pysolo_package.utils import radar_structure, tasks
+from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
@@ -48,7 +48,7 @@ def ring_zap(from_km, to_km, input_list, bad, dgi_clip_gate, boundary_mask_input
 	# create a ctypes type that is an array of floats of length from above
 	data_length_type = ctypes.c_float * data_length
 	# initialize an empty float array of length
-	output_array = tasks.initialize_float_array(data_length)
+	output_array = ctypes_helper.initialize_float_array(data_length)
 
 	# create a ctypes type that is an array of bools of length from above
 	boundary_length_type = ctypes.c_bool * data_length
@@ -61,9 +61,9 @@ def ring_zap(from_km, to_km, input_list, bad, dgi_clip_gate, boundary_mask_input
 	se_ring_zap(ctypes.c_size_t(from_km), ctypes.c_size_t(to_km), data_length_type(*input_list), output_array, ctypes.c_size_t(data_length), ctypes.c_float(bad), ctypes.c_size_t(dgi_clip_gate), boundary_length_type(*boundary_mask_input))
 
 	# convert ctypes array to python list
-	output_list = tasks.array_to_list(output_array, data_length)
+	output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-	boundary_mask_output = tasks.update_boundary_mask(input_list, output_list, boundary_mask_output)
+	boundary_mask_output = ctypes_helper.update_boundary_mask(input_list, output_list, boundary_mask_output)
 
 	# returns the new data and masks packaged in an object
 	return radar_structure.RadarData(output_list, boundary_mask_output)
