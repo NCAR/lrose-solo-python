@@ -23,4 +23,3 @@ print("B")
 # If executing script from shell, run the following code.
 if __name__ == "__main__":
 	print("PySolo Package Loaded")
-
