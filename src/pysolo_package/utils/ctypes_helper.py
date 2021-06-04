@@ -13,7 +13,8 @@ def initialize_float_array(size):
 
 def update_boundary_mask(input_list, output_list, boundary_mask_output):
     # update boundary mask for new invalid entries that were replaced by despeckle
+    changes = 0
     for i in range(len(input_list)):
         if input_list[i] != output_list[i]:
             boundary_mask_output[i] = True
-    return boundary_mask_output
+    return boundary_mask_output, changes

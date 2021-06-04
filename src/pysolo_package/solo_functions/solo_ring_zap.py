@@ -6,7 +6,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
 
-def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate=0, boundary_mask_all_true=False):
+def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate=None, boundary_mask_all_true=False):
     """ 
         Performs a ring zap operation on a list of data.
         
@@ -56,7 +56,7 @@ def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate
     # if optional, last parameter set to True, then create a list of bools set to True of length from above
     if boundary_mask_all_true:
         boundary_mask_input = [True] * data_length
-    if dgi_clip_gate == 0:
+    if dgi_clip_gate == None:
         dgi_clip_gate = data_length        
 
     # run C function, output_array is updated with despeckle results
@@ -65,7 +65,8 @@ def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate
     # convert ctypes array to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output = ctypes_helper.update_boundary_mask(input_list, output_list, boundary_mask_output)
+    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(input_list, output_list, boundary_mask_output)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, boundary_mask_output)
+    return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+
