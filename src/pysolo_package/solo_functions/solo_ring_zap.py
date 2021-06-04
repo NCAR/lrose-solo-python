@@ -104,14 +104,12 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates):
 
     for i in range(len(data_list)):
         input_data = data_list[i]
-        bad = float(missing)
         boundary_mask = mask[i]
 
         # run ring removal
-        ring = ring_zap(from_km, to_km, input_data, bad, boundary_mask, boundary_mask_all_true=True)
+        ring = ring_zap(from_km, to_km, input_data, missing, boundary_mask, boundary_mask_all_true=True)
         output_data.append(ring.data)
         output_mask.append(ring.mask)
 
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
-    

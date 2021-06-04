@@ -98,3 +98,50 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, bounda
 
     # returns the new data and masks packaged in an object
     return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+
+
+def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2):
+    """ 
+        Performs a despeckle operation on a numpy masked array
+        
+        Args:
+            masked_array: A list containing float data.
+            a_speckle: An integer that determines the number of contiguous good data considered a speckle
+
+        Returns:
+            Numpy masked array
+
+        Throws:
+            ModuleNotFoundError: if numpy is not installed
+            AttributeError: if masked_array arg is not a numpy masked array.
+    """
+    try:
+        import numpy as np
+        missing = masked_array.fill_value
+        mask = masked_array.mask.tolist()
+        data_list = masked_array.tolist(missing)
+
+        threshold_missing = threshold_array.fill_value
+        threshold_data_list = threshold_array.tolist(missing)
+    except ModuleNotFoundError:
+        print("You must have Numpy installed.")
+    except AttributeError:
+        print("Expected a numpy masked array.")
+    
+    output_data = []
+    output_mask = []
+
+    for i in range(len(data_list)):
+        input_data = data_list[i]
+        boundary_mask = mask[i]
+
+        threshold_input_data = threshold_data_list[i]
+
+        # run threshold
+        thr = threshold(where, scaled_thr1, scaled_thr2, input_data, threshold_input_data, missing, boundary_mask, thr_bad=threshold_missing, boundary_mask_all_true=True)
+
+        output_data.append(thr.data)
+        output_mask.append(thr.mask)
+
+    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
+    return output_masked_array

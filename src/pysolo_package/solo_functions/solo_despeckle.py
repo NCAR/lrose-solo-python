@@ -100,11 +100,10 @@ def despeckle_masked(masked_array, a_speckle):
 
     for i in range(len(data_list)):
         input_data = data_list[i]
-        bad = float(missing)
         boundary_mask = mask[i]
 
         # run despeckle
-        despec = despeckle(input_data, bad, a_speckle, boundary_mask, boundary_mask_all_true=True)
+        despec = despeckle(input_data, missing, a_speckle, boundary_mask, boundary_mask_all_true=True)
         output_data.append(despec.data)
         output_mask.append(despec.mask)
 
