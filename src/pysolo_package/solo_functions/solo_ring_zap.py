@@ -70,3 +70,48 @@ def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate
     # returns the new data and masks packaged in an object
     return radar_structure.RadarData(output_list, boundary_mask_output, changes)
 
+
+def ring_zap_masked(masked_array, from_km, to_km, km_between_gates):
+    """ 
+        Performs a despeckle operation on a numpy masked array
+        
+        Args:
+            masked_array: A list containing float data.
+            a_speckle: An integer that determines the number of contiguous good data considered a speckle
+
+        Returns:
+            Numpy masked array
+
+        Throws:
+            ModuleNotFoundError: if numpy is not installed
+            AttributeError: if masked_array arg is not a numpy masked array.
+    """
+    try:
+        import numpy as np
+        missing = masked_array.fill_value
+        mask = masked_array.mask.tolist()
+        data_list = masked_array.tolist(missing)
+    except ModuleNotFoundError:
+        print("You must have Numpy installed.")
+    except AttributeError:
+        print("Expected a numpy masked array.")
+    
+    output_data = []
+    output_mask = []
+
+    from_km = int(from_km / km_between_gates)
+    to_km = int(to_km / km_between_gates)
+
+    for i in range(len(data_list)):
+        input_data = data_list[i]
+        bad = float(missing)
+        boundary_mask = mask[i]
+
+        # run ring removal
+        ring = ring_zap(from_km, to_km, input_data, bad, boundary_mask, boundary_mask_all_true=True)
+        output_data.append(ring.data)
+        output_mask.append(ring.mask)
+
+    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
+    return output_masked_array
+    

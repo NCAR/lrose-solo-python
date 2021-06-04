@@ -87,7 +87,6 @@ def despeckle_masked(masked_array, a_speckle):
     """
     try:
         import numpy as np
-         
         missing = masked_array.fill_value
         mask = masked_array.mask.tolist()
         data_list = masked_array.tolist(missing)
