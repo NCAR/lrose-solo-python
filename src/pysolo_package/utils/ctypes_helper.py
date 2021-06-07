@@ -5,16 +5,19 @@ def array_to_list(input_array, size):
     return [input_array[i] for i in range(size)]
 
 
-def initialize_float_array(size):
+def initialize_float_array(size, floats=None):
     """ returns an empty float buffer of size """
     data_length_type = ctypes.c_float * size
-    return ctypes.cast(data_length_type(), ctypes.POINTER(ctypes.c_float))
+    if (floats == None):
+        return ctypes.cast(data_length_type(), ctypes.POINTER(ctypes.c_float))
+    else:
+        return ctypes.cast(data_length_type(*floats), ctypes.POINTER(ctypes.c_float))
 
 
 def initialize_bool_array(size, bools):
     """ returns an empty float buffer of size """
-    data_length_type = ctypes.c_float * size
-    return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_float))
+    data_length_type = ctypes.c_bool * size
+    return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_bool))
 
 
 def update_boundary_mask(input_list, output_list, boundary_mask_output):
