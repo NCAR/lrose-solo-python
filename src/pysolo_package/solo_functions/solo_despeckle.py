@@ -75,7 +75,7 @@ def despeckle_masked(masked_array, a_speckle):
         Performs a despeckle operation on a numpy masked array
         
         Args:
-            masked_array: A list containing float data.
+            masked_array: A numpy masked array data structure,
             a_speckle: An integer that determines the number of contiguous good data considered a speckle
 
         Returns:

@@ -73,11 +73,13 @@ def ring_zap(from_km, to_km, input_list, bad, boundary_mask_input, dgi_clip_gate
 
 def ring_zap_masked(masked_array, from_km, to_km, km_between_gates):
     """ 
-        Performs a despeckle operation on a numpy masked array
+        Performs a ring zap operation on a numpy masked array
         
         Args:
-            masked_array: A list containing float data.
-            a_speckle: An integer that determines the number of contiguous good data considered a speckle
+            masked_array: A numpy masked array data structure,
+            from_km: An integer for the starting range,
+            to_km: An integer for the ending range,
+            km_between_gates: An integer representing the distance (in km) between gates
 
         Returns:
             Numpy masked array

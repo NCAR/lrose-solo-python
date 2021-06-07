@@ -102,12 +102,15 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, bounda
 
 def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2):
     """ 
-        Performs a despeckle operation on a numpy masked array
+        Performs a threshold mask operation on a numpy masked array
         
         Args:
-            masked_array: A list containing float data.
-            a_speckle: An integer that determines the number of contiguous good data considered a speckle
-
+            masked_array: A numpy masked array data structure,
+            threshold_array: A numpy masked array data structure for referenced threshold,
+            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2)
+            scaled_thr1: Lower bound threshold
+            scaled_thr2: Upper bound threshold
+            
         Returns:
             Numpy masked array
 

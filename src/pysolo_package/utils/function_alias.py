@@ -16,6 +16,7 @@ if (platform.system() == "Windows"):
     despeckle = c_lib.se_despeckle
     ring_zap = c_lib.se_ring_zap
     threshold = c_lib.se_threshold_field
+    flag_glitches = c_lib.se_flag_glitches
 else:
     libraryName = os.path.join(dirname, 'libs/libSolo_18.04.so')
     os.path.join(dirname, libraryName)
@@ -23,7 +24,9 @@ else:
     despeckle = c_lib._Z12se_despecklePKfPfmfimPb
     ring_zap = c_lib._Z11se_ring_zapmmPKfPfmfmPb
     threshold = c_lib._Z18se_threshold_field5WhereffiPKfS1_mPfffmPbPKb
+    flag_glitches = c_lib._Z16se_flag_glitchesfiiPKfmfmPbS1_
 
 aliases['despeckle'] = despeckle
 aliases['ring_zap'] = ring_zap
 aliases['threshold'] = threshold
+aliases['flag_glitches'] = flag_glitches

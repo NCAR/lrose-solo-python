@@ -11,6 +11,12 @@ def initialize_float_array(size):
     return ctypes.cast(data_length_type(), ctypes.POINTER(ctypes.c_float))
 
 
+def initialize_bool_array(size, bools):
+    """ returns an empty float buffer of size """
+    data_length_type = ctypes.c_float * size
+    return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_float))
+
+
 def update_boundary_mask(input_list, output_list, boundary_mask_output):
     # update boundary mask for new invalid entries that were replaced by despeckle
     changes = 0
