@@ -17,6 +17,7 @@ def initialize_float_array(size, floats=None):
 def initialize_bool_array(size, bools):
     """ returns an empty float buffer of size """
     data_length_type = ctypes.c_bool * size
+
     return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_bool))
 
 

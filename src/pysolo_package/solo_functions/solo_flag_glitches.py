@@ -37,6 +37,7 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
         ctypes.c_int,                       # deglitch_radius
         ctypes.c_int,                       # deglitch_min_bins
         ctypes.POINTER(ctypes.c_float),     # data
+        ctypes.c_size_t,                    # ngates
         ctypes.c_float,                     # bad
         ctypes.c_size_t,                    # dgi_clip_gate
         ctypes.POINTER(ctypes.c_bool),      # boundary_mask
