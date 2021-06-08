@@ -6,7 +6,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_despeckle = aliases['despeckle']
 
-def despeckle(input_list, bad, a_speckle, input_boundary_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
+def despeckle2(input_list, bad, a_speckle, input_boundary_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
     """ 
         Performs a despeckle operation on a list of data (a single ray)
         
@@ -45,30 +45,24 @@ def despeckle(input_list, bad, a_speckle, input_boundary_mask, dgi_clip_gate=Non
     # retrieve size of input/output/mask array
     data_length = len(input_list)
 
+    # initialize an empty float array of length
+    output_array = ctypes_helper.initialize_float_array(data_length)
+
     # if optional, last parameter set to True, then create a list of bools set to True of length from above
     if boundary_mask_all_true:
         input_boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
-        dgi_clip_gate = data_length      
-
-    # create a ctypes type that is an array of floats of length from above
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
-
-    mask_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
-
-    # initialize an empty float array of length
-    output_array = ctypes_helper.initialize_float_array(data_length)
-
+        dgi_clip_gate = data_length        
 
     # run C function, output_array is updated with despeckle results
     se_despeckle(
-        input_array,
-        output_array,
+        ctypes_helper.initialize_float_array(len(input_list), input_list),
+        ctypes_helper.initialize_float_array(data_length),
         ctypes.c_size_t(data_length), 
         ctypes.c_float(bad), 
         ctypes.c_int(a_speckle), 
         ctypes.c_size_t(dgi_clip_gate), 
-        mask_array
+        ctypes_helper.initialize_bool_array(len(input_boundary_mask), input_boundary_mask)
     )
 
     # convert ctypes array to python list
@@ -80,7 +74,7 @@ def despeckle(input_list, bad, a_speckle, input_boundary_mask, dgi_clip_gate=Non
     return radar_structure.RadarData(output_list, boundary_mask_output, changes)
 
 
-def despeckle_masked(masked_array, a_speckle):
+def despeckle_masked2(masked_array, a_speckle):
     """ 
         Performs a despeckle operation on a numpy masked array
         
@@ -113,7 +107,7 @@ def despeckle_masked(masked_array, a_speckle):
         boundary_mask = mask[i]
 
         # run despeckle
-        despec = despeckle(input_data, missing, a_speckle, boundary_mask, boundary_mask_all_true=True)
+        despec = despeckle2(input_data, missing, a_speckle, boundary_mask, boundary_mask_all_true=True)
         output_data.append(despec.data)
         output_mask.append(despec.mask)
 

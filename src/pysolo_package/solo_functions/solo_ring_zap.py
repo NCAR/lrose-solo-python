@@ -55,23 +55,32 @@ def ring_zap(from_km, to_km, input_list, bad, input_boundary_mask, dgi_clip_gate
     # retrieve size of input/output/mask array
     data_length = len(input_list)
 
-    # initialize a float array from input_list parameter
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
-
-    # initialize an empty float array of length
-    output_array = ctypes_helper.initialize_float_array(data_length)
-
-    # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
-
     # if optional, last parameter set to True, then create a list of bools set to True of length from above
     if boundary_mask_all_true:
         input_boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length        
+        
+    # create a ctypes type that is an array of floats of length from above
+    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
+
+    mask_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
+
+    # initialize an empty float array of length
+    output_array = ctypes_helper.initialize_float_array(data_length)
+
 
     # run C function, output_array is updated with despeckle results
-    se_ring_zap(ctypes.c_size_t(from_km), ctypes.c_size_t(to_km), input_array, output_array, ctypes.c_size_t(data_length), ctypes.c_float(bad), ctypes.c_size_t(dgi_clip_gate), boundary_array)
+    se_ring_zap(
+        ctypes.c_size_t(from_km), 
+        ctypes.c_size_t(to_km), 
+        input_array, 
+        output_array, 
+        ctypes.c_size_t(data_length), 
+        ctypes.c_float(bad), 
+        ctypes.c_size_t(dgi_clip_gate),
+        mask_array
+    )
 
     # convert ctypes array to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)

@@ -7,7 +7,7 @@ from pysolo_package.utils.enums import Where
 
 se_threshold = aliases['threshold']
 
-def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_boundary_mask, dgi_clip_gate=None, thr_bad=None, first_good_gate=0, boundary_mask_all_true=False):
+def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_boundary_mask, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask_all_true=False):
     """
         Performs a <todo>
 
@@ -20,7 +20,7 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
             bad: A float that represents a missing/invalid data point for input_list.
             input_boundary_mask: A list of bools for masking valid/invalid values for input_list
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) thr_bad: A float that represents a missing/invalid data point for thr_list (default: same value as bad)
+            (optional) thr_missing: A float that represents a missing/invalid data point for thr_list (default: same value as bad)
             (optional) first_good_gate: Marks the index of the first "good" value in the input_list (default: 0) 
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
 
@@ -48,7 +48,7 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
         ctypes.c_size_t,                        # nGates
         ctypes.POINTER(ctypes.c_float),         # newData
         ctypes.c_float,                         # bad
-        ctypes.c_float,                         # thr_bad
+        ctypes.c_float,                         # thr_missing
         ctypes.c_size_t,                        # dgi_clip_gate
         ctypes.POINTER(ctypes.c_bool),          # boundary_mask
         ctypes.POINTER(ctypes.c_bool)           # bad_flag_mask
@@ -74,8 +74,8 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
         input_boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length
-    if thr_bad == None:
-        thr_bad = bad
+    if thr_missing == None:
+        thr_missing = bad
 
     # run C function, output_array is updated with despeckle results
     se_threshold(
@@ -88,7 +88,7 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
         ctypes.c_size_t(data_length),
         output_array,
         ctypes.c_float(bad),
-        ctypes.c_float(thr_bad),
+        ctypes.c_float(thr_missing),
         ctypes.c_size_t(dgi_clip_gate),
         boundary_array,
         boundary_array
@@ -144,7 +144,7 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
         threshold_input_data = threshold_data_list[i]
 
         # run threshold
-        thr = threshold(where, scaled_thr1, scaled_thr2, input_data, threshold_input_data, missing, boundary_mask, thr_bad=threshold_missing, boundary_mask_all_true=True)
+        thr = threshold(where, scaled_thr1, scaled_thr2, input_data, threshold_input_data, missing, boundary_mask, thr_missing=threshold_missing, boundary_mask_all_true=True)
 
         output_data.append(thr.data)
         output_mask.append(thr.mask)
