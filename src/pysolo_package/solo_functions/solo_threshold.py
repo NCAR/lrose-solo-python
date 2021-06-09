@@ -59,6 +59,14 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
     # retrieve size of input/output/mask array
     data_length = len(input_list)
 
+    # if optional, last parameter set to True, then create a list of bools set to True of length from above
+    if boundary_mask_all_true:
+        input_boundary_mask = [True] * data_length
+    if dgi_clip_gate == None:
+        dgi_clip_gate = data_length
+    if thr_missing == None:
+        thr_missing = bad
+        
     # initialize a float array from input_list parameter
     input_array = ctypes_helper.initialize_float_array(data_length, input_list)
     threshold_array = ctypes_helper.initialize_float_array(data_length, thr_list)
@@ -69,13 +77,6 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
     # initialize a boolean array from input_boundary_mask
     boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
 
-    # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask_all_true:
-        input_boundary_mask = [True] * data_length
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
-    if thr_missing == None:
-        thr_missing = bad
 
     # run C function, output_array is updated with despeckle results
     se_threshold(

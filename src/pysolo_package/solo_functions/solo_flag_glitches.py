@@ -1,5 +1,5 @@
 import ctypes
-from copy import deepcopy
+from copy import deepcopy, copy
 
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
@@ -35,7 +35,7 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     se_flag_glitches.argtypes = [
         ctypes.c_float,                     # deglitch_threshold
         ctypes.c_int,                       # deglitch_radius
-        ctypes.c_int,                       # deglitch_min_bins
+        ctypes.c_int,                       # deglitch_min_gates
         ctypes.POINTER(ctypes.c_float),     # data
         ctypes.c_size_t,                    # ngates
         ctypes.c_float,                     # bad
@@ -44,10 +44,18 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
         ctypes.POINTER(ctypes.c_bool)       # bad_flag_mask
         ]
 
-    boundary_mask_output = deepcopy(input_boundary_mask)
+    # boundary_mask_output = deepcopy(input_boundary_mask)
 
     # retrieve size of input/output/mask array
     data_length = len(input_list)
+
+    # if optional, last parameter set to True, then create a list of bools set to True of length from above
+    if boundary_mask_all_true:
+        input_boundary_mask = [True] * data_length
+    if dgi_clip_gate == None:
+        dgi_clip_gate = data_length
+
+    original_input_list = copy(input_list)
 
     # initialize a float array from input_list parameter
     input_array = ctypes_helper.initialize_float_array(data_length, input_list)
@@ -57,12 +65,6 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
 
     # initialize a boolean array from input_boundary_mask
     boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
-
-    # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask_all_true:
-        input_boundary_mask = [True] * data_length
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
 
     # run C function, output_array is updated with despeckle results
     se_flag_glitches(
@@ -78,12 +80,55 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     )
 
     # convert ctypes array to python list
-    output_list = ctypes_helper.array_to_list(flag_array, data_length)
+    output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(input_list, output_list, boundary_mask_output)
+    assert (original_input_list == input_list)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+    return radar_structure.RadarData(input_list, output_flag_list, 0)
 
-def flag_glitches_masked():
-    return
+
+def flag_glitches_masked(masked_array, bad_flag_mask, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask_all_true=False):
+    """ 
+        Performs a deglitch on a numpy masked array
+        
+        Args:
+            masked_array: A numpy masked array data structure,
+            bad_flag_mask: A list of lists,
+            deglitch_threshold: <TODO>,
+            deglitch_radius: <TODO>,
+            deglitch_min_gates: <TODO>
+
+        Returns:
+            Numpy masked array
+
+        Throws:
+            ModuleNotFoundError: if numpy is not installed
+            AttributeError: if masked_array arg is not a numpy masked array.
+    """
+    try:
+        import numpy as np
+        missing = masked_array.fill_value
+        mask = masked_array.mask.tolist()
+        data_list = masked_array.tolist(missing)
+    except ModuleNotFoundError:
+        print("You must have Numpy installed.")
+    except AttributeError:
+        print("Expected a numpy masked array.")
+    
+    output_data = []
+    output_mask = []
+
+    for i in range(len(data_list)):
+        input_data = data_list[i]
+        boundary_mask = mask[i]
+        bad_flag = bad_flag_mask[i]
+
+        # run flag
+        flag = flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input_data, missing, boundary_mask, bad_flag, boundary_mask_all_true=boundary_mask_all_true)
+        output_data.append(flag.data)
+        output_mask.append(flag.mask)
+
+    assert output_data == data_list
+    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
+    return output_masked_array
