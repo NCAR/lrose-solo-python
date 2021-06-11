@@ -98,7 +98,7 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
     # convert ctypes array to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(input_list, output_list, boundary_mask_output)
+    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, boundary_mask_output)
 
     # returns the new data and masks packaged in an object
     return radar_structure.RadarData(output_list, boundary_mask_output, changes)

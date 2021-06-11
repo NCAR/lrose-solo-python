@@ -3,19 +3,19 @@ import ctypes
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
 
-se_flag_glitches = aliases['flag_glitches']
+se_flag_freckles = aliases['flag_freckles']
 
-def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list, bad, input_boundary_mask, bad_flag_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
+def flag_freckles(freckle_threshold, freckle_avg_count, input_list, bad, input_boundary_mask, bad_flag_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
     """
-        Performs a flag glitches operation on a list of data (a single ray)
+        Performs a <TODO>
 
         Args:
-            deglitch_threshold: <TODO>
-            deglitch_radius: <TODO>
-            deglitch_min_gates: <TODO>
+            freckle_threshold: <TODO>
+            freckle_avg_count: <TODO>
             input_list: A list containing float data.
             bad: A float that represents a missing/invalid data point.
             input_boundary_mask: A list of bools for masking valid/invalid values for input_list
+            bad_flag_mask: <TODO>
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
 
@@ -29,12 +29,12 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     if (len(input_list) != len(input_boundary_mask)):
         raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list), len(input_boundary_mask)))
 
+
     # set return type and arg types
-    se_flag_glitches.restype = None
-    se_flag_glitches.argtypes = [
-        ctypes.c_float,                     # deglitch_threshold
-        ctypes.c_int,                       # deglitch_radius
-        ctypes.c_int,                       # deglitch_min_gates
+    se_flag_freckles.restype = None
+    se_flag_freckles.argtypes = [
+        ctypes.c_float,                     # freckle_threshold
+        ctypes.c_size_t,                    # freckle_avg_count
         ctypes.POINTER(ctypes.c_float),     # data
         ctypes.c_size_t,                    # ngates
         ctypes.c_float,                     # bad
@@ -61,11 +61,10 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     # initialize a boolean array from input_boundary_mask
     boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
 
-    # run C function, output_array is updated with flag glitches results
-    se_flag_glitches(
-        ctypes.c_float(deglitch_threshold),
-        ctypes.c_int(deglitch_radius),
-        ctypes.c_int(deglitch_min_gates),
+    # run C function, output_array is updated with flag freckles results
+    se_flag_freckles(
+        ctypes.c_float(freckle_threshold),
+        ctypes.c_size_t(freckle_avg_count),
         input_array,
         ctypes.c_size_t(data_length),
         ctypes.c_float(bad),
@@ -80,17 +79,15 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     # returns the new data and masks packaged in an object
     return radar_structure.RadarData(input_list, output_flag_list, 0)
 
-
-def flag_glitches_masked(masked_array, bad_flag_mask, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask_all_true=False):
+def flag_freckles_masked(masked_array, bad_flag_mask, freckle_threshold, freckle_avg_count, boundary_mask_all_true=False):
     """ 
         Performs a deglitch on a numpy masked array
         
         Args:
             masked_array: A numpy masked array data structure,
             bad_flag_mask: A list of lists,
-            deglitch_threshold: <TODO>,
-            deglitch_radius: <TODO>,
-            deglitch_min_gates: <TODO>
+            freckle_threshold: <TODO>,
+            freckle_avg_count: <TODO>
 
         Returns:
             Numpy masked array
@@ -118,7 +115,7 @@ def flag_glitches_masked(masked_array, bad_flag_mask, deglitch_threshold, deglit
         bad_flag = bad_flag_mask[i]
 
         # run flag
-        flag = flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input_data, missing, boundary_mask, bad_flag, boundary_mask_all_true=boundary_mask_all_true)
+        flag = flag_freckles(freckle_threshold, freckle_avg_count, input_data, missing, boundary_mask, bad_flag, boundary_mask_all_true=boundary_mask_all_true)
         output_data.append(flag.data)
         output_mask.append(flag.mask)
 

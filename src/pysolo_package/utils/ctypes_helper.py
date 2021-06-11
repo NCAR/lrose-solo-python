@@ -20,11 +20,11 @@ def initialize_bool_array(size, bools):
     return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_bool))
 
 
-def update_boundary_mask(input_list, output_list, boundary_mask_output):
-    # update boundary mask for new invalid entries that were replaced by despeckle
-    changes = 0
+def update_boundary_mask(input_list, missing, input_mask):
+    # update boundary mask for new invalid entries that were replaced 
+    removal_count = 0
     for i in range(len(input_list)):
-        if input_list[i] != output_list[i]:
-            boundary_mask_output[i] = True
-            changes += 1
-    return boundary_mask_output, changes
+        if input_list[i] == missing:
+            input_mask[i] = True
+            removal_count += 1
+    return input_mask, removal_count
