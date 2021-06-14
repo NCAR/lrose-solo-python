@@ -19,7 +19,7 @@ radar.fields['ZZ']['data']
 a_speckle = 2
 ZZ_masked_array = radar.fields['ZZ']['data']
 despeckled_mask = solo.despeckle_masked(ZZ_masked_array, a_speckle)
-radar.add_field_like('ZZ', 'ZZ_despeckled', despeckled_mask,   replace_existing=True)
+radar.add_field_like('ZZ', 'ZZ_despeckled', despeckled_mask, replace_existing=True)
 
 ############# [Ring Zap] ##############
 from_km = 25
@@ -38,15 +38,13 @@ radar.add_field_like('ZZ', 'ZZ_threshold', threshold_mask, replace_existing=True
 deglitch_threshold = 1
 deglitch_radius = 20
 deglitch_min_bins = 27
-bad_flag_mask = copy(radar.fields['ZZ']['data'].mask.tolist())
-flag_glitches_mask = solo.flag_glitches_masked(radar.fields['ZZ']['data'], bad_flag_mask, deglitch_threshold, deglitch_radius, deglitch_min_bins, boundary_mask_all_true=True)
+flag_glitches_mask = solo.flag_glitches_masked(radar.fields['ZZ']['data'], deglitch_threshold, deglitch_radius, deglitch_min_bins)
 radar.add_field_like('ZZ', 'ZZ_flag_glitch', flag_glitches_mask, replace_existing=True)
 
 ############## [Freckles] ##############
 freckle_threshold = 12
 freckle_avg_count = 2
-bad_flag_mask = copy(radar.fields['ZZ']['data'].mask.tolist())
-flag_freckles_mask = solo.flag_freckles_masked(radar.fields['ZZ']['data'], bad_flag_mask, freckle_threshold, freckle_avg_count, boundary_mask_all_true=True)
+flag_freckles_mask = solo.flag_freckles_masked(radar.fields['ZZ']['data'], freckle_threshold, freckle_avg_count)
 radar.add_field_like('ZZ', 'ZZ_flag_freckles', flag_freckles_mask, replace_existing=True)
 
 
@@ -76,8 +74,8 @@ def demoThreshold(display):
     plt.show()
 
 
-# graphPlot(display, 'ZZ_despeckled')
-# graphPlot(display, 'ZZ_ring_zapped')
-# demoThreshold(display)
-# graphPlot(display, 'ZZ_flag_glitch')
+graphPlot(display, 'ZZ_despeckled')
+graphPlot(display, 'ZZ_ring_zapped')
+demoThreshold(display)
+graphPlot(display, 'ZZ_flag_glitch')
 graphPlot(display, 'ZZ_flag_freckles')

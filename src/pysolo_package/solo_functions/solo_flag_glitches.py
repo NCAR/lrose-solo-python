@@ -5,16 +5,16 @@ from pysolo_package.utils.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
 
-def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list, bad, input_boundary_mask, bad_flag_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
+def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a flag glitches operation on a list of data (a single ray)
 
         Args:
+            input_list: A list containing float data.
+            bad: A float that represents a missing/invalid data point.
             deglitch_threshold: <TODO>
             deglitch_radius: <TODO>
             deglitch_min_gates: <TODO>
-            input_list: A list containing float data.
-            bad: A float that represents a missing/invalid data point.
             input_boundary_mask: A list of bools for masking valid/invalid values for input_list
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
@@ -26,8 +26,8 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
-    if (len(input_list) != len(input_boundary_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list), len(input_boundary_mask)))
+    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
+        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
 
     # set return type and arg types
     se_flag_glitches.restype = None
@@ -44,22 +44,24 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
         ]
 
     # retrieve size of input/output/mask array
-    data_length = len(input_list)
+    data_length = len(input_list_data)
 
     # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask_all_true:
-        input_boundary_mask = [True] * data_length
+    if boundary_mask == None:
+        boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length
+    if input_list_mask == None:
+        input_list_mask = [True if x == bad else False for x in input_list_data]        
 
     # initialize a float array from input_list parameter
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
+    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
 
     # initialize an empty float array of length
-    flag_array = ctypes_helper.initialize_bool_array(data_length, bad_flag_mask)
+    flag_array = ctypes_helper.initialize_bool_array(data_length, input_list_mask)
 
     # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
+    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
     # run C function, output_array is updated with flag glitches results
     se_flag_glitches(
@@ -78,10 +80,10 @@ def flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input
     output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(input_list, output_flag_list, 0)
+    return radar_structure.RadarData(input_list_data, output_flag_list, 0)
 
 
-def flag_glitches_masked(masked_array, bad_flag_mask, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask_all_true=False):
+def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):
     """ 
         Performs a deglitch on a numpy masked array
         
@@ -114,11 +116,10 @@ def flag_glitches_masked(masked_array, bad_flag_mask, deglitch_threshold, deglit
 
     for i in range(len(data_list)):
         input_data = data_list[i]
-        boundary_mask = mask[i]
-        bad_flag = bad_flag_mask[i]
+        input_mask = mask[i]
 
         # run flag
-        flag = flag_glitches(deglitch_threshold, deglitch_radius, deglitch_min_gates, input_data, missing, boundary_mask, bad_flag, boundary_mask_all_true=boundary_mask_all_true)
+        flag = flag_glitches(input_data, missing, deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list_mask=input_mask, boundary_mask=boundary_mask)
         output_data.append(flag.data)
         output_mask.append(flag.mask)
 

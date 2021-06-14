@@ -7,22 +7,22 @@ from pysolo_package.utils.enums import Where
 
 se_threshold = aliases['threshold']
 
-def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_boundary_mask, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask_all_true=False):
+def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, input_list_mask=None, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
         Performs a <todo>
 
         Args:
-            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2)
-            scaled_thr1: Lower bound threshold
-            scaled_thr2: Upper bound threshold
             input_list: A list containing float data.
             thr_list: The referenced list for threshold
             bad: A float that represents a missing/invalid data point for input_list.
-            input_boundary_mask: A list of bools for masking valid/invalid values for input_list
+            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2)
+            scaled_thr1: Lower bound threshold
+            scaled_thr2: Upper bound threshold
+            (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) thr_missing: A float that represents a missing/invalid data point for thr_list (default: same value as bad)
             (optional) first_good_gate: Marks the index of the first "good" value in the input_list (default: 0) 
-            (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
+            (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
         Returns:
             RadarData: object containing resultant 'data' and 'masks' lists.
@@ -31,10 +31,10 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
-    if (len(input_list) != len(thr_list)):
-        raise ValueError(("data size (%d) and threshold size (%d) must be of equal size.") % (len(input_list), len(thr_list)))
-    elif (len(input_list) != len(input_boundary_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list), len(input_boundary_mask)))
+    if (len(input_list_data) != len(thr_list)):
+        raise ValueError(("data size (%d) and threshold size (%d) must be of equal size.") % (len(input_list_data), len(thr_list)))
+    elif (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
+        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
 
     # set return type and arg types
     se_threshold.restype = None
@@ -54,28 +54,30 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
         ctypes.POINTER(ctypes.c_bool)           # bad_flag_mask
         ]
 
-    boundary_mask_output = deepcopy(input_boundary_mask)
 
     # retrieve size of input/output/mask array
-    data_length = len(input_list)
+    data_length = len(input_list_data)
 
-    # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask_all_true:
-        input_boundary_mask = [True] * data_length
+    # optional parameters
+    if boundary_mask == None:
+        boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length
     if thr_missing == None:
         thr_missing = bad
+    if input_list_mask == None:
+        input_list_mask = [True if x == bad else False for x in input_list_data]        
         
     # initialize a float array from input_list parameter
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
+    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
+    
     threshold_array = ctypes_helper.initialize_float_array(data_length, thr_list)
 
     # initialize an empty float array of length
     output_array = ctypes_helper.initialize_float_array(data_length)
 
     # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
+    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
 
     # run C function, output_array is updated with despeckle results
@@ -98,13 +100,13 @@ def threshold(where, scaled_thr1, scaled_thr2, input_list, thr_list, bad, input_
     # convert ctypes array to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, boundary_mask_output)
+    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
 
     # returns the new data and masks packaged in an object
     return radar_structure.RadarData(output_list, boundary_mask_output, changes)
 
 
-def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2):
+def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
     """ 
         Performs a threshold mask operation on a numpy masked array
         
@@ -140,12 +142,12 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
 
     for i in range(len(data_list)):
         input_data = data_list[i]
-        boundary_mask = mask[i]
+        input_mask = mask[i]
 
         threshold_input_data = threshold_data_list[i]
 
         # run threshold
-        thr = threshold(where, scaled_thr1, scaled_thr2, input_data, threshold_input_data, missing, boundary_mask, thr_missing=threshold_missing, boundary_mask_all_true=True)
+        thr = threshold(input_data, threshold_input_data, missing, where, scaled_thr1, scaled_thr2, input_list_mask=input_mask, thr_missing=threshold_missing, boundary_mask=boundary_mask)
 
         output_data.append(thr.data)
         output_mask.append(thr.mask)

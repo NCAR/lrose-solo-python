@@ -20,11 +20,11 @@ def initialize_bool_array(size, bools):
     return ctypes.cast(data_length_type(*bools), ctypes.POINTER(ctypes.c_bool))
 
 
-def update_boundary_mask(input_list, missing, input_mask):
+def update_boundary_mask(input_list, bad, input_mask):
     # update boundary mask for new invalid entries that were replaced 
     removal_count = 0
     for i in range(len(input_list)):
-        if input_list[i] == missing:
+        if input_list[i] == bad:
             input_mask[i] = True
             removal_count += 1
     return input_mask, removal_count

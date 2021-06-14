@@ -5,7 +5,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_flag_freckles = aliases['flag_freckles']
 
-def flag_freckles(freckle_threshold, freckle_avg_count, input_list, bad, input_boundary_mask, bad_flag_mask, dgi_clip_gate=None, boundary_mask_all_true=False):
+def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a <TODO>
 
@@ -26,8 +26,8 @@ def flag_freckles(freckle_threshold, freckle_avg_count, input_list, bad, input_b
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
-    if (len(input_list) != len(input_boundary_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list), len(input_boundary_mask)))
+    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
+        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
 
 
     # set return type and arg types
@@ -44,22 +44,24 @@ def flag_freckles(freckle_threshold, freckle_avg_count, input_list, bad, input_b
         ]
 
     # retrieve size of input/output/mask array
-    data_length = len(input_list)
+    data_length = len(input_list_data)
 
     # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask_all_true:
-        input_boundary_mask = [True] * data_length
+    if boundary_mask == None:
+        boundary_mask = [True] * data_length
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length
+    if input_list_mask == None:
+        input_list_mask = [True if x == bad else False for x in input_list_data]                
 
     # initialize a float array from input_list parameter
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list)
+    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
 
     # initialize an empty float array of length
-    flag_array = ctypes_helper.initialize_bool_array(data_length, bad_flag_mask)
+    flag_array = ctypes_helper.initialize_bool_array(data_length, input_list_mask)
 
     # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, input_boundary_mask)
+    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
     # run C function, output_array is updated with flag freckles results
     se_flag_freckles(
@@ -77,9 +79,9 @@ def flag_freckles(freckle_threshold, freckle_avg_count, input_list, bad, input_b
     output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(input_list, output_flag_list, 0)
+    return radar_structure.RadarData(input_list_data, output_flag_list, 0)
 
-def flag_freckles_masked(masked_array, bad_flag_mask, freckle_threshold, freckle_avg_count, boundary_mask_all_true=False):
+def flag_freckles_masked(masked_array, freckle_threshold, freckle_avg_count, boundary_mask=None):
     """ 
         Performs a deglitch on a numpy masked array
         
@@ -111,11 +113,10 @@ def flag_freckles_masked(masked_array, bad_flag_mask, freckle_threshold, freckle
 
     for i in range(len(data_list)):
         input_data = data_list[i]
-        boundary_mask = mask[i]
-        bad_flag = bad_flag_mask[i]
+        input_mask = mask[i]
 
         # run flag
-        flag = flag_freckles(freckle_threshold, freckle_avg_count, input_data, missing, boundary_mask, bad_flag, boundary_mask_all_true=boundary_mask_all_true)
+        flag = flag_freckles(input_data, missing, freckle_threshold, freckle_avg_count, input_list_mask=input_mask, boundary_mask=boundary_mask)
         output_data.append(flag.data)
         output_mask.append(flag.mask)
 
