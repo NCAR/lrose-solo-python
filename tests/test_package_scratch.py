@@ -13,7 +13,7 @@ import random
 
 os.system("cls")
 
-radius = 100
+radius = 150
 
 data = []
 mask = []
@@ -26,7 +26,7 @@ for i in range(360):
 for i in range(0, 1440, 1):
     x = math.cos(math.radians(i/4)) * radius 
     y = math.sin(math.radians(i/4)) * radius 
-    mask[round(radius-y)+20][round(radius-x)+20] = False
+    mask[round(radius-y)+30][round(radius-x)] = False
     # if (20 < i < 35):
     #     x = math.cos(math.radians(i)) * (radius)
     #     y = math.sin(math.radians(i)) * (radius)
@@ -41,13 +41,13 @@ for i in range(0, 1440, 1):
     #         mask[round(radius-y+j)][round(radius-x+j)] = False
 
 
-random_num = 228
-random_x = -2
-random_y = 8
-for i in range(10):
-    for j in range(random_num - 10, random_num + 10):
-            data[random_y + j][random_x + j] = 40
-            mask[random_y + j][random_x + j] = False      
+# random_num = 228
+# random_x = -2
+# random_y = 8
+# for i in range(10):
+#     for j in range(random_num - 10, random_num + 10):
+#             data[random_y + j][random_x + j] = 40
+#             mask[random_y + j][random_x + j] = False      
 
 
 for i in range(len(mask)):
@@ -61,7 +61,6 @@ for i in range(len(mask)):
 
     for j in range(first_index, last_index + 1):
         mask[i][j] = False
-
 
 
 masked_array = np.ma.masked_array(data=data, mask=mask, fill_value=0)
