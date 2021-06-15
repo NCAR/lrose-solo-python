@@ -11,23 +11,23 @@ from pysolo_package.utils.enums import Where
 input_data = [3, -3, -3, 5, 5, 5, -3, 5, 5, -3]
 bad = -3
 a_speckle = 3
-dgi_clip_gate = 8
+dgi = 8
 input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
 expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
-output = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi_clip_gate, boundary_mask=input_boundary_mask)
+output = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
 assert output.data == expected_data
 print("A")
 
 
 # test ring zap
-from_km = 2
-to_km = 9
 input_data = [-3, 4, 6, -3, 8, -3, 10, 12, 14, -3, -3]
 bad = -3
-dgi_clip_gate = 10
+from_km = 2
+to_km = 9
+dgi = 10
 input_boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
 expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
-output_data = solo.ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi_clip_gate, boundary_mask=input_boundary_mask)
+output_data = solo.ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
 assert (output_data.data == expected_data)
 print("B")
 

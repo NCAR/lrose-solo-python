@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from copy import *
 
 import pysolo_package as solo
-from pysolo_package.solo_functions.solo_flag_freckles import flag_freckles
 from pysolo_package.utils.radar_structure import RadarData
 from pysolo_package.utils.enums import Where
 
@@ -75,7 +74,7 @@ def demoThreshold(display):
 
 
 graphPlot(display, 'ZZ_despeckled')
-graphPlot(display, 'ZZ_ring_zapped')
-demoThreshold(display)
-graphPlot(display, 'ZZ_flag_glitch')
-graphPlot(display, 'ZZ_flag_freckles')
+# graphPlot(display, 'ZZ_ring_zapped')
+# demoThreshold(display)
+# graphPlot(display, 'ZZ_flag_glitch')
+# graphPlot(display, 'ZZ_flag_freckles')

@@ -54,14 +54,14 @@ def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, in
     if input_list_mask == None:
         input_list_mask = [True if x == bad else False for x in input_list_data]                
 
-    # initialize a float array from input_list parameter
+    # create a ctypes float/bool array from a list of size data_length
     input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
 
-    # initialize an empty float array of length
+    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
+
+    # initialize an empty bool array of length
     flag_array = ctypes_helper.initialize_bool_array(data_length, input_list_mask)
 
-    # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
     # run C function, output_array is updated with flag freckles results
     se_flag_freckles(
@@ -75,7 +75,7 @@ def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, in
         flag_array
     )
 
-    # convert ctypes array to python list
+    # convert resultant ctypes array back to python list
     output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
 
     # returns the new data and masks packaged in an object

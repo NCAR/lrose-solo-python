@@ -1,5 +1,6 @@
-import ctypes
 from copy import deepcopy
+import ctypes
+import numpy as np
 
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
@@ -25,6 +26,7 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
+    # if input_list_mask was provided, check if it's the same size as input_list_data
     if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
         raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
 
@@ -46,20 +48,19 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
 
     # optional parameters
     if boundary_mask == None:
-        boundary_mask = [True] * data_length
+        boundary_mask = [True] * data_length # set boundary_mask to all true, match size of input_list_data
     if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
+        dgi_clip_gate = data_length 
     if input_list_mask == None:
-        input_list_mask = [True if x == bad else False for x in input_list_data]
+        input_list_mask = [True if x == bad else False for x in input_list_data] # set mask to True on indexes with 'bad' value
 
-    # create a ctypes type that is an array of floats of length from above
+    # create a ctypes float/bool array from a list of size data_length
     input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
 
     boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
     # initialize an empty float array of length
     output_array = ctypes_helper.initialize_float_array(data_length)
-
 
     # run C function, output_array is updated with despeckle results
     se_despeckle(
@@ -72,13 +73,15 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
         boundary_array
     )
 
-    # convert ctypes array to python list
+    # convert resultant ctypes array back to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
+    # the solo functions doesn't do this, but
+    # update the mask for the new bad values created from the despeckle.
+    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+    return radar_structure.RadarData(output_list, output_list_mask, changes)
 
 
 def despeckle_masked(masked_array, a_speckle, boundary_mask=None):
@@ -97,26 +100,39 @@ def despeckle_masked(masked_array, a_speckle, boundary_mask=None):
             AttributeError: if masked_array arg is not a numpy masked array.
     """
     try:
-        import numpy as np
+        # extract data, mask, and missing values from masked array
         missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
+        mask_list = masked_array.mask.tolist()
         data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
     except AttributeError:
         print("Expected a numpy masked array.")
 
-    output_data = []
-    output_mask = []
+    # initialize empty lists, these will eventually become lists of lists with despeckle results
+    output_data = deepcopy(data_list)
+    output_mask = deepcopy(mask_list)
 
+    # perform despeckle on each ray
     for i in range(len(data_list)):
         input_data = data_list[i]
-        input_mask = mask[i]
+        input_mask = mask_list[i]
 
-        # run despeckle
+        # and run despeckle on each individual ray
         despec = despeckle(input_data, missing, a_speckle, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(despec.data)
-        output_mask.append(despec.mask)
+        # despec returns resultant data and mask lists, append to output_data and output_mask
+        output_data[i] = despec.data
+        output_mask[i] = despec.mask
 
+    # repackage as masked array and return
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
+
+
+def despeckle_ray(output_data, output_mask, data_list, mask_list, missing, a_speckle, boundary_mask, i):
+        input_data = data_list[i]
+        input_mask = mask_list[i]
+
+        # and run despeckle on each individual ray
+        despec = despeckle(input_data, missing, a_speckle, input_list_mask=input_mask, boundary_mask=boundary_mask)
+        # despec returns resultant data and mask lists, append to output_data and output_mask
+        output_data[i] = despec.data
+        output_mask[i] = despec.mask

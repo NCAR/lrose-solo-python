@@ -68,16 +68,16 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
     if input_list_mask == None:
         input_list_mask = [True if x == bad else False for x in input_list_data]        
         
-    # initialize a float array from input_list parameter
+    # create a ctypes float/bool array from a list of size data_length
     input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
     
     threshold_array = ctypes_helper.initialize_float_array(data_length, thr_list)
 
+    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
+
     # initialize an empty float array of length
     output_array = ctypes_helper.initialize_float_array(data_length)
 
-    # initialize a boolean array from input_boundary_mask
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 
 
     # run C function, output_array is updated with despeckle results
@@ -97,7 +97,7 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
         boundary_array
     )
 
-    # convert ctypes array to python list
+    # convert resultant ctypes array back to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
     boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
