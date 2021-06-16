@@ -1,11 +1,18 @@
 from copy import deepcopy
 import ctypes
+import os
 import numpy as np
+from multiprocessing import Manager, shared_memory, cpu_count, Process, Array
+import math
+import logging
+import psutil
 
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
 
 se_despeckle = aliases['despeckle']
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(process)d] - %(message)s')
 
 def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
     """
@@ -20,7 +27,7 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
             (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
         Returns:
-            RadarData: object containing resultant 'data' and 'masks' lists.
+            RayData: object containing resultant 'data' and 'masks' lists.
 
         Throws:
             ValueError: if input_list and input_boundary_mask are not equal in size
@@ -52,7 +59,7 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
     if dgi_clip_gate == None:
         dgi_clip_gate = data_length 
     if input_list_mask == None:
-        input_list_mask = [True if x == bad else False for x in input_list_data] # set mask to True on indexes with 'bad' value
+        input_list_mask = [True if x == np.float32(bad) else False for x in input_list_data] # set mask to True on indexes with 'bad' value
 
     # create a ctypes float/bool array from a list of size data_length
     input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
@@ -81,10 +88,10 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
     output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, output_list_mask, changes)
+    return radar_structure.RayData(output_list, output_list_mask, changes)
 
 
-def despeckle_masked(masked_array, a_speckle, boundary_mask=None):
+def despeckle_masked(masked_array, a_speckle, boundary_mask=None, parallel=False):
     """
         Performs a despeckle operation on a numpy masked array
 
@@ -99,40 +106,91 @@ def despeckle_masked(masked_array, a_speckle, boundary_mask=None):
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        # extract data, mask, and missing values from masked array
-        missing = masked_array.fill_value
-        mask_list = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except AttributeError:
-        print("Expected a numpy masked array.")
-
-    # initialize empty lists, these will eventually become lists of lists with despeckle results
-    output_data = deepcopy(data_list)
-    output_mask = deepcopy(mask_list)
-
-    # perform despeckle on each ray
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask_list[i]
-
-        # and run despeckle on each individual ray
-        despec = despeckle(input_data, missing, a_speckle, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        # despec returns resultant data and mask lists, append to output_data and output_mask
-        output_data[i] = despec.data
-        output_mask[i] = despec.mask
+    rayData = RayData(masked_array, a_speckle, boundary_mask, parallel)
+    if parallel:
+        rayData.run_parallel()
+    else:
+        rayData.run_serial() 
 
     # repackage as masked array and return
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
+    output_masked_array = np.ma.masked_array(data=rayData.result_data, mask=rayData.result_mask, fill_value=rayData.missing)
     return output_masked_array
 
 
-def despeckle_ray(output_data, output_mask, data_list, mask_list, missing, a_speckle, boundary_mask, i):
-        input_data = data_list[i]
-        input_mask = mask_list[i]
+class RayData:
+    def __init__(self, masked, a_speckle, boundary_mask, parallel):
+        self.a_speckle = a_speckle
+        self.boundary_mask = boundary_mask
+
+        self.parallel = parallel
+
+        self.missing = masked.fill_value
+        self.mask_list = masked.mask.tolist()
+        self.data_list = masked.tolist(self.missing)
+
+        self.output_data = self.data_list
+        self.output_mask = self.mask_list 
+        
+
+    def despeckle_rays(self, start, end):
+        for ray in range(start, end):
+            self.despeckle_single_ray(ray)
+
+
+    def despeckle_single_ray(self, i):
+        input_data = self.data_list[i]
+        input_mask = self.mask_list[i]
 
         # and run despeckle on each individual ray
-        despec = despeckle(input_data, missing, a_speckle, input_list_mask=input_mask, boundary_mask=boundary_mask)
+        despec = despeckle(input_data, self.missing, self.a_speckle, input_list_mask=input_mask, boundary_mask=self.boundary_mask)
         # despec returns resultant data and mask lists, append to output_data and output_mask
-        output_data[i] = despec.data
-        output_mask[i] = despec.mask
+        if (self.parallel):
+            with self.lock:
+                self.shared_data[i] = despec.data
+                self.shared_mask[i] = despec.mask
+        else:
+            self.output_data[i] = despec.data
+            self.output_mask[i] = despec.mask
+
+
+
+    def run_serial(self):
+        self.despeckle_rays(0, len(self.data_list))
+        self.result_data = list(self.output_data)
+        self.result_mask = list(self.output_mask)
+
+
+    def run_parallel(self):
+
+        manager = Manager()
+        self.shared_data = manager.list(self.output_data)
+        self.shared_mask = manager.list(self.output_mask)
+        self.lock = manager.Lock()
+
+        processes = []
+        chunks = []
+        start = 0
+        end = 0
+        nums = list(range(0, len(self.data_list)))
+        chunk_size = math.ceil(len(self.data_list) / cpu_count())
+
+        for i in range(0, len(self.data_list), chunk_size):
+            start = i
+            end = start + chunk_size
+            chunks.append( (start, end) )
+
+        logging.info(chunks)
+
+        logging.info("received chunk size of %d" % (chunk_size))
+        for chunk in chunks:
+            logging.info("processing chunks: %d to %d" % (chunk[0], chunk[1]))
+            process = Process(target=self.despeckle_rays, args=(chunk[0], chunk[1]))
+            processes.append(process)
+            process.start()
+
+        for process in processes:
+            process.join()
+            logging.info("process finished.")
+
+        self.result_data = list(self.shared_data)
+        self.result_mask = list(self.shared_mask)

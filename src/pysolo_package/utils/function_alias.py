@@ -16,6 +16,7 @@ if (platform.system() == "Windows"):
     threshold = c_lib.se_threshold_field
     flag_glitches = c_lib.se_flag_glitches
     flag_freckles = c_lib.se_flag_freckles
+    forced_unfolding = c_lib.se_funfold
 else:
     libraryName = os.path.join(dirname, 'libs/libSolo_18.04.so')
     c_lib = ctypes.CDLL(libraryName)
@@ -24,9 +25,11 @@ else:
     threshold = c_lib._Z18se_threshold_field5WhereffiPKfS1_mPfffmPbPKb
     flag_glitches = c_lib._Z16se_flag_glitchesfiiPKfmfmPbS1_
     flag_freckles = c_lib._Z16se_flag_frecklesfmPKfmfmPbS1_
+    forced_unfolding = c_lib._Z10se_funfoldPKfPfmffffmPb
 
 aliases['despeckle'] = despeckle
 aliases['ring_zap'] = ring_zap
 aliases['threshold'] = threshold
 aliases['flag_glitches'] = flag_glitches
 aliases['flag_freckles'] = flag_freckles
+aliases['forced_unfolding'] = forced_unfolding

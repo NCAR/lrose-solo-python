@@ -25,7 +25,7 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
             (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
         Returns:
-            RadarData: object containing resultant 'data' and 'masks' lists.
+            RayData: object containing resultant 'data' and 'masks' lists.
 
         Throws:
             ValueError: if input_list and input_boundary_mask are not equal in size
@@ -100,10 +100,10 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
     # convert resultant ctypes array back to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
+    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+    return radar_structure.RayData(output_list, output_list_mask, changes)
 
 
 def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):

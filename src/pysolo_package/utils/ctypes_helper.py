@@ -1,4 +1,5 @@
 import ctypes
+import numpy as np
 
 def array_to_list(input_array, size):
     """ converts ctype array to python list """
@@ -24,7 +25,7 @@ def update_boundary_mask(input_list, bad, input_mask):
     # update boundary mask for new invalid entries that were replaced 
     removal_count = 0
     for i in range(len(input_list)):
-        if input_list[i] == bad:
+        if input_list[i] == np.float32(bad):
             input_mask[i] = True
             removal_count += 1
     return input_mask, removal_count

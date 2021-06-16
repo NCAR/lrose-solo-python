@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from copy import *
 
 import pysolo_package as solo
-from pysolo_package.utils.radar_structure import RadarData
+from pysolo_package.utils.radar_structure import RayData
 from pysolo_package.utils.enums import Where
 import os
 import math

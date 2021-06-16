@@ -10,16 +10,16 @@ def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_cli
         Performs a ring zap operation on a list of data.
         
         Args:
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
+            from_km: An integer for the starting range,
+            to_km: An integer for the ending range,
             (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
 
         Returns:
-          RadarData: object containing resultant 'data' and 'masks' lists.
+          RayData: object containing resultant 'data' and 'masks' lists.
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
@@ -85,10 +85,10 @@ def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_cli
     # convert resultant ctypes array back to python list
     output_list = ctypes_helper.array_to_list(output_array, data_length)
 
-    boundary_mask_output, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
+    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(output_list, boundary_mask_output, changes)
+    return radar_structure.RayData(output_list, output_list_mask, changes)
 
 
 def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mask=None):

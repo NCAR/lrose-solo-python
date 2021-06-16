@@ -20,7 +20,7 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
 
         Returns:
-            RadarData: object containing resultant 'data' and 'masks' lists.
+            RayData: object containing resultant 'data' and 'masks' lists.
 
         Throws:
             ValueError: if input_list and input_boundary_mask are not equal in size
@@ -79,7 +79,7 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
     output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
 
     # returns the new data and masks packaged in an object
-    return radar_structure.RadarData(input_list_data, output_flag_list, 0)
+    return radar_structure.RayData(input_list_data, output_flag_list, 0)
 
 
 def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):

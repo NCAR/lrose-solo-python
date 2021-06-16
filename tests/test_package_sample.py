@@ -3,7 +3,7 @@
 # https://test.pypi.org/project/pysolo-wip/
 
 import pysolo_package as solo
-from pysolo_package.utils.radar_structure import RadarData
+from pysolo_package.utils.radar_structure import RayData
 from pysolo_package.utils.enums import Where
 
 
