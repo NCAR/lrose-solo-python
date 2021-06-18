@@ -2,15 +2,14 @@
 # also handles which library to import based on platform
 
 import platform
-import os
+from pathlib import Path
 import ctypes
 
 aliases = {}
 
-dirname = os.path.dirname(os.path.abspath(__file__))    
 if (platform.system() == "Windows"):
-    libraryName = os.path.join(dirname, 'libs/solo.dll')
-    c_lib = ctypes.CDLL(libraryName)
+    path_to_file = Path.cwd() / Path('src/pysolo_package/libs/solo.dll')
+    c_lib = ctypes.CDLL(str(path_to_file))
     despeckle = c_lib.se_despeckle
     ring_zap = c_lib.se_ring_zap
     threshold = c_lib.se_threshold_field
@@ -18,8 +17,8 @@ if (platform.system() == "Windows"):
     flag_freckles = c_lib.se_flag_freckles
     forced_unfolding = c_lib.se_funfold
 else:
-    libraryName = os.path.join(dirname, 'libs/libSolo_18.04.so')
-    c_lib = ctypes.CDLL(libraryName)
+    path_to_file = Path.cwd() / Path('src/pysolo_package/libs/libSolo_18.04.so')
+    c_lib = ctypes.CDLL(str(path_to_file))
     despeckle = c_lib._Z12se_despecklePKfPfmfimPb
     ring_zap = c_lib._Z11se_ring_zapmmPKfPfmfmPb
     threshold = c_lib._Z18se_threshold_field5WhereffiPKfS1_mPfffmPbPKb
