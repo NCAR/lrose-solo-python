@@ -3,7 +3,6 @@ import numpy as np
 from multiprocessing import Manager, cpu_count, Process
 import math
 import logging
-import psutil
 
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases

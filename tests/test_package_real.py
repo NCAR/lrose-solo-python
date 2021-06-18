@@ -45,22 +45,31 @@ radar.add_field_like('ZZ', 'ZZ_flag_glitch', flag_glitches_mask, replace_existin
 ############## [Freckles] ##############
 freckle_threshold = 12
 freckle_avg_count = 2
-flag_freckles_mask = solo.flag_freckles_masked(radar.fields['ZZ']['data'], freckle_threshold, freckle_avg_count)
-radar.add_field_like('ZZ', 'ZZ_flag_freckles', flag_freckles_mask, replace_existing=True)
+flag_freckles_mask = solo.flag_freckles_masked(radar.fields['VV']['data'], freckle_threshold, freckle_avg_count)
+radar.add_field_like('VV', 'VV_flag_freckles', flag_freckles_mask, replace_existing=True)
 
-# ########## [Forced unfolding] ##########
-# nyquist_velocity = 25
-# dds_radd_eff_unamb_vel = 5
-# center = 0
-# forced_unfolding_mask = solo.forced_unfolding_masked(radar.fields['ZZ']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, center)
-# radar.add_field_like('ZZ', 'ZZ_forced_unfolding', forced_unfolding_mask, replace_existing=True)
+########## [Forced unfolding] ##########
+nyquist_velocity = 7
+dds_radd_eff_unamb_vel = 5
+center = 0
+forced_unfolding_mask = solo.forced_unfolding_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, center)
+radar.add_field_like('VV', 'VV_forced_unfolding', forced_unfolding_mask, replace_existing=True)
 
+####### [Unfold First Good Gate] #######
+nyquist_velocity = 25
+dds_radd_eff_unamb_vel = 5
+max_pos_folds = 10
+max_neg_folds = 10
+ngates_averaged = 20
+last_good_v0 = [1] * radar.ngates
+BB_unfolding_mask = solo.unfold_first_good_gate_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
+radar.add_field_like('VV', 'VV_unfold_first_good_gate', BB_unfolding_mask, replace_existing=True)
 
 display = pyart.graph.RadarMapDisplay(radar)
 
-def graphPlot(display, plot_field):
+def graphPlot(display, plot_field, ref='ZZ'):
     fig, ax = plt.subplots(ncols=2, figsize=(15,7))
-    display.plot(field='ZZ', vmin=-40, vmax=40, title="Original (RHI)", cmap='pyart_NWSRef', ax=ax[0])
+    display.plot(field=ref, vmin=-40, vmax=40, title="Original (RHI)", cmap='pyart_NWSRef', ax=ax[0])
     display.set_limits((-50, 50), (-10, 35), ax=ax[0])
     display.plot(field=plot_field, vmin=-40, vmax=40, title=plot_field + " (RHI)", cmap='pyart_NWSRef', ax=ax[1])
     display.set_limits((-50, 50), (-10, 35), ax=ax[1])
@@ -86,5 +95,6 @@ def demoThreshold(display):
 # graphPlot(display, 'ZZ_ring_zapped')
 # demoThreshold(display)
 # graphPlot(display, 'ZZ_flag_glitch')
-graphPlot(display, 'ZZ_flag_freckles')
-# graphPlot(display, 'ZZ_forced_unfolding')
+# graphPlot(display, 'ZZ_flag_freckles')
+graphPlot(display, 'VV_forced_unfolding', 'VV')
+# graphPlot(display, 'VV_unfold_first_good_gate', 'VV')
