@@ -1,13 +1,11 @@
-n_gates = 10
-n_rays = 10
-rays = []
+import os
+from pathlib import Path
 
-for _ in range(n_rays):
-    rays.append([0]  * n_gates)
 
-for i in range(n_rays):
-    for j in range(n_gates):
-        rays[i][j] = str(i) + str(j)
+path_to_file = Path.cwd() / Path('src/pysolo_package/libs/solo.dll')
 
-for ray in rays:
-    print(*ray)
+print(path_to_file)
+
+# dirname = os.path.dirname(os.path.abspath(__file__))
+# libraryName = os.path.join(dirname, 'libs/solo.dll')
+# print(libraryName)

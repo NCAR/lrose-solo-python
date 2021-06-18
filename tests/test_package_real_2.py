@@ -24,11 +24,11 @@ if __name__ == '__main__':
     missing = reflectivity.fill_value
 
 
+    a_speckle = 50
 
     ############ [Despeckle] ##############
     print("Starting Timer...")
     start = timeit.default_timer()
-    a_speckle = 2
     despeckled_mask_serial = solo.despeckle_masked(reflectivity, a_speckle)
     radar.add_field_like('reflectivity', 'reflectivity_despeckled_serial', despeckled_mask_serial, replace_existing=True)
     stop = timeit.default_timer()
@@ -36,7 +36,6 @@ if __name__ == '__main__':
 
     print("Starting Timer...")
     start = timeit.default_timer()
-    a_speckle = 2
     despeckled_mask_parallel = solo.despeckle_masked(reflectivity, a_speckle, parallel=True)
     radar.add_field_like('reflectivity', 'reflectivity_despeckled_parallel', despeckled_mask_parallel, replace_existing=True)
     stop = timeit.default_timer()

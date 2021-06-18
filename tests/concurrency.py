@@ -12,7 +12,7 @@ if __name__ == '__main__':
     from pysolo_package.utils import radar_structure, ctypes_helper
     from pysolo_package.utils.function_alias import aliases
 
-    path_to_file = Path.cwd() / Path('tests/radar_data_c')
+    path_to_file = Path.cwd() / Path('tests/data/radar_data_c')
 
     radar = pyart.io.read(path_to_file)
     print(list(radar.fields.keys()))
@@ -26,6 +26,9 @@ if __name__ == '__main__':
     data_before = reflectivity.tolist(missing)
     mask_before = reflectivity.mask.tolist()
 
+    print(radar.nrays)
+    sys.exit(0)
+    
     ############ [Despeckle] ##############
     a_speckle = 2
 

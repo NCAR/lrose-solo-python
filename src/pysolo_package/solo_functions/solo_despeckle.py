@@ -1,8 +1,6 @@
-from copy import deepcopy
 import ctypes
-import os
 import numpy as np
-from multiprocessing import Manager, shared_memory, cpu_count, Process, Array
+from multiprocessing import Manager, cpu_count, Process
 import math
 import logging
 import psutil
@@ -117,6 +115,7 @@ def despeckle_masked(masked_array, a_speckle, boundary_mask=None, parallel=False
     return output_masked_array
 
 
+# TODO: clean up
 class RayData:
     def __init__(self, masked, a_speckle, boundary_mask, parallel):
         self.a_speckle = a_speckle
@@ -128,13 +127,20 @@ class RayData:
         self.mask_list = masked.mask.tolist()
         self.data_list = masked.tolist(self.missing)
 
+        # if either data_list or mask_list are 1D lists, cast them to be 2D lists
+        # essentially, from: 1 list -> 1 list containing 1 list
+        if (not any(isinstance(el, list) for el in self.data_list)):
+            self.data_list = [self.data_list]
+        if (not any(isinstance(el, list) for el in self.mask_list)):
+            self.mask_list = [self.mask_list]
+
         self.output_data = self.data_list
         self.output_mask = self.mask_list 
         
 
     def despeckle_rays(self, start, end):
-        for ray in range(start, end):
-            self.despeckle_single_ray(ray)
+        for ray_num in range(start, end):
+            self.despeckle_single_ray(ray_num)
 
 
     def despeckle_single_ray(self, i):
