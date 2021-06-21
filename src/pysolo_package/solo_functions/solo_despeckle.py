@@ -2,6 +2,7 @@ import ctypes
 import numpy as np
 from multiprocessing import Manager, cpu_count, Process
 import math
+import psutil
 import logging
 
 from pysolo_package.utils import radar_structure, ctypes_helper
@@ -177,7 +178,7 @@ class RayData:
         start = 0
         end = 0
         nums = list(range(0, len(self.data_list)))
-        chunk_size = math.ceil(len(self.data_list) / cpu_count())
+        chunk_size = math.ceil(len(self.data_list) / psutil.cpu_count(logical = False))
 
         for i in range(0, len(self.data_list), chunk_size):
             start = i

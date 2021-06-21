@@ -1,4 +1,3 @@
-
 if __name__ == '__main__':
 
     import numpy as np
@@ -6,7 +5,9 @@ if __name__ == '__main__':
     from pathlib import Path
     import pyart
     import sys
-    sys.path.append('C:/Users/Marma/Desktop/pysolo/src/pysolo_package/')
+    from pathlib import Path
+    directory = Path.cwd() / Path('src/pysolo_package/')
+    sys.path.append(str(directory))
     import solo_functions.solo_despeckle as test
 
     from pysolo_package.utils import radar_structure, ctypes_helper
@@ -15,9 +16,6 @@ if __name__ == '__main__':
     path_to_file = Path.cwd() / Path('tests/data/radar_data_c')
 
     radar = pyart.io.read(path_to_file)
-    print(list(radar.fields.keys()))
-    # sys.exit(0)
-
 
     reflectivity = radar.fields['reflectivity']['data']
 
@@ -26,8 +24,7 @@ if __name__ == '__main__':
     data_before = reflectivity.tolist(missing)
     mask_before = reflectivity.mask.tolist()
 
-    print(radar.nrays)
-    sys.exit(0)
+    print('{:,}'.format(radar.nrays * radar.ngates))
     
     ############ [Despeckle] ##############
     a_speckle = 2

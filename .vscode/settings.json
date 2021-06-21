@@ -1,4 +1,8 @@
 {
     "jupyter.jupyterServerType": "local",
-    "python.pythonPath": "C:\\Users\\Marma\\miniconda3\\envs\\pyart_env\\python.exe"
+    "python.pythonPath": "C:\\Users\\Marma_na00b8q\\anaconda3\\envs\\solo_env\\python.exe",
+    "python.formatting.provider": "black",
+    "terminal.integrated.env.windows": {
+    },
+    "terminal.integrated.fontFamily": "CaskaydiaCove NF"
 }

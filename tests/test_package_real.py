@@ -62,8 +62,23 @@ max_pos_folds = 10
 max_neg_folds = 10
 ngates_averaged = 20
 last_good_v0 = [1] * radar.ngates
-BB_unfolding_mask = solo.unfold_first_good_gate_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
-radar.add_field_like('VV', 'VV_unfold_first_good_gate', BB_unfolding_mask, replace_existing=True)
+BB_unfolding_fgg_mask = solo.unfold_first_good_gate_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
+radar.add_field_like('VV', 'VV_unfold_first_good_gate', BB_unfolding_fgg_mask, replace_existing=True)
+
+######### [Unfold Local Wind] ##########
+nyquist_velocity = 25
+dds_radd_eff_unamb_vel = 5
+azimuth_angle_degrees = 5
+elevation_angle_degrees = 5
+ew_wind = 5
+ns_wind = 5
+ud_wind = 5
+max_pos_folds = 10
+max_neg_folds = 10
+ngates_averaged = 20
+BB_unfolding_lw_mask = solo.unfold_local_wind_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged)
+radar.add_field_like('VV', 'VV_unfold_local_wind', BB_unfolding_lw_mask, replace_existing=True)
+
 
 display = pyart.graph.RadarMapDisplay(radar)
 
@@ -80,10 +95,10 @@ def demoThreshold(display):
     display = pyart.graph.RadarMapDisplay(radar)
     fig = plt.figure(figsize=(14, 14))
     ax = fig.add_subplot(221)
-    display.plot(field='ZZ', vmin=-20, vmax=10, title="Original (ZZ) (PPI)", cmap='pyart_NWSRef')
+    display.plot(field='ZZ', vmin=-20, vmax=10, title="Original (PPI)", cmap='pyart_NWSRef')
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     ax = fig.add_subplot(222)
-    display.plot(field='ZZ_threshold', vmin=-20, vmax=10, title="Threshold (ZZ) (PPI)", cmap='pyart_NWSRef')
+    display.plot(field='ZZ_threshold', vmin=-20, vmax=10, title="Threshold (PPI)", cmap='pyart_NWSRef')
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     ax = fig.add_subplot(223)
     display.plot(field='VV', vmin=-20, vmax=10, title="Original (VV) (PPI)", cmap='pyart_NWSRef')
@@ -96,5 +111,6 @@ def demoThreshold(display):
 # demoThreshold(display)
 # graphPlot(display, 'ZZ_flag_glitch')
 # graphPlot(display, 'ZZ_flag_freckles')
-graphPlot(display, 'VV_forced_unfolding', 'VV')
+# graphPlot(display, 'VV_forced_unfolding', 'VV')
 # graphPlot(display, 'VV_unfold_first_good_gate', 'VV')
+# graphPlot(display, 'VV_unfold_local_wind', 'VV')
