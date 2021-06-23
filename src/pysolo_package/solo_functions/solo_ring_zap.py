@@ -1,6 +1,6 @@
 import ctypes
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
@@ -108,30 +108,8 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-    
-    output_data = []
-    output_mask = []
 
     from_km = int(from_km / km_between_gates)
     to_km = int(to_km / km_between_gates)
 
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        # run ring removal
-        ring = ring_zap(input_data, missing, from_km, to_km, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(ring.data)
-        output_mask.append(ring.mask)
-
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_mask = boundary_mask)

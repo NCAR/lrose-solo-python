@@ -1,6 +1,7 @@
 import ctypes
+from pysolo_package.solo_functions.solo_flag_freckles import flag_freckles
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
@@ -100,28 +101,5 @@ def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, degl
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-    
-    output_data = []
-    output_mask = []
 
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        # run flag
-        flag = flag_glitches(input_data, missing, deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(flag.data)
-        output_mask.append(flag.mask)
-
-    assert output_data == data_list
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    return masked_op.masked_func(flag_glitches, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask = boundary_mask)

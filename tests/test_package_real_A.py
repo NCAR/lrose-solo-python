@@ -14,7 +14,6 @@ radar = pyart.io.read(path_to_file)
 
 radar.fields['ZZ']['data']
 
-
 ############ [Despeckle] ##############
 a_speckle = 2
 ZZ_masked_array = radar.fields['ZZ']['data']
@@ -44,12 +43,12 @@ radar.add_field_like('ZZ', 'ZZ_flag_glitch', flag_glitches_mask, replace_existin
 ############## [Freckles] ##############
 freckle_threshold = 12
 freckle_avg_count = 2
-flag_freckles_mask = solo.flag_freckles_masked(radar.fields['VV']['data'], freckle_threshold, freckle_avg_count)
-radar.add_field_like('VV', 'VV_flag_freckles', flag_freckles_mask, replace_existing=True)
+flag_freckles_mask = solo.flag_freckles_masked(radar.fields['ZZ']['data'], freckle_threshold, freckle_avg_count)
+radar.add_field_like('ZZ', 'ZZ_flag_freckles', flag_freckles_mask, replace_existing=True)
 
 ########## [Forced unfolding] ##########
-nyquist_velocity = 7
-dds_radd_eff_unamb_vel = 5
+nyquist_velocity = 30
+dds_radd_eff_unamb_vel = 0
 center = 0
 forced_unfolding_mask = solo.forced_unfolding_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, center)
 radar.add_field_like('VV', 'VV_forced_unfolding', forced_unfolding_mask, replace_existing=True)
@@ -105,11 +104,39 @@ def demoThreshold(display):
     plt.show()
 
 
-# graphPlot(display, 'ZZ_despeckled')
-# graphPlot(display, 'ZZ_ring_zapped')
-# demoThreshold(display)
-# graphPlot(display, 'ZZ_flag_glitch')
-# graphPlot(display, 'ZZ_flag_freckles')
-# graphPlot(display, 'VV_forced_unfolding', 'VV')
-# graphPlot(display, 'VV_unfold_first_good_gate', 'VV')
-# graphPlot(display, 'VV_unfold_local_wind', 'VV')
+graphPlot(display, 'ZZ_despeckled')
+graphPlot(display, 'ZZ_ring_zapped')
+demoThreshold(display)
+graphPlot(display, 'ZZ_flag_glitch')
+graphPlot(display, 'ZZ_flag_freckles')
+graphPlot(display, 'VV_forced_unfolding', 'VV')
+graphPlot(display, 'VV_unfold_first_good_gate', 'VV')
+graphPlot(display, 'VV_unfold_local_wind', 'VV')
+
+# fig, ax = plt.subplots(ncols=2, figsize=(15,7))
+# display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (RHI)", cmap='pyart_NWSRef', ax=ax[0])
+# display.set_limits((-50, 50), (-10, 35), ax=ax[0])
+# display.plot_ppi(field='VG', vmin=-48, vmax=48, title="VG (RHI)", cmap='pyart_NWSRef', ax=ax[1])
+# display.set_limits((-50, 50), (-10, 35), ax=ax[1])
+# plt.show()
+
+# i = 20
+# j = 0
+# k = 0
+# nyquist_velocity = i
+# dds_radd_eff_unamb_vel = j
+# center = k
+# forced_unfolding_mask = solo.forced_unfolding_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, center)
+# radar.add_field_like('VV', 'VV_forced_unfolding', forced_unfolding_mask, replace_existing=True)
+
+# fig = plt.figure(figsize=(14, 14))
+# ax = fig.add_subplot(221)
+# display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (PPI)", cmap='pyart_NWSRef')
+# ax = fig.add_subplot(222)
+# display.plot_ppi(field='VG', vmin=-48, vmax=48, title="VG (PPI)", cmap='pyart_NWSRef')
+# ax = fig.add_subplot(223)
+# display.plot_ppi(field='VV_forced_unfolding', vmin=-48, vmax=48, title="Mine (PPI)", cmap='pyart_NWSRef')
+# plt.suptitle("nyquist = %d, center = %d, eff_unamb_vel = %d" % (i, j, k), fontsize=16)
+# plt.show()
+# # plt.savefig("C:/Users/Marma_na00b8q/Pictures/forced_unfolding/funfold_%d_%d_%d" % (i, j, k))
+# print("Saved figure%d_%d_%d" % (i, j, k))

@@ -1,6 +1,6 @@
 import ctypes
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_unfold_local_wind = aliases['unfold_local_wind']
@@ -128,27 +128,5 @@ def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-
-    output_data = []
-    output_mask = []
-
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        # run
-        ring = unfold_local_wind(input_data, missing, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind,  ns_wind,  ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(ring.data)
-        output_mask.append(ring.mask)
-
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    
+    return masked_op.masked_func(unfold_local_wind, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_mask = boundary_mask)

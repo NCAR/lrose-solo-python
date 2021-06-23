@@ -1,6 +1,6 @@
 import ctypes
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_flag_freckles = aliases['flag_freckles']
@@ -98,28 +98,5 @@ def flag_freckles_masked(masked_array, freckle_threshold, freckle_avg_count, bou
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-    
-    output_data = []
-    output_mask = []
 
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        # run flag
-        flag = flag_freckles(input_data, missing, freckle_threshold, freckle_avg_count, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(flag.data)
-        output_mask.append(flag.mask)
-
-    assert output_data == data_list
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    return masked_op.masked_func(flag_freckles, masked_array, freckle_threshold, freckle_avg_count, boundary_mask = boundary_mask)

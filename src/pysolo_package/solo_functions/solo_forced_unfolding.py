@@ -1,6 +1,6 @@
 import ctypes
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_funfold = aliases['forced_unfolding']
@@ -105,27 +105,5 @@ def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_v
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-    
-    output_data = []
-    output_mask = []
 
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        # run forced_unfolding
-        ring = forced_unfolding(input_data, missing, nyquist_velocity, dds_radd_eff_unamb_vel, center, input_list_mask=input_mask, boundary_mask=boundary_mask)
-        output_data.append(ring.data)
-        output_mask.append(ring.mask)
-
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    return masked_op.masked_func(forced_unfolding, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask = boundary_mask)

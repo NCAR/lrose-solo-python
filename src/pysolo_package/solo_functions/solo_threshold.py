@@ -1,7 +1,7 @@
 import ctypes
 from copy import deepcopy
 
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 from pysolo_package.utils.enums import Where
 
@@ -124,33 +124,5 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        import numpy as np
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
 
-        threshold_missing = threshold_array.fill_value
-        threshold_data_list = threshold_array.tolist(missing)
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
-    except AttributeError:
-        print("Expected a numpy masked array.")
-    
-    output_data = []
-    output_mask = []
-
-    for i in range(len(data_list)):
-        input_data = data_list[i]
-        input_mask = mask[i]
-
-        threshold_input_data = threshold_data_list[i]
-
-        # run threshold
-        thr = threshold(input_data, threshold_input_data, missing, where, scaled_thr1, scaled_thr2, input_list_mask=input_mask, thr_missing=threshold_missing, boundary_mask=boundary_mask)
-
-        output_data.append(thr.data)
-        output_mask.append(thr.mask)
-
-    output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
-    return output_masked_array
+    return masked_op.masked_func(threshold, masked_array, where, scaled_thr1, scaled_thr2, boundary_mask = boundary_mask, second_masked_array=threshold_array)
