@@ -22,14 +22,15 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
         data_list = masked_array.tolist(missing)
 
         second_data_list = None
-        if (second_masked_array.any() != None):
+        if (second_masked_array is not None):
             second_missing = second_masked_array.fill_value
             second_data_list = second_masked_array.tolist(second_missing)
 
     except ModuleNotFoundError:
         print("You must have Numpy installed.")
-    except AttributeError:
+    except AttributeError as e:
         print("Expected a numpy masked array.")
+        print(e)
     
     output_data = []
     output_mask = []

@@ -1,5 +1,5 @@
 import ctypes
-from pysolo_package.solo_functions.solo_flag_freckles import flag_freckles
+from pysolo_package.utils.run_solo import run_solo_function
 
 from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
@@ -27,60 +27,19 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
-    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
+    args = {
+        "deglitch_threshold" : ctypes_helper.DataTypeValue(ctypes.c_float, deglitch_threshold),
+        "deglitch_radius" : ctypes_helper.DataTypeValue(ctypes.c_int, deglitch_radius),
+        "deglitch_min_gates" : ctypes_helper.DataTypeValue(ctypes.c_int, deglitch_min_gates),
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), input_list_mask)
+    }
 
-    # set return type and arg types
-    se_flag_glitches.restype = None
-    se_flag_glitches.argtypes = [
-        ctypes.c_float,                     # deglitch_threshold
-        ctypes.c_int,                       # deglitch_radius
-        ctypes.c_int,                       # deglitch_min_gates
-        ctypes.POINTER(ctypes.c_float),     # data
-        ctypes.c_size_t,                    # ngates
-        ctypes.c_float,                     # bad
-        ctypes.c_size_t,                    # dgi_clip_gate
-        ctypes.POINTER(ctypes.c_bool),      # boundary_mask
-        ctypes.POINTER(ctypes.c_bool)       # bad_flag_mask
-        ]
-
-    # retrieve size of input/output/mask array
-    data_length = len(input_list_data)
-
-    # if optional, last parameter set to True, then create a list of bools set to True of length from above
-    if boundary_mask == None:
-        boundary_mask = [True] * data_length
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
-    if input_list_mask == None:
-        input_list_mask = [True if x == bad else False for x in input_list_data]        
-
-    # create a ctypes float/bool array from a list of size data_length
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
-
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
-
-    # initialize an empty float array of length
-    flag_array = ctypes_helper.initialize_bool_array(data_length, input_list_mask)
-
-    # run C function, output_array is updated with flag glitches results
-    se_flag_glitches(
-        ctypes.c_float(deglitch_threshold),
-        ctypes.c_int(deglitch_radius),
-        ctypes.c_int(deglitch_min_gates),
-        input_array,
-        ctypes.c_size_t(data_length),
-        ctypes.c_float(bad),
-        ctypes.c_size_t(dgi_clip_gate),
-        boundary_array,
-        flag_array
-    )
-
-    # convert resultant ctypes array back to python list
-    output_flag_list = ctypes_helper.array_to_list(flag_array, data_length)
-
-    # returns the new data and masks packaged in an object
-    return radar_structure.RayData(input_list_data, output_flag_list, 0)
+    return run_solo_function(se_flag_glitches, args, input_list_mask)
 
 
 def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):

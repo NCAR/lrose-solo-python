@@ -100,7 +100,7 @@ dds_radd_eff_unamb_vel = 0.0
 expected_data = [3.0, 4.0, 5.0, 6.0]
 last_good_v0 = [bad]
 output_data = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
-assert (output_data.data == expected_data)
+assert (output_data.data == expected_data), output_data.data
 
 data = [-3, -3, 5, 6]
 input_boundary_mask = [True, True, True, True]

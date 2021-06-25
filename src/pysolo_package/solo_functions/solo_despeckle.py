@@ -1,10 +1,11 @@
 import ctypes
 import numpy as np
-from multiprocessing import Manager, cpu_count, Process
+from multiprocessing import Manager, Process
 import math
 import psutil
 import logging
 
+from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import radar_structure, ctypes_helper
 from pysolo_package.utils.function_alias import aliases
 
@@ -30,6 +31,18 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
         Throws:
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
+
+    args = {
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "a_speckle" : ctypes_helper.DataTypeValue(ctypes.c_size_t, a_speckle),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+    }
+
+    return run_solo_function(se_despeckle, args, input_list_mask)
 
     # if input_list_mask was provided, check if it's the same size as input_list_data
     if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):

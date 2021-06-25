@@ -1,6 +1,13 @@
 import ctypes
 
-from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
+import sys
+from pathlib import Path
+
+from pysolo_package.utils.run_solo import run_solo_function
+# directory = Path.cwd() / Path('src/')
+# sys.path.append(str(directory))
+
+from pysolo_package.utils import ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
@@ -27,68 +34,18 @@ def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_cli
                       if from_km is less than 0 or if to_km is greater than length of input list.
     """
 
-    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
-    elif (from_km > to_km):
-        raise ValueError(("from_km value (%d) must be smaller than to_km value (%d).") % (from_km, to_km))
-    elif (from_km < 0):
-        raise ValueError(("from_km value (%d) must be greater than zero.") % from_km)
-    elif (to_km > len(input_list_data)):
-        raise ValueError(("to_km value (%d) must be less than than the length of the input list (%d).") % (to_km, len(input_list_data)))
+    args = {
+        "from_km" : ctypes_helper.DataTypeValue(ctypes.c_size_t, from_km),
+        "to_km" : ctypes_helper.DataTypeValue(ctypes.c_size_t, to_km),
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+    }
 
-    # set return type and arg types
-    se_ring_zap.restype = None
-    se_ring_zap.argtypes = [
-        ctypes.c_size_t,
-        ctypes.c_size_t, 
-        ctypes.POINTER(ctypes.c_float), 
-        ctypes.POINTER(ctypes.c_float), 
-        ctypes.c_size_t, 
-        ctypes.c_float, 
-        ctypes.c_size_t, 
-        ctypes.POINTER(ctypes.c_bool)
-        ]
-
-
-    # retrieve size of input/output/mask array
-    data_length = len(input_list_data)
-
-    # optional parameters
-    if boundary_mask == None:
-        boundary_mask = [True] * data_length
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
-    if input_list_mask == None:
-        input_list_mask = [True if x == bad else False for x in input_list_data]    
-        
-    # create a ctypes float/bool array from a list of size data_length
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
-
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
-
-    # initialize an empty float array of length
-    output_array = ctypes_helper.initialize_float_array(data_length)
-
-
-    # run C function, output_array is updated with despeckle results
-    se_ring_zap(
-        ctypes.c_size_t(from_km), 
-        ctypes.c_size_t(to_km), 
-        input_array, 
-        output_array, 
-        ctypes.c_size_t(data_length), 
-        ctypes.c_float(bad), 
-        ctypes.c_size_t(dgi_clip_gate),
-        boundary_array
-    )
-
-    # convert resultant ctypes array back to python list
-    output_list = ctypes_helper.array_to_list(output_array, data_length)
-
-    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
-
-    # returns the new data and masks packaged in an object
-    return radar_structure.RayData(output_list, output_list_mask, changes)
+    return run_solo_function(se_ring_zap, args, input_list_mask)
 
 
 def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mask=None):
@@ -113,3 +70,25 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
     to_km = int(to_km / km_between_gates)
 
     return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_mask = boundary_mask)
+
+def main():
+
+    input_data = [-3, 4, 6, -3, 8, -3, 10, 12, 14, -3, -3]
+    bad = -3
+    from_km = 2
+    to_km = 9
+    dgi = 10
+    boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
+
+    input_list_mask = None
+
+    output_data = ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=boundary_mask)
+
+    expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
+    assert (output_data.data == expected_data), "PROBLEM"
+
+    return
+
+
+if __name__ == "__main__":
+    main()

@@ -1,13 +1,13 @@
 import ctypes
-from copy import deepcopy
 
+from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
 from pysolo_package.utils.enums import Where
 
 se_threshold = aliases['threshold']
 
-def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, input_list_mask=None, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
+def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, scaled_thr2, input_list_mask=None, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
         Performs a <todo>
 
@@ -31,8 +31,27 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
             ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
-    if (len(input_list_data) != len(thr_list)):
-        raise ValueError(("data size (%d) and threshold size (%d) must be of equal size.") % (len(input_list_data), len(thr_list)))
+    args = {
+        "where" : ctypes_helper.DataTypeValue(ctypes.c_int, where),
+        "scaled_thr1" : ctypes_helper.DataTypeValue(ctypes.c_float, scaled_thr1),
+        "scaled_thr2" : ctypes_helper.DataTypeValue(ctypes.c_float, scaled_thr2),
+        "first_good_gate" : ctypes_helper.DataTypeValue(ctypes.c_int, first_good_gate),
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "thr_data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), threshold_list_data),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "thr_bad" : ctypes_helper.DataTypeValue(ctypes.c_float, thr_missing if thr_missing else bad),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), input_list_mask)
+    }
+
+    return run_solo_function(se_threshold, args, input_list_mask)
+
+
+    if (len(input_list_data) != len(threshold_list_data)):
+        raise ValueError(("data size (%d) and threshold size (%d) must be of equal size.") % (len(input_list_data), len(threshold_list_data)))
     elif (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
         raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
 
@@ -71,7 +90,7 @@ def threshold(input_list_data, thr_list, bad, where, scaled_thr1, scaled_thr2, i
     # create a ctypes float/bool array from a list of size data_length
     input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
     
-    threshold_array = ctypes_helper.initialize_float_array(data_length, thr_list)
+    threshold_array = ctypes_helper.initialize_float_array(data_length, threshold_list_data)
 
     boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
 

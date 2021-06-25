@@ -1,4 +1,5 @@
 import ctypes
+from pysolo_package.utils.run_solo import run_solo_function
 
 from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
@@ -33,6 +34,27 @@ def unfold_local_wind(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
     """
+
+    args = {
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "nyquist_velocity" : ctypes_helper.DataTypeValue(ctypes.c_float, nyquist_velocity),
+        "dds_radd_eff_unamb_vel" : ctypes_helper.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
+        "azimuth_angle_degrees" : ctypes_helper.DataTypeValue(ctypes.c_float, azimuth_angle_degrees),
+        "elevation_angle_degrees" : ctypes_helper.DataTypeValue(ctypes.c_float, elevation_angle_degrees),
+        "ew_wind" : ctypes_helper.DataTypeValue(ctypes.c_float, ew_wind),
+        "ns_wind" : ctypes_helper.DataTypeValue(ctypes.c_float, ns_wind),
+        "ud_wind" : ctypes_helper.DataTypeValue(ctypes.c_float, ud_wind),
+        "max_pos_folds" : ctypes_helper.DataTypeValue(ctypes.c_int, max_pos_folds),
+        "max_neg_folds" : ctypes_helper.DataTypeValue(ctypes.c_int, max_neg_folds),
+        "ngates_averaged" : ctypes_helper.DataTypeValue(ctypes.c_size_t, ngates_averaged),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+    }
+
+    return run_solo_function(se_unfold_local_wind, args, input_list_mask)
 
     if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
         raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (

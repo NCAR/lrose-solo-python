@@ -29,3 +29,9 @@ def update_boundary_mask(input_list, bad, input_mask):
             input_mask[i] = True
             removal_count += 1
     return input_mask, removal_count
+
+
+class DataTypeValue:
+    def __init__(self, ctype_type, value):
+        self.type = ctype_type
+        self.value = value

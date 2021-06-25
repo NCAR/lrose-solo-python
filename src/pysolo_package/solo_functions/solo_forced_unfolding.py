@@ -1,4 +1,5 @@
 import ctypes
+from pysolo_package.utils.run_solo import run_solo_function
 
 from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
 from pysolo_package.utils.function_alias import aliases
@@ -28,64 +29,19 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
                       if from_km is less than 0 or if to_km is greater than length of input list.
     """
 
-    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
+    args = {
+        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
+        "nyquist_velocity" : ctypes_helper.DataTypeValue(ctypes.c_float, nyquist_velocity),
+        "dds_radd_eff_unamb_vel" : ctypes_helper.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
+        "center" : ctypes_helper.DataTypeValue(ctypes.c_float, center),
+        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+    }
 
-    # set return type and arg types
-    se_funfold.restype = None
-    se_funfold.argtypes = [
-        ctypes.POINTER(ctypes.c_float), 
-        ctypes.POINTER(ctypes.c_float), 
-        ctypes.c_size_t, 
-        ctypes.c_float, 
-        ctypes.c_float, 
-        ctypes.c_float, 
-        ctypes.c_float, 
-        ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_bool)
-        ]
-
-
-    # retrieve size of input/output/mask array
-    data_length = len(input_list_data)
-
-    # optional parameters
-    if boundary_mask == None:
-        boundary_mask = [True] * data_length
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length
-    if input_list_mask == None:
-        input_list_mask = [True if x == bad else False for x in input_list_data]    
-        
-    # create a ctypes float/bool array from a list of size data_length
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
-
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
-
-    # initialize an empty float array of length
-    output_array = ctypes_helper.initialize_float_array(data_length)
-
-
-    # run C function, output_array is updated with despeckle results
-    se_funfold(
-        input_array, 
-        output_array, 
-        ctypes.c_size_t(data_length), 
-        ctypes.c_float(nyquist_velocity), 
-        ctypes.c_float(dds_radd_eff_unamb_vel), 
-        ctypes.c_float(center), 
-        ctypes.c_float(bad), 
-        ctypes.c_size_t(dgi_clip_gate),
-        boundary_array
-    )
-
-    # convert resultant ctypes array back to python list
-    output_list = ctypes_helper.array_to_list(output_array, data_length)
-
-    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
-
-    # returns the new data and masks packaged in an object
-    return radar_structure.RayData(output_list, output_list_mask, changes)
+    return run_solo_function(se_funfold, args, input_list_mask)
 
 
 def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask=None):

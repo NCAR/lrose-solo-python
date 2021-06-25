@@ -1,3 +1,4 @@
+from numpy.ma.core import masked_equal
 import pyart
 import numpy as np
 import cartopy.crs as ccrs
@@ -5,8 +6,8 @@ import matplotlib.pyplot as plt
 from copy import *
 from pathlib import Path
 import pysolo_package as solo
-from pysolo_package.utils.radar_structure import RayData
-from pysolo_package.utils.enums import Where
+
+import shelve
 
 path_to_file = Path.cwd() / Path('tests/data/radar_data.nc')
 
@@ -80,7 +81,7 @@ radar.add_field_like('VV', 'VV_unfold_local_wind', BB_unfolding_lw_mask, replace
 
 display = pyart.graph.RadarMapDisplay(radar)
 
-def graphPlot(display, plot_field, ref='ZZ'):
+def graphPlot(plot_field, ref='ZZ'):
     fig, ax = plt.subplots(ncols=2, figsize=(15,7))
     display.plot(field=ref, vmin=-40, vmax=40, title="Original (RHI)", cmap='pyart_NWSRef', ax=ax[0])
     display.set_limits((-50, 50), (-10, 35), ax=ax[0])
@@ -89,7 +90,7 @@ def graphPlot(display, plot_field, ref='ZZ'):
     plt.suptitle(plot_field, fontsize=16)
     plt.show()
 
-def demoThreshold(display):
+def demoThreshold():
     display = pyart.graph.RadarMapDisplay(radar)
     fig = plt.figure(figsize=(14, 14))
     ax = fig.add_subplot(221)
@@ -103,15 +104,31 @@ def demoThreshold(display):
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     plt.show()
 
+shelfFile = shelve.open('shelf/test_package_real_A_data')
 
-graphPlot(display, 'ZZ_despeckled')
-graphPlot(display, 'ZZ_ring_zapped')
-demoThreshold(display)
-graphPlot(display, 'ZZ_flag_glitch')
-graphPlot(display, 'ZZ_flag_freckles')
-graphPlot(display, 'VV_forced_unfolding', 'VV')
-graphPlot(display, 'VV_unfold_first_good_gate', 'VV')
-graphPlot(display, 'VV_unfold_local_wind', 'VV')
+forced_unfolding_mask_shelfed = shelfFile['forced_unfolding_mask'] 
+BB_unfolding_fgg_mask_shelfed = shelfFile['BB_unfolding_fgg_mask']
+BB_unfolding_lw_mask_shelfed = shelfFile['BB_unfolding_lw_mask']
+
+assert(np.ma.allclose(forced_unfolding_mask_shelfed, forced_unfolding_mask))
+assert(np.ma.allclose(BB_unfolding_fgg_mask_shelfed, BB_unfolding_fgg_mask))
+assert(np.ma.allclose(BB_unfolding_lw_mask_shelfed, BB_unfolding_lw_mask))
+  
+
+# flag_freckles_mask_shelfed = shelfFile['flag_freckles_mask']
+# sm = flag_freckles_mask_shelfed.mask.tolist()
+# m = flag_freckles_mask.mask.tolist()
+# assert (sm == m)
+shelfFile.close()
+
+# graphPlot('ZZ_despeckled')
+# graphPlot('ZZ_ring_zapped')
+# demoThreshold()
+# graphPlot('ZZ_flag_glitch')
+# graphPlot('ZZ_flag_freckles')
+# graphPlot('VV_forced_unfolding', 'VV')
+# graphPlot('VV_unfold_first_good_gate', 'VV')
+# graphPlot('VV_unfold_local_wind', 'VV')
 
 # fig, ax = plt.subplots(ncols=2, figsize=(15,7))
 # display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (RHI)", cmap='pyart_NWSRef', ax=ax[0])
