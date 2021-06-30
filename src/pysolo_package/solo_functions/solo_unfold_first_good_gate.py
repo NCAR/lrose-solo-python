@@ -1,7 +1,7 @@
 import ctypes
 from pysolo_package.utils.run_solo import run_solo_function
 
-from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
+from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_unfold_first_good_gate = aliases['unfold_first_good_gate']
@@ -30,18 +30,18 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
     """
 
     args = {
-        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
-        "nyquist_velocity" : ctypes_helper.DataTypeValue(ctypes.c_float, nyquist_velocity),
-        "dds_radd_eff_unamb_vel" : ctypes_helper.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
-        "max_pos_folds" : ctypes_helper.DataTypeValue(ctypes.c_int, max_pos_folds),
-        "max_neg_folds" : ctypes_helper.DataTypeValue(ctypes.c_int, max_neg_folds),
-        "ngates_averaged" : ctypes_helper.DataTypeValue(ctypes.c_size_t, ngates_averaged),
-        "last_good_v0" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), last_good_v0),
-        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "nyquist_velocity" : DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
+        "dds_radd_eff_unamb_vel" : DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
+        "max_pos_folds" : DataPair.DataTypeValue(ctypes.c_int, max_pos_folds),
+        "max_neg_folds" : DataPair.DataTypeValue(ctypes.c_int, max_neg_folds),
+        "ngates_averaged" : DataPair.DataTypeValue(ctypes.c_size_t, ngates_averaged),
+        "last_good_v0" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), last_good_v0),
+        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
     return run_solo_function(se_unfold_first_good_gate, args)

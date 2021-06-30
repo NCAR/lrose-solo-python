@@ -10,7 +10,7 @@ if __name__ == '__main__':
     sys.path.append(str(directory))
     import solo_functions.solo_flag_freckles as test
 
-    from pysolo_package.utils import radar_structure, ctypes_helper
+    from pysolo_package.utils import radar_structure, DataPair
     from pysolo_package.utils.function_alias import aliases
 
     path_to_file = Path.cwd() / Path('tests/data/radar_data_c')

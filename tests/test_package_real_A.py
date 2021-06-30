@@ -78,6 +78,15 @@ ngates_averaged = 20
 BB_unfolding_lw_mask = solo.unfold_local_wind_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged)
 radar.add_field_like('VV', 'VV_unfold_local_wind', BB_unfolding_lw_mask, replace_existing=True)
 
+########### [Radial Shear] ############
+seds_gate_diff_interval = round(radar.ngates / 2)
+radial_shear_mask = solo.radial_shear_masked(radar.fields['ZZ']['data'], seds_gate_diff_interval)
+radar.add_field_like('ZZ', 'ZZ_radial_shear', radial_shear_mask, replace_existing=True)
+
+############# [Rain Rate] ##############
+d_const = 2
+rain_rate_mask = solo.rain_rate_masked(radar.fields['ZZ']['data'], d_const)
+radar.add_field_like('ZZ', 'ZZ_rain_rate', rain_rate_mask, replace_existing=True)
 
 display = pyart.graph.RadarMapDisplay(radar)
 
@@ -113,14 +122,16 @@ assert(np.ma.allclose(BB_unfolding_fgg_mask_shelfed, BB_unfolding_fgg_mask))
 assert(np.ma.allclose(BB_unfolding_lw_mask_shelfed, BB_unfolding_lw_mask))
 shelfFile.close()
 
-graphPlot('ZZ_despeckled')
-graphPlot('ZZ_ring_zapped')
-demoThreshold()
-graphPlot('ZZ_flag_glitch')
-graphPlot('ZZ_flag_freckles')
-graphPlot('VV_forced_unfolding', 'VV')
-graphPlot('VV_unfold_first_good_gate', 'VV')
-graphPlot('VV_unfold_local_wind', 'VV')
+# graphPlot('ZZ_despeckled')
+# graphPlot('ZZ_ring_zapped')
+# demoThreshold()
+# graphPlot('ZZ_flag_glitch')
+# graphPlot('ZZ_flag_freckles')
+# graphPlot('VV_forced_unfolding', 'VV')
+# graphPlot('VV_unfold_first_good_gate', 'VV')
+# graphPlot('VV_unfold_local_wind', 'VV')
+# graphPlot('ZZ_radial_shear')
+graphPlot('ZZ_rain_rate')
 
 # fig, ax = plt.subplots(ncols=2, figsize=(15,7))
 # display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (RHI)", cmap='pyart_NWSRef', ax=ax[0])

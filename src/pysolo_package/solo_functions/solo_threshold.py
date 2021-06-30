@@ -1,7 +1,7 @@
 import ctypes
 
 from pysolo_package.utils.run_solo import run_solo_function
-from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
+from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 from pysolo_package.utils.enums import Where
 
@@ -31,19 +31,19 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
     """
 
     args = {
-        "where" : ctypes_helper.DataTypeValue(ctypes.c_int, where),
-        "scaled_thr1" : ctypes_helper.DataTypeValue(ctypes.c_float, scaled_thr1),
-        "scaled_thr2" : ctypes_helper.DataTypeValue(ctypes.c_float, scaled_thr2),
-        "first_good_gate" : ctypes_helper.DataTypeValue(ctypes.c_int, first_good_gate),
-        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "thr_data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), threshold_list_data),
-        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
-        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
-        "thr_bad" : ctypes_helper.DataTypeValue(ctypes.c_float, thr_missing if thr_missing else bad),
-        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask)
+        "where" : DataPair.DataTypeValue(ctypes.c_int, where),
+        "scaled_thr1" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr1),
+        "scaled_thr2" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr2),
+        "first_good_gate" : DataPair.DataTypeValue(ctypes.c_int, first_good_gate),
+        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "thr_data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), threshold_list_data),
+        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
+        "thr_bad" : DataPair.DataTypeValue(ctypes.c_float, thr_missing if thr_missing else bad),
+        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask)
     }
 
     return run_solo_function(se_threshold, args)

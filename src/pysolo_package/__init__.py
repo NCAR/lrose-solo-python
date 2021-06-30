@@ -8,6 +8,8 @@ from pysolo_package.solo_functions.solo_flag_freckles import flag_freckles, flag
 from pysolo_package.solo_functions.solo_forced_unfolding import forced_unfolding, forced_unfolding_masked
 from pysolo_package.solo_functions.solo_unfold_first_good_gate import unfold_first_good_gate, unfold_first_good_gate_masked
 from pysolo_package.solo_functions.solo_unfold_local_wind import unfold_local_wind, unfold_local_wind_masked
+from pysolo_package.solo_functions.solo_radial_shear import radial_shear,radial_shear_masked
+from pysolo_package.solo_functions.solo_rain_rate import rain_rate, rain_rate_masked
 
 from pysolo_package.utils.enums import Where
 from pysolo_package.utils.radar_structure import RayData

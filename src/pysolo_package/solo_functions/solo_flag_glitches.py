@@ -1,7 +1,7 @@
 import ctypes
 from pysolo_package.utils.run_solo import run_solo_function
 
-from pysolo_package.utils import radar_structure, ctypes_helper, masked_op
+from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
@@ -28,15 +28,15 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
     """
 
     args = {
-        "deglitch_threshold" : ctypes_helper.DataTypeValue(ctypes.c_float, deglitch_threshold),
-        "deglitch_radius" : ctypes_helper.DataTypeValue(ctypes.c_int, deglitch_radius),
-        "deglitch_min_gates" : ctypes_helper.DataTypeValue(ctypes.c_int, deglitch_min_gates),
-        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask)
+        "deglitch_threshold" : DataPair.DataTypeValue(ctypes.c_float, deglitch_threshold),
+        "deglitch_radius" : DataPair.DataTypeValue(ctypes.c_int, deglitch_radius),
+        "deglitch_min_gates" : DataPair.DataTypeValue(ctypes.c_int, deglitch_min_gates),
+        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask)
     }
 
     return run_solo_function(se_flag_glitches, args)

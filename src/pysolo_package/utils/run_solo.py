@@ -1,6 +1,6 @@
 import ctypes
 import re
-from pysolo_package.utils import radar_structure, ctypes_helper
+from pysolo_package.utils import radar_structure, DataPair
 from pysolo_package.utils.function_alias import aliases
 import numpy as np
 
@@ -134,14 +134,14 @@ def main():
     input_list_mask = None
 
     args = {
-        "from_km" : ctypes_helper.DataTypeValue(ctypes.c_size_t, from_km),
-        "to_km" : ctypes_helper.DataTypeValue(ctypes.c_size_t, to_km),
-        "data" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "nGates" : ctypes_helper.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "from_km" : DataPair.DataTypeValue(ctypes.c_size_t, from_km),
+        "to_km" : DataPair.DataTypeValue(ctypes.c_size_t, to_km),
+        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
     output_data = run_solo_function(se_ring_zap, args)

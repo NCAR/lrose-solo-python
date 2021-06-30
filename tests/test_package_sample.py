@@ -2,6 +2,8 @@
 # Pip install from here to test:
 # https://test.pypi.org/project/pysolo-wip/
 
+import numpy as np
+
 import pysolo_package as solo
 from pysolo_package.utils.radar_structure import RayData
 from pysolo_package.utils.enums import Where
@@ -140,5 +142,47 @@ expected_data = [3, -3, 5, 2, 7, -3, 6]
 last_good_v0 = [bad]
 output_data = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, boundary_mask = boundary)
 assert (output_data.data == expected_data), output_data.data
+
+# test radial shear
+seds_gate_diff_interval = 4
+data = [-3, 4, 5, 6, 7, 8, 9, 10]
+nGates = 8
+bad_data_value = -3
+dgi = 8
+boundary_mask = [True, True, True, True, True, True, True, True]
+expected_data = [-3, 4, 4, 4, 0, 0, 0, 0]
+output_data = solo.radial_shear(data, bad, seds_gate_diff_interval)
+assert (output_data.data == expected_data), output_data.data
+
+seds_gate_diff_interval = 5
+data = [8, -3, -3, -3, 4, 8, 6, 4, 4, -3, 2, 3]
+nGates = 12
+bad_data_value = -3
+dgi = 10
+boundary_mask = [True, True, True, True, True, False, False, False, True, True, True, True]
+expected_data = [0, -3, -3, -3, -3, 0, 0, 0, 0, 0, 0, 0]
+output_data = solo.radial_shear(data, bad, seds_gate_diff_interval, dgi_clip_gate=dgi)
+assert (output_data.data == expected_data), output_data.data
+
+seds_gate_diff_interval = 30
+data = [8, -3, -3, -3, 4, 8, 6, 4, 4, -3, 2, 3]
+nGates = 12
+bad_data_value = -3
+dgi = 10
+boundary_mask = [True, True, True, True, True, False, False, False, True, True, True, True]
+expected_data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+output_data = solo.radial_shear(data, bad, seds_gate_diff_interval, dgi_clip_gate=dgi)
+assert (output_data.data == expected_data), output_data.data
+
+# test rain rate
+# for any good values 'g', sets it to g = (1/300) * 10 ^ (0.1 * g * d_const)
+d_const = 4
+data = [8, -3, -3, -3, 4, 8, 6, 4, 4, -3, 2, 3]
+nGates = 12
+bad_data_value = -3
+boundary_mask = [True, True, True, True, True, True, True, True, True, True, True, True]
+expected_data = [5.282977308, -3, -3, -3, 0.1327023902, 5.282977308, 0.8372954772, 0.1327023902, 0.1327023902, -3, 0.02103191148, 0.05282977308]
+output_data = solo.rain_rate(data, bad, d_const)
+assert (np.allclose(output_data.data, expected_data))
 
 print("All tests passed.")
