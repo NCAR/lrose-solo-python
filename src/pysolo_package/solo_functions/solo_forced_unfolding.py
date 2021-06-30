@@ -6,7 +6,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_funfold = aliases['forced_unfolding']
 
-def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
+def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a <TODO>
         
@@ -16,7 +16,6 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
             nyquist_velocity: <TODO>, 
             dds_radd_eff_unamb_vel: <TODO>, 
             center: <TODO>,
-            (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
 
@@ -41,7 +40,7 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
         "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_funfold, args, input_list_mask)
+    return run_solo_function(se_funfold, args)
 
 
 def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask=None):

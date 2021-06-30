@@ -105,30 +105,22 @@ def demoThreshold():
     plt.show()
 
 shelfFile = shelve.open('shelf/test_package_real_A_data')
-
 forced_unfolding_mask_shelfed = shelfFile['forced_unfolding_mask'] 
 BB_unfolding_fgg_mask_shelfed = shelfFile['BB_unfolding_fgg_mask']
 BB_unfolding_lw_mask_shelfed = shelfFile['BB_unfolding_lw_mask']
-
 assert(np.ma.allclose(forced_unfolding_mask_shelfed, forced_unfolding_mask))
 assert(np.ma.allclose(BB_unfolding_fgg_mask_shelfed, BB_unfolding_fgg_mask))
 assert(np.ma.allclose(BB_unfolding_lw_mask_shelfed, BB_unfolding_lw_mask))
-  
-
-# flag_freckles_mask_shelfed = shelfFile['flag_freckles_mask']
-# sm = flag_freckles_mask_shelfed.mask.tolist()
-# m = flag_freckles_mask.mask.tolist()
-# assert (sm == m)
 shelfFile.close()
 
-# graphPlot('ZZ_despeckled')
-# graphPlot('ZZ_ring_zapped')
-# demoThreshold()
-# graphPlot('ZZ_flag_glitch')
-# graphPlot('ZZ_flag_freckles')
-# graphPlot('VV_forced_unfolding', 'VV')
-# graphPlot('VV_unfold_first_good_gate', 'VV')
-# graphPlot('VV_unfold_local_wind', 'VV')
+graphPlot('ZZ_despeckled')
+graphPlot('ZZ_ring_zapped')
+demoThreshold()
+graphPlot('ZZ_flag_glitch')
+graphPlot('ZZ_flag_freckles')
+graphPlot('VV_forced_unfolding', 'VV')
+graphPlot('VV_unfold_first_good_gate', 'VV')
+graphPlot('VV_unfold_local_wind', 'VV')
 
 # fig, ax = plt.subplots(ncols=2, figsize=(15,7))
 # display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (RHI)", cmap='pyart_NWSRef', ax=ax[0])

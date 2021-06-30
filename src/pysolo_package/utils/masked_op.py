@@ -1,4 +1,4 @@
-def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_array=None):
+def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_array=None, usesBadFlags=False):
     """ 
         Performs a deglitch on a numpy masked array
         
@@ -35,14 +35,24 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
     output_data = []
     output_mask = []
 
+    argsLength = len(args)
+    if (usesBadFlags):
+        argsList = list(args)
+        argsList.append(None)
+        args = tuple(argsList)
+
     for i in range(len(data_list)):
         input_data = data_list[i]
         input_mask = mask[i]
         if second_data_list != None:
             second_input_data = second_data_list[i]
-            flag = func(input_data, second_input_data, missing, *args, input_list_mask=input_mask, boundary_mask=boundary_mask)
+            flag = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_mask)
         else:
-            flag = func(input_data, missing, *args, input_list_mask=input_mask, boundary_mask=boundary_mask)
+            if (usesBadFlags):
+                argsList = list(args)
+                argsList[argsLength] = input_mask
+                args = tuple(argsList)
+            flag = func(input_data, missing, *args, boundary_mask=boundary_mask)
         output_data.append(flag.data)
         output_mask.append(flag.mask)
 

@@ -49,7 +49,7 @@ deglitch_threshold = 3
 deglitch_radius = 1
 deglitch_min_bins = 3
 expected_bad_flag = [False, False, True, False, True, True, True, True]
-output_bad_flag = solo.flag_glitches(input_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_bins, input_list_mask=input_bad_flag, boundary_mask=input_boundary_mask)
+output_bad_flag = solo.flag_glitches(input_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_bins, input_bad_flag, boundary_mask=input_boundary_mask)
 assert (output_bad_flag.mask == expected_bad_flag)
 
 

@@ -6,7 +6,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
 
-def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
+def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a flag glitches operation on a list of data (a single ray)
 
@@ -36,10 +36,10 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
         "bad" : ctypes_helper.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : ctypes_helper.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), input_list_mask)
+        "bad_flag_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask)
     }
 
-    return run_solo_function(se_flag_glitches, args, input_list_mask)
+    return run_solo_function(se_flag_glitches, args)
 
 
 def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):
@@ -61,4 +61,4 @@ def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, degl
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(flag_glitches, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask = boundary_mask)
+    return masked_op.masked_func(flag_glitches, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask = boundary_mask, usesBadFlags=True)

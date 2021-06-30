@@ -12,7 +12,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
 
-def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
+def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a ring zap operation on a list of data.
         
@@ -21,7 +21,6 @@ def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_cli
             bad: A float that represents a missing/invalid data point,
             from_km: An integer for the starting range,
             to_km: An integer for the ending range,
-            (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
 
@@ -45,7 +44,7 @@ def ring_zap(input_list_data, bad, from_km, to_km, input_list_mask=None, dgi_cli
         "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_ring_zap, args, input_list_mask)
+    return run_solo_function(se_ring_zap, args)
 
 
 def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mask=None):

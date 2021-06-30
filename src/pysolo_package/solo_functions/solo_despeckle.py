@@ -13,7 +13,7 @@ se_despeckle = aliases['despeckle']
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(process)d] - %(message)s')
 
-def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
+def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a despeckle operation on a list of data (a single ray)
 
@@ -21,7 +21,6 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
             input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
             a_speckle: An integer that determines the number of contiguous good data considered a speckle,
-            (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list),
             (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
@@ -42,64 +41,7 @@ def despeckle(input_list_data, bad, a_speckle, input_list_mask=None, dgi_clip_ga
         "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_despeckle, args, input_list_mask)
-
-    # if input_list_mask was provided, check if it's the same size as input_list_data
-    if (input_list_mask != None and len(input_list_data) != len(input_list_mask)):
-        raise ValueError(("data size (%d) and mask size (%d) must be of equal size.") % (len(input_list_data), len(input_list_mask)))
-
-    # set return type and arg types
-    se_despeckle.restype = None
-    se_despeckle.argtypes = [
-        ctypes.POINTER(ctypes.c_float),        # data
-        ctypes.POINTER(ctypes.c_float),        # newData
-        ctypes.c_size_t,                       # nGates
-        ctypes.c_float,                        # bad
-        ctypes.c_int,                          # a_speckle
-        ctypes.c_size_t,                       # dgi_clip_gate
-        ctypes.POINTER(ctypes.c_bool)          # boundary_mask
-        ]
-
-
-    # retrieve size of input/output/mask array
-    data_length = len(input_list_data)
-
-    # optional parameters
-    if boundary_mask == None:
-        boundary_mask = [True] * data_length # set boundary_mask to all true, match size of input_list_data
-    if dgi_clip_gate == None:
-        dgi_clip_gate = data_length 
-    if input_list_mask == None:
-        input_list_mask = [True if x == np.float32(bad) else False for x in input_list_data] # set mask to True on indexes with 'bad' value
-
-    # create a ctypes float/bool array from a list of size data_length
-    input_array = ctypes_helper.initialize_float_array(data_length, input_list_data)
-
-    boundary_array = ctypes_helper.initialize_bool_array(data_length, boundary_mask)
-
-    # initialize an empty float array of length
-    output_array = ctypes_helper.initialize_float_array(data_length)
-
-    # run C function, output_array is updated with despeckle results
-    se_despeckle(
-        input_array,
-        output_array,
-        ctypes.c_size_t(data_length),
-        ctypes.c_float(bad),
-        ctypes.c_int(a_speckle),
-        ctypes.c_size_t(dgi_clip_gate),
-        boundary_array
-    )
-
-    # convert resultant ctypes array back to python list
-    output_list = ctypes_helper.array_to_list(output_array, data_length)
-
-    # the solo functions doesn't do this, but
-    # update the mask for the new bad values created from the despeckle.
-    output_list_mask, changes = ctypes_helper.update_boundary_mask(output_list, bad, input_list_mask)
-
-    # returns the new data and masks packaged in an object
-    return radar_structure.RayData(output_list, output_list_mask, changes)
+    return run_solo_function(se_despeckle, args)
 
 
 def despeckle_masked(masked_array, a_speckle, boundary_mask=None, parallel=False):
@@ -161,7 +103,7 @@ class RayData:
         input_mask = self.mask_list[i]
 
         # and run despeckle on each individual ray
-        despec = despeckle(input_data, self.missing, self.a_speckle, input_list_mask=input_mask, boundary_mask=self.boundary_mask)
+        despec = despeckle(input_data, self.missing, self.a_speckle, boundary_mask=self.boundary_mask)
         # despec returns resultant data and mask lists, append to output_data and output_mask
         if (self.parallel):
             with self.lock:

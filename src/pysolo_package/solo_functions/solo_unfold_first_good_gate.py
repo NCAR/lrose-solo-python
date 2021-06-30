@@ -6,7 +6,7 @@ from pysolo_package.utils.function_alias import aliases
 
 se_unfold_first_good_gate = aliases['unfold_first_good_gate']
 
-def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, input_list_mask=None, dgi_clip_gate=None, boundary_mask=None):
+def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a <TODO>
 
@@ -19,7 +19,6 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
             max_neg_folds: <TODO>
             ngates_averaged: <TODO>
             last_good_v0: <TODO>
-            (optional) input_list_mask: A list of bools for masking valid/invalid values for input_list (default: a list with True entries for all 'bad' values in 'input_list_data'),
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
 
@@ -45,7 +44,7 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
         "boundary_mask" : ctypes_helper.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_unfold_first_good_gate, args, input_list_mask)
+    return run_solo_function(se_unfold_first_good_gate, args)
 
 
 # TODO: what to do with last_good_v0
