@@ -4,7 +4,7 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_funfold = aliases['forced_unfolding']
+se_funfold = aliases['funfold']
 
 def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
     """ 

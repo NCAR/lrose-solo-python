@@ -5,7 +5,7 @@ from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 from pysolo_package.utils.enums import Where
 
-se_threshold = aliases['threshold']
+se_threshold = aliases['threshold_field']
 
 def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """

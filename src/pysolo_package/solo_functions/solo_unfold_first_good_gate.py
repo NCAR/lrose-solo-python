@@ -4,7 +4,7 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_unfold_first_good_gate = aliases['unfold_first_good_gate']
+se_unfold_first_good_gate = aliases['BB_unfold_first_good_gate']
 
 def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, dgi_clip_gate=None, boundary_mask=None):
     """

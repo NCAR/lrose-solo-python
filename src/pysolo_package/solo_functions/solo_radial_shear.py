@@ -7,7 +7,7 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_radial_sheer = aliases['radial_sheer']
+se_radial_shear = aliases['radial_shear']
 
 def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=None, boundary_mask=None):
     """ 
@@ -37,7 +37,7 @@ def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=No
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_radial_sheer, args)
+    return run_solo_function(se_radial_shear, args)
 
 
 def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):

@@ -4,7 +4,7 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import radar_structure, DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_unfold_local_wind = aliases['unfold_local_wind']
+se_unfold_local_wind = aliases['BB_unfold_local_wind']
 
 def unfold_local_wind(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind,  ns_wind,  ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, dgi_clip_gate=None, boundary_mask=None):
     """
