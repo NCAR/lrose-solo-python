@@ -5,9 +5,17 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_rain_rate = aliases['rain_rate']
+se_remove_ac_motion = aliases['remove_ac_motion']
 
-def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
+# extern "C" SOLO_API void se_remove_ac_motion(float vert_velocity, float ew_velocity, float ns_velocity,
+# float ew_gndspd_corr, float tilt, float elevation,
+# const float* data, float* newData, size_t nGates,
+# float bad, size_t dgi_clip_gate,
+# float dds_radd_eff_unamb_vel,
+# float seds_nyquist_velocity, bool* bnd);
+
+
+def remove_ac_motion(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a list of data.
         
@@ -26,19 +34,26 @@ def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=N
     """
 
     args = {
-        "d_const" : DataPair.DataTypeValue(ctypes.c_float, d_const),
+        "vert_velocity" : DataPair.DataTypeValue(ctypes.c_float, vert_velocity),
+        "ew_velocity" : DataPair.DataTypeValue(ctypes.c_float, ew_velocity),
+        "ns_velocity" : DataPair.DataTypeValue(ctypes.c_float, ns_velocity),
+        "ew_gndspd_corr" : DataPair.DataTypeValue(ctypes.c_float, ew_gndspd_corr),
+        "tilt" : DataPair.DataTypeValue(ctypes.c_float, tilt),
+        "elevation" : DataPair.DataTypeValue(ctypes.c_float, elevation),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
         "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "dds_radd_eff_unamb_vel" : DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
+        "seds_nyquist_velocity" : DataPair.DataTypeValue(ctypes.c_float, seds_nyquist_velocity),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_rain_rate, args)
+    return run_solo_function(se_remove_ac_motion, args)
 
 
-def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
+def remove_ac_motion_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -57,4 +72,4 @@ def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """
 
 
-    return masked_op.masked_func(rain_rate, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)
+    return masked_op.masked_func(remove_ac_motion, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)

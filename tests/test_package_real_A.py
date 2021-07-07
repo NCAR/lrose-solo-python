@@ -79,16 +79,21 @@ BB_unfolding_lw_mask = solo.unfold_local_wind_masked(radar.fields['VV']['data'],
 radar.add_field_like('VV', 'VV_unfold_local_wind', BB_unfolding_lw_mask, replace_existing=True)
 
 ########### [Radial Shear] ############
+# index[0] = index[seds + 0] - index[0]
+# index[1] = index[seds + 1] - index[1]
+# index[2] = index[seds + 2] - index[2]
 seds_gate_diff_interval = round(radar.ngates / 2)
 radial_shear_mask = solo.radial_shear_masked(radar.fields['ZZ']['data'], seds_gate_diff_interval)
-radar.add_field_like('ZZ', 'ZZ_radial_shear', radial_shear_mask, replace_existing=True)
+radar.add_field_like('ZZ', 'ZZ_radial_shear', radial_shear_mask, replace_existing=True) #velocity
 
-############# [Rain Rate] ##############
+############# [Rain Rate] ############## planar
+# for any good values 'g', sets it to g = (1/300) * 10 ^ (0.1 * g * d_const)
 d_const = 2
 rain_rate_mask = solo.rain_rate_masked(radar.fields['ZZ']['data'], d_const)
 radar.add_field_like('ZZ', 'ZZ_rain_rate', rain_rate_mask, replace_existing=True)
 
 display = pyart.graph.RadarMapDisplay(radar)
+
 
 def graphPlot(plot_field, ref='ZZ'):
     fig, ax = plt.subplots(ncols=2, figsize=(15,7))
@@ -130,33 +135,6 @@ shelfFile.close()
 # graphPlot('VV_forced_unfolding', 'VV')
 # graphPlot('VV_unfold_first_good_gate', 'VV')
 # graphPlot('VV_unfold_local_wind', 'VV')
-# graphPlot('ZZ_radial_shear')
-graphPlot('ZZ_rain_rate')
+graphPlot('ZZ_radial_shear', 'ZZ')
+graphPlot('ZZ_rain_rate', 'ZZ')
 
-# fig, ax = plt.subplots(ncols=2, figsize=(15,7))
-# display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (RHI)", cmap='pyart_NWSRef', ax=ax[0])
-# display.set_limits((-50, 50), (-10, 35), ax=ax[0])
-# display.plot_ppi(field='VG', vmin=-48, vmax=48, title="VG (RHI)", cmap='pyart_NWSRef', ax=ax[1])
-# display.set_limits((-50, 50), (-10, 35), ax=ax[1])
-# plt.show()
-
-# i = 20
-# j = 0
-# k = 0
-# nyquist_velocity = i
-# dds_radd_eff_unamb_vel = j
-# center = k
-# forced_unfolding_mask = solo.forced_unfolding_masked(radar.fields['VV']['data'], nyquist_velocity, dds_radd_eff_unamb_vel, center)
-# radar.add_field_like('VV', 'VV_forced_unfolding', forced_unfolding_mask, replace_existing=True)
-
-# fig = plt.figure(figsize=(14, 14))
-# ax = fig.add_subplot(221)
-# display.plot_ppi(field='VV', vmin=-48, vmax=48, title="VV (PPI)", cmap='pyart_NWSRef')
-# ax = fig.add_subplot(222)
-# display.plot_ppi(field='VG', vmin=-48, vmax=48, title="VG (PPI)", cmap='pyart_NWSRef')
-# ax = fig.add_subplot(223)
-# display.plot_ppi(field='VV_forced_unfolding', vmin=-48, vmax=48, title="Mine (PPI)", cmap='pyart_NWSRef')
-# plt.suptitle("nyquist = %d, center = %d, eff_unamb_vel = %d" % (i, j, k), fontsize=16)
-# plt.show()
-# # plt.savefig("C:/Users/Marma_na00b8q/Pictures/forced_unfolding/funfold_%d_%d_%d" % (i, j, k))
-# print("Saved figure%d_%d_%d" % (i, j, k))

@@ -1,6 +1,6 @@
 # This file is to test features from the package
 # Pip install from here to test:
-# https://test.pypi.org/project/pysolo-wip/
+# https:#test.pypi.org/project/pysolo-wip/
 
 import numpy as np
 
@@ -184,5 +184,289 @@ boundary_mask = [True, True, True, True, True, True, True, True, True, True, Tru
 expected_data = [5.282977308, -3, -3, -3, 0.1327023902, 5.282977308, 0.8372954772, 0.1327023902, 0.1327023902, -3, 0.02103191148, 0.05282977308]
 output_data = solo.rain_rate(data, bad, d_const)
 assert (np.allclose(output_data.data, expected_data))
+
+# test remove ac motion
+data = [3,4,5,6]
+newData = [0,0,0,0]
+bnd = [1,1,1,1]
+bad_flag = -3
+vert_velocity = 1
+ew_velocity = 1
+ns_velocity = 1
+ew_gndspd_corr = 1
+elevation = 0.0
+tilt = 0.0
+eff_unamb_vel = 0.0
+nyquist_velocity = 10.0
+clip_gate = nGates
+expected_data = [3, 4, 5, 6]
+output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
+assert (output_data.data == expected_data), output_data.data
+
+
+data = [3,4,-5,6]
+newData = [0,0,0,0]
+bnd = [1,1,1,1]
+bad_flag = -3
+vert_velocity = 1
+ew_velocity = 1
+ns_velocity = 1
+ew_gndspd_corr = 1
+elevation = 0.0
+tilt = 0.0
+eff_unamb_vel = 0.0
+nyquist_velocity = 3.2
+nGates = 4
+clip_gate = nGates
+expected_data = [3, -2, 1, 0]
+output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
+assert (output_data.data == expected_data), output_data.data
+
+import math
+
+data =    [-3,6,5,-3]
+newData = [ 0,0,0, 0]
+bnd = [1,1,1,1]
+bad_flag = -3
+vert_velocity = 3 # goes with sin(elevation)
+ew_velocity = 1   # these three go with sin(tilt)
+ns_velocity = 1
+ew_gndspd_corr = 1
+elevation = math.pi/2.0 # or any multiple of pi help make ac_vel = 0
+tilt = 0.0 # or any multiple of pi help make ac_vel = 0
+# Nyquist stuff ...
+# keep the Nyquist velocity greater than any data value, 
+# to avoid any folding/unfolding
+eff_unamb_vel = 0.0 
+nyquist_velocity = 10.0
+nGates = 4
+clip_gate = 2
+expected_data = [-3,9,5,-3]  # no changed 
+output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+assert (output_data.data == expected_data), output_data.data
+
+
+data = [-3,6,5,-3]
+newData = [0,0,0,0]
+bnd = [1,1,1,1]
+bad_flag = -3
+vert_velocity = 3
+ew_velocity = 1
+ns_velocity = 1
+ew_gndspd_corr = 1
+elevation = math.pi/2.0 # or any multiple of pi help make ac_vel = 0
+tilt = 0.0 # or any multiple of pi help make ac_vel = 0
+# Nyquist stuff ...
+# keep the Nyquist velocity greater than any data value, 
+# to avoid any folding/unfolding
+eff_unamb_vel = 0.0 
+nyquist_velocity = 5.0 # causes folding
+nGates = 4
+clip_gate = 2
+expected_data = [-3,-1,5,-3]  # no changed 
+output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+assert (output_data.data == expected_data), output_data.data
+
+
+data = [-4,-3, 5, 8]
+newData = [0,0,0,0]
+bnd = [1,1,1,1]
+bad_flag = -3
+vert_velocity = 3
+ew_velocity = 10.0
+ns_velocity = 0.0
+ew_gndspd_corr = 1  # ac_vel should be 11.0
+tilt = math.pi/2.0 # or any multiple of pi help make ac_vel = 0
+elevation = 0.0 # or any multiple of pi help make ac_vel = 0
+# ac_vel should be unfolded to -1.0
+# Nyquist stuff ...
+# keep the Nyquist velocity greater than any data value, 
+# to avoid any folding/unfolding
+eff_unamb_vel = 0.0 
+nyquist_velocity = 6.0 # causes folding
+nGates = 4
+clip_gate = 3
+expected_data = [-5,-3,4,8]  # no change 
+output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+assert (output_data.data == expected_data), output_data.data
+
+#
+#
+#
+#
+#
+#
+#
+#
+
+# data = [-4,-3, 5, 8]
+# newData = [0,0,0,0]
+# bnd = [1,1,1,1]
+# bad_flag = -3
+# vert_velocity = 3
+# ew_velocity = 10.0
+# ns_velocity = 0.0
+# ew_gndspd_corr = 1  # ac_vel should be 11.0
+# tilt = math.pi/2.0 # or any multiple of pi help make ac_vel = 0
+# elevation = 0.0 # or any multiple of pi help make ac_vel = 0
+# # ac_vel should be unfolded to -1.0
+# # Nyquist stuff ...
+# # keep the Nyquist velocity greater than any data value, 
+# # to avoid any folding/unfolding
+# eff_unamb_vel = 6.0  # causes folding
+# nyquist_velocity = 0.0 
+# nGates = 4
+# clip_gate = 3
+# expected_data = [-5,-3,4,8]  # no change 
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =    [3,-3, 5,-16, 7,-3 ,6]
+# newData = [0, 0, 0,  0, 0, 0, 0]
+# bnd =      [0, 0, 1,  1, 0, 1, 1]
+# bad_flag = -3
+# vert_velocity = 1
+# ew_velocity = 1
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = 0.0 # or any multiple of pi help make ac_vel = 0                                              
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0                                                   
+# # ac_vel should be zero                                                                                          
+# # Nyquist stuff ...                                                                                              
+# # the Nyquist velocity is less than some data values,                                                            
+# # should see unfolding                                                                                           
+# eff_unamb_vel = 0.0 # TODO: this comes from data file?                                                    
+# nyquist_velocity = 3.2
+# nGates = 7
+# clip_gate = nGates
+# expected_data = [3,-3,-1,-10, 7,-3, 0]  # single unfolding only!
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =                [ 3,-3, -3, 5, 5,-2, -3, 5, 5, -3]
+# newData =             [ 0, 0,  0, 0, 0, 0,  0, 0, 0,  0]
+# expected_data =    [ 6,-3, -3, 8, 5, 1, -3, 8, 5, -3] 
+# bnd =                 [ 1, 0,  1, 1, 0, 1,  1, 1, 1,  0]
+# bad_flag = -3
+# vert_velocity = 3 # goes with sin(elevation)
+# ew_velocity = 1   # these three go with sin(tilt)
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = math.pi/2.0 # or any multiple of pi help make ac_vel = 0
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0 
+# # adjust should be 3.0
+# # Nyquist stuff ...     
+# # keep the Nyquist velocity greater than any data value,
+# # to avoid any folding/unfolding 
+# eff_unamb_vel = 0.0
+# nyquist_velocity = 10.0
+# nGates = 10
+# clip_gate = 8
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =             [ 3,-3,  4,-8, 6, 5, -3, 5, 5, -3]
+# newData =          [ 0, 0,  0, 0, 0, 0,  0, 0, 0,  0]
+# # add ac_vel = 3 to each             6, x,    -5, 9,        8, 8,  x
+# # then unfold by nyqi = 6            0  x      1, 3,        2, 2,  x
+# expected_data = [ 0,-3,  4, 1, 3, 5, -3, 2, 2, -3]
+# bnd =              [ 1, 1,  0, 1, 1, 0,  0, 1, 1,  1]
+# bad_flag = -3
+# vert_velocity = 3 # goes with sin(elevation)
+# ew_velocity = 1   # these three go with sin(tilt)
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = math.pi/2.0 # or any multiple of pi help make ac_vel = 0 
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0  
+# # adjust should be 3 
+# # Nyquist stuff ...    
+# # keep the Nyquist velocity greater than any data value,
+# # to avoid any folding/unfolding 
+# eff_unamb_vel = 0.0
+# nyquist_velocity = 3.0
+# nGates = 10
+# clip_gate = nGates
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =             [-3,-3, -3, 5,-5, 5, -3, 5, 5, -3]
+# newData =          [ 0, 0,  0, 0, 0, 0,  0, 0, 0,  0]
+# #   add adjust                              x,12, 2
+# #   unfold                                  x,-8, 2
+# expected_data = [-3,-3, -3,-8, 2, 5, -3, 5, 5, -3]
+# bnd =              [ 0, 0,  1, 1, 1, 0,  0, 0, 0,  0]
+# bad_flag = -3
+# vert_velocity = 33.67 # goes with sin(elevation)
+# ew_velocity = 1   # these three go with sin(tilt)
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = - math.pi/2.0 # or any multiple of pi help make ac_vel = 0 
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0  
+# # adjust should be 7.0 
+# # Nyquist stuff ...    
+# # keep the Nyquist velocity greater than any data value,
+# # to avoid any folding/unfolding 
+# eff_unamb_vel = 0.0
+# nyquist_velocity = 10.0
+# nGates = 10
+# clip_gate = 8
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =             [-3,-3, -3, 5,-5, 5, -3, 5, 5,  5]
+# newData =          [ 0, 0,  0, 0, 0, 0,  0, 0, 0,  0]
+# #   add adjust                              x,12, 2           12
+# #   unfold                                  x,-8, 2           -8
+# expected_data = [-3,-3, -3,-8, 2, 5, -3, 5,-8,  5]
+# bnd =              [ 0, 0,  1, 1, 1, 0,  0, 0, 1,  1]
+# bad_flag = -3
+# vert_velocity = 33.67 # goes with sin(elevation)
+# ew_velocity = 1   # these three go with sin(tilt)
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = - math.pi/2.0 # or any multiple of pi help make ac_vel = 0 
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0  
+# # adjust should be 7.0 
+# # Nyquist stuff ...    
+# # keep the Nyquist velocity greater than any data value,
+# # to avoid any folding/unfolding 
+# eff_unamb_vel = 10.0
+# nyquist_velocity = 0.0
+
+# nGates = 10
+# clip_gate = 9
+# output_data = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+# assert (output_data.data == expected_data), output_data.data
+
+
+# data =             [-3,-3, -3, 5, 6,-4, -3,10,-12, -3]
+# newData =          [ 0, 0,  0, 0, 0, 0,  0, 0, 0,   0]
+# #    adjust by -1                              4  5 -5   x  9 -13
+# #   unfold                                     0  1 -1   x  5  -9
+# expected_data = [-3,-3, -3, 0, 1,-1, -3, 5, -9, -3]
+# bnd =              [ 1, 1,  1, 1, 1, 1,  1, 1,  1,  1]
+# bad_flag = -3
+# vert_velocity = 31 # goes with sin(elevation)
+# ew_velocity = 1   # these three go with sin(tilt)
+# ns_velocity = 1
+# ew_gndspd_corr = 1
+# elevation = math.pi/2.0 # or any multiple of pi help make ac_vel = 0 
+# tilt = 0.0 # or any multiple of pi help make ac_vel = 0  
+# # adjust should be -1
+
+# # Nyquist stuff ...    
+# # keep the Nyquist velocity greater than any data value,
+# # to avoid any folding/unfolding 
+# eff_unamb_vel = 0.0
+# nyquist_velocity = 2.0
+
+# nGates = 10
+# clip_gate = nGates
+
 
 print("All tests passed.")

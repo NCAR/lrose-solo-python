@@ -5,9 +5,9 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_rain_rate = aliases['rain_rate']
+se_remove_storm_motion = aliases['remove_storm_motion']
 
-def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
+def remove_storm_motion(input_list_data, bad, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a list of data.
         
@@ -26,7 +26,10 @@ def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=N
     """
 
     args = {
-        "d_const" : DataPair.DataTypeValue(ctypes.c_float, d_const),
+        "wind" : DataPair.DataTypeValue(ctypes.c_float, wind),
+        "speed" : DataPair.DataTypeValue(ctypes.c_float, speed),
+        "dgi_dd_rotation_angle" : DataPair.DataTypeValue(ctypes.c_float, dgi_dd_rotation_angle),
+        "dgi_dd_elevation_angle" : DataPair.DataTypeValue(ctypes.c_float, dgi_dd_elevation_angle),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
         "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
@@ -35,10 +38,10 @@ def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=N
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_rain_rate, args)
+    return run_solo_function(se_remove_storm_motion, args)
 
 
-def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
+def remove_storm_motion_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -57,4 +60,4 @@ def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """
 
 
-    return masked_op.masked_func(rain_rate, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)
+    return masked_op.masked_func(remove_storm_motion, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)

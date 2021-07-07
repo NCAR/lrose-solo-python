@@ -18,6 +18,8 @@ functions = [
     "rain_rate",
     "ring_zap",
     "threshold_field",
+    "remove_ac_motion",
+    "remove_storm_motion"
 ]
 
 if (platform.system() == "Windows"):
