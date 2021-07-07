@@ -4,7 +4,6 @@ from pysolo_package.utils import radar_structure, DataPair
 from pysolo_package.utils.function_alias import aliases
 import numpy as np
 
-se_ring_zap = aliases['ring_zap']
 isArray = re.compile(r"<class '.*\.LP_c_.*'>")
 
 

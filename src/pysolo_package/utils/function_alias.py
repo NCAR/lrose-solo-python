@@ -22,6 +22,7 @@ functions = [
     "remove_storm_motion"
 ]
 
+# TODO: verify correctness of path for Windows
 if (platform.system() == "Windows"):
     path_to_file = Path.cwd() / Path('src/pysolo_package/libs/solo.dll')
     c_lib = ctypes.CDLL(str(path_to_file))
@@ -33,24 +34,31 @@ else:
     import re
     import shelve
 
-    if not os.path.exists("temp/readelf.txt"):
-        os.system("mkdir temp")
-        os.system("readelf -Ws src/pysolo_package/libs/libSolo_18.04.so > temp/readelf.txt")
+    pysolo_package_dir = Path(__file__).parents[1].absolute()
+    temp_dir = pysolo_package_dir / Path("temp")
+    shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSolo_18.04.so')
 
-    shelfFile = shelve.open('temp/unmangled_functions')
+    if not os.path.exists(temp_dir):
+        os.system("mkdir %s" % temp_dir)
+        os.system("readelf -Ws %s > %s" % (shared_lib_path, temp_dir / Path("readelf.txt")))
+
+    shelfFile = shelve.open(str(temp_dir / Path("unmangled_functions")))
 
     if "mangled" not in shelfFile:
-        content = open("temp/readelf.txt").read()
+        content = open(temp_dir / Path("readelf.txt")).read()
         matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
         shelfFile["mangled"] = matches
-        print("Added 'mangled' to shelf.")
     else:
         matches = shelfFile["mangled"]
 
-    path_to_file = Path.cwd() / Path('src/pysolo_package/libs/libSolo_18.04.so')
-    c_lib = ctypes.CDLL(str(path_to_file))
-    
+    # from this script file, go up two directories (pysolo_package) then into libs/libSolo...
+    c_lib = ctypes.CDLL(str(shared_lib_path))
     for match in matches:
         for func in functions:
             if func in match:
                 aliases[func] = c_lib[match]
+
+
+
+for func in functions:
+    assert func in aliases, func
