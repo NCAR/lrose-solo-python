@@ -8,23 +8,35 @@ import ctypes
 aliases = {}
 
 functions = [
+    "assert_bad_flags",
+    "assign_value",
+    "bad_flags_logic",
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
+    "clear_bad_flags",
+    "copy_bad_flags",
+    "do_clear_bad_flags_array",
     "despeckle",
+    "fix_vortex_vels",
+    "flagged_add",
     "flag_freckles",
     "flag_glitches",
     "funfold",
+    "merge_fields",
     "radial_shear",
     "rain_rate",
     "ring_zap",
+    "set_bad_flags",
     "threshold_field",
     "remove_ac_motion",
-    "remove_storm_motion"
+    "remove_storm_motion",
 ]
 
-# TODO: verify correctness of path for Windows
+pysolo_package_dir = Path(__file__).parents[1].absolute()
+
+
 if (platform.system() == "Windows"):
-    path_to_file = Path.cwd() / Path('src/pysolo_package/libs/solo.dll')
+    path_to_file = pysolo_package_dir / Path('libs/solo.dll')
     c_lib = ctypes.CDLL(str(path_to_file))
     for function in functions:
         aliases[function] = c_lib["se_" + function]
@@ -34,7 +46,6 @@ else:
     import re
     import shelve
 
-    pysolo_package_dir = Path(__file__).parents[1].absolute()
     temp_dir = pysolo_package_dir / Path("temp")
     shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSolo_18.04.so')
 
@@ -57,7 +68,6 @@ else:
         for func in functions:
             if func in match:
                 aliases[func] = c_lib[match]
-
 
 
 for func in functions:
