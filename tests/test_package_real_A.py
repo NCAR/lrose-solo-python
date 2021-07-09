@@ -88,18 +88,18 @@ radar.add_field_like('ZZ', 'ZZ_radial_shear', radial_shear_mask, replace_existin
 
 ############# [Rain Rate] ############## planar
 # for any good values 'g', sets it to g = (1/300) * 10 ^ (0.1 * g * d_const)
-d_const = 2
-rain_rate_mask = solo.rain_rate_masked(radar.fields['ZZ']['data'], d_const)
-radar.add_field_like('ZZ', 'ZZ_rain_rate', rain_rate_mask, replace_existing=True)
+d_const = 6
+rain_rate_mask = solo.rain_rate_masked(radar.fields['VV']['data'], d_const)
+radar.add_field_like('VV', 'VV_rain_rate', rain_rate_mask, replace_existing=True)
 
 display = pyart.graph.RadarMapDisplay(radar)
 
 
 def graphPlot(plot_field, ref='ZZ'):
     fig, ax = plt.subplots(ncols=2, figsize=(15,7))
-    display.plot(field=ref, vmin=-40, vmax=40, title="Original (RHI)", cmap='pyart_NWSRef', ax=ax[0])
+    display.plot(field=ref, vmin=-40, vmax=40, title=ref, cmap='pyart_NWSRef', ax=ax[0])
     display.set_limits((-50, 50), (-10, 35), ax=ax[0])
-    display.plot(field=plot_field, vmin=-40, vmax=40, title=plot_field + " (RHI)", cmap='pyart_NWSRef', ax=ax[1])
+    display.plot(field=plot_field, vmin=-40, vmax=40, title=plot_field, cmap='pyart_NWSRef', ax=ax[1])
     display.set_limits((-50, 50), (-10, 35), ax=ax[1])
     plt.suptitle(plot_field, fontsize=16)
     plt.show()
@@ -135,6 +135,6 @@ shelfFile.close()
 # graphPlot('VV_forced_unfolding', 'VV')
 # graphPlot('VV_unfold_first_good_gate', 'VV')
 # graphPlot('VV_unfold_local_wind', 'VV')
-graphPlot('ZZ_radial_shear', 'ZZ')
-graphPlot('ZZ_rain_rate', 'ZZ')
+# graphPlot('ZZ_radial_shear', 'ZZ')
+graphPlot('VV_rain_rate', 'VV')
 
