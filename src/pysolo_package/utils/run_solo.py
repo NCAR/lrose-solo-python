@@ -119,35 +119,3 @@ def run_solo_function(c_func, args):
         return radar_structure.RayData(input_list_data, output_flag_list)
 
     raise Exception("Unexpected control flow.")
-
-
-def main():
-
-    input_list_data = [-3, 4, 6, -3, 8, -3, 10, 12, 14, -3, -3]
-    bad = -3
-    from_km = 2
-    to_km = 9
-    dgi_clip_gate = 10
-    boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
-
-    input_list_mask = None
-
-    args = {
-        "from_km" : DataPair.DataTypeValue(ctypes.c_size_t, from_km),
-        "to_km" : DataPair.DataTypeValue(ctypes.c_size_t, to_km),
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-    }
-
-    output_data = run_solo_function(se_ring_zap, args)
-    expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
-    assert (output_data.data == expected_data), "PROBLEM"
-    return
-
-
-if __name__ == "__main__":
-    main()    
