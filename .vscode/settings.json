@@ -4,5 +4,7 @@
     "python.formatting.provider": "black",
     "terminal.integrated.env.windows": {
     },
-    "terminal.integrated.fontFamily": "CaskaydiaCove NF"
+    "terminal.integrated.fontFamily": "CaskaydiaCove NF",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
