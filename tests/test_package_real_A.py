@@ -3,13 +3,12 @@ import pyart
 import numpy as np
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-from copy import *
 from pathlib import Path
 import pysolo_package as solo
 
 import shelve
 
-path_to_file = Path.cwd() / Path('tests/data/radar_data.nc')
+path_to_file = Path.cwd() / Path('tests/data/radar_data_a.nc')
 
 radar = pyart.io.read(path_to_file)
 
@@ -104,6 +103,7 @@ def graphPlot(plot_field, ref='ZZ'):
     plt.suptitle(plot_field, fontsize=16)
     plt.show()
 
+
 def demoThreshold():
     display = pyart.graph.RadarMapDisplay(radar)
     fig = plt.figure(figsize=(14, 14))
@@ -118,17 +118,51 @@ def demoThreshold():
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     plt.show()
 
-shelfFile = shelve.open('shelf/test_package_real_A_data')
-forced_unfolding_mask_shelfed = shelfFile['forced_unfolding_mask'] 
-BB_unfolding_fgg_mask_shelfed = shelfFile['BB_unfolding_fgg_mask']
-BB_unfolding_lw_mask_shelfed = shelfFile['BB_unfolding_lw_mask']
-assert(np.ma.allclose(forced_unfolding_mask_shelfed, forced_unfolding_mask))
-assert(np.ma.allclose(BB_unfolding_fgg_mask_shelfed, BB_unfolding_fgg_mask))
-assert(np.ma.allclose(BB_unfolding_lw_mask_shelfed, BB_unfolding_lw_mask))
-shelfFile.close()
 
-# graphPlot('ZZ_despeckled')
-# graphPlot('ZZ_ring_zapped')
+def saveToShelf():
+    tests_dir = Path(__file__).parent.absolute()
+    shelf_dir = tests_dir / Path("shelf/test_package_real_A_data")
+    shelf_dir.mkdir(parents=True, exist_ok=True)
+
+    shelfFile = shelve.open(str(shelf_dir))
+    shelfFile['despeckled_mask'] = despeckled_mask
+    shelfFile['ring_zapped_mask'] = ring_zapped_mask
+    shelfFile['threshold_mask'] = threshold_mask
+    shelfFile['flag_glitches_mask'] = flag_glitches_mask
+    shelfFile['flag_freckles_mask'] = flag_freckles_mask
+    shelfFile['forced_unfolding_mask'] = forced_unfolding_mask
+    shelfFile['BB_unfolding_fgg_mask'] = BB_unfolding_fgg_mask
+    shelfFile['BB_unfolding_lw_mask'] = BB_unfolding_lw_mask
+    shelfFile['radial_shear_mask'] = radial_shear_mask
+    shelfFile['rain_rate_mask'] = rain_rate_mask
+    shelfFile.close()
+    print("Saved data to shelves.")
+
+
+def checkFromShelf():
+    tests_dir = Path(__file__).parent.absolute()
+    shelf_dir = tests_dir / Path("shelf/test_package_real_A_data")
+    if not Path.exists(shelf_dir):
+        raise FileNotFoundError("There are no shelves loaded.")
+
+    shelfFile = shelve.open(str(shelf_dir))
+    assert(np.ma.allclose(despeckled_mask, shelfFile['despeckled_mask']) )
+    assert(np.ma.allclose(ring_zapped_mask, shelfFile['ring_zapped_mask']) )
+    assert(np.ma.allclose(threshold_mask, shelfFile['threshold_mask']) )
+    assert(np.ma.allclose(flag_glitches_mask, shelfFile['flag_glitches_mask']) )
+    assert(np.ma.allclose(flag_freckles_mask, shelfFile['flag_freckles_mask']) )
+    assert(np.ma.allclose(forced_unfolding_mask, shelfFile['forced_unfolding_mask']) )
+    assert(np.ma.allclose(BB_unfolding_fgg_mask, shelfFile['BB_unfolding_fgg_mask']) )
+    assert(np.ma.allclose(BB_unfolding_lw_mask, shelfFile['BB_unfolding_lw_mask']) )
+    # assert(np.ma.allclose(radial_shear_mask, shelfFile['radial_shear_mask']) )
+    # assert(np.ma.allclose(rain_rate_mask, shelfFile['rain_rate_mask']) )
+    shelfFile.close()
+    print("Shelf tests passed.")
+
+checkFromShelf()
+
+graphPlot('ZZ_despeckled')
+graphPlot('ZZ_ring_zapped')
 # demoThreshold()
 # graphPlot('ZZ_flag_glitch')
 # graphPlot('ZZ_flag_freckles')
@@ -136,5 +170,4 @@ shelfFile.close()
 # graphPlot('VV_unfold_first_good_gate', 'VV')
 # graphPlot('VV_unfold_local_wind', 'VV')
 # graphPlot('ZZ_radial_shear', 'ZZ')
-graphPlot('VV_rain_rate', 'VV')
-
+# graphPlot('VV_rain_rate', 'VV')
