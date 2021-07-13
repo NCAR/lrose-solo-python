@@ -8,30 +8,31 @@ import ctypes
 aliases = {}
 
 functions = [
-    "assert_bad_flags",
-    "assign_value",
-    "bad_flags_logic",
+    "assert_bad_flags", # TODO: implement
+    "assign_value", # TODO: implement
+    "bad_flags_logic", # TODO: implement
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
-    "clear_bad_flags",
-    "copy_bad_flags",
-    "do_clear_bad_flags_array",
+    "clear_bad_flags", # TODO: implement
+    "copy_bad_flags", # TODO: implement
+    "do_clear_bad_flags_array", # TODO: implement
     "despeckle",
-    "fix_vortex_vels",
-    "flagged_add",
+    "fix_vortex_vels", # TODO: implement
+    "flagged_add", # TODO: implement
     "flag_freckles",
     "flag_glitches",
     "funfold",
-    "merge_fields",
+    "merge_fields", # TODO: implement
     "radial_shear",
     "rain_rate",
     "ring_zap",
-    "set_bad_flags",
+    "set_bad_flags", # TODO: implement
     "threshold_field",
     "remove_ac_motion",
-    "remove_storm_motion",
+    "remove_storm_motion", # TODO: implement
 ]
 
+# from this script file, go up two directories (pysolo_package) then into libs/libSolo...
 pysolo_package_dir = Path(__file__).parents[1].absolute()
 
 
@@ -62,7 +63,6 @@ else:
     else:
         matches = shelfFile["mangled"]
 
-    # from this script file, go up two directories (pysolo_package) then into libs/libSolo...
     c_lib = ctypes.CDLL(str(shared_lib_path))
     for match in matches:
         for func in functions:
