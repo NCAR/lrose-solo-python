@@ -1,12 +1,6 @@
 import ctypes
 
-import sys
-from pathlib import Path
-
 from pysolo_package.utils.run_solo import run_solo_function
-# directory = Path.cwd() / Path('src/')
-# sys.path.append(str(directory))
-
 from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
@@ -69,25 +63,3 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
     to_km = int(to_km / km_between_gates)
 
     return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_mask = boundary_mask)
-
-def main():
-
-    input_data = [-3, 4, 6, -3, 8, -3, 10, 12, 14, -3, -3]
-    bad = -3
-    from_km = 2
-    to_km = 9
-    dgi = 10
-    boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
-
-    input_list_mask = None
-
-    output_data = ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=boundary_mask)
-
-    expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
-    assert (output_data.data == expected_data), "PROBLEM"
-
-    return
-
-
-if __name__ == "__main__":
-    main()
