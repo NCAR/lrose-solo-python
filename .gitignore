@@ -129,3 +129,4 @@ src/main.py
 # automated tools
 .bat
 build_upload.bat
+tests/results/
