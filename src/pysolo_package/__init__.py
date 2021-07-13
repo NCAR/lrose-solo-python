@@ -12,6 +12,7 @@ from pysolo_package.solo_functions.solo_radial_shear import radial_shear,radial_
 from pysolo_package.solo_functions.solo_rain_rate import rain_rate, rain_rate_masked
 from pysolo_package.solo_functions.solo_remove_ac_motion import remove_ac_motion, remove_ac_motion_masked
 from pysolo_package.solo_functions.solo_remove_storm_motion import remove_storm_motion, remove_storm_motion_masked
+from pysolo_package.solo_functions.solo_fix_vortex_vels import fix_vortex_vels, fix_vortex_vels_masked
+from pysolo_package.solo_functions.solo_merge_fields import merge_fields, merge_fields_masked
 
 from pysolo_package.utils.enums import Where
-from pysolo_package.utils.radar_structure import RayData

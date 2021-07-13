@@ -1,7 +1,7 @@
 import ctypes
 from pysolo_package.utils.run_solo import run_solo_function
 
-from pysolo_package.utils import radar_structure, DataPair, masked_op
+from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
@@ -18,7 +18,7 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
             deglitch_min_gates: <TODO>
             input_boundary_mask: A list of bools for masking valid/invalid values for input_list
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False)
+            (optional) boundary_mask: Defines region over which operations will be done. (default: all True)
 
         Returns:
             RayData: object containing resultant 'data' and 'masks' lists.

@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_array=None, usesBadFlags=False):
     """ 
         Performs a deglitch on a numpy masked array
@@ -16,7 +19,6 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
             AttributeError: if masked_array arg is not a numpy masked array.
     """
     try:
-        import numpy as np
         missing = masked_array.fill_value
         mask = masked_array.mask.tolist()
         data_list = masked_array.tolist(missing)
@@ -26,8 +28,6 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
             second_missing = second_masked_array.fill_value
             second_data_list = second_masked_array.tolist(second_missing)
 
-    except ModuleNotFoundError:
-        print("You must have Numpy installed.")
     except AttributeError as e:
         print("Expected a numpy masked array.")
         print(e)

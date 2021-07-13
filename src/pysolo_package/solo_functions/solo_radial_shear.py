@@ -18,7 +18,7 @@ def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=No
             bad: A float that represents a missing/invalid data point,
             seds_gate_diff_interval: <TODO>
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
+            (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
         Returns:
           RayData: object containing resultant 'data' and 'masks' lists.

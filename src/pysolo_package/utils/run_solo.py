@@ -1,8 +1,5 @@
-import copy
 import ctypes
 import re
-from pysolo_package.utils import radar_structure, DataPair
-from pysolo_package.utils.function_alias import aliases
 import numpy as np
 
 isArray = re.compile(r"<class '.*\.LP_(c_.*)'>")
@@ -45,9 +42,17 @@ def run_solo_function(c_func, args):
           RayData: object containing resultant 'data' and 'masks' lists.
 
     """
+    
+    # data list either comes from "data" or "data1" parameters.
+    if "data" not in args:
+        if "data1" in args:
+            input_list_data = args["data1"].value
+        else:
+            raise ValueError("Expected either Data or Data1 as a parameter for solo functions.")
+    else:
+        input_list_data = args["data"].value
 
     # Obtain input data list, because its size is needed for output data, boundary mask and nGates.
-    input_list_data = args["data"].value
 
     bad = args["bad"].value
 

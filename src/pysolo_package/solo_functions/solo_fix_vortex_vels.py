@@ -23,10 +23,13 @@ def fix_vortex_vels(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
+            vs_data: <TODO>
+            vl_data: <TODO>
+            vs_xmitted_freq: <TODO>
+            vs_interpulse_time: <TODO>
+            vl_interpulse_time: <TODO>
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
+            (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
         Returns:
           RayData: object containing resultant 'data' and 'masks' lists.
@@ -60,8 +63,11 @@ def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_i
         
         Args:
             masked_array: A numpy masked array data structure,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
+            vs_data: <TODO>
+            vl_data: <TODO>
+            vs_xmitted_freq: <TODO>
+            vs_interpulse_time: <TODO>
+            vl_interpulse_time: <TODO>
             km_between_gates: An integer representing the distance (in km) between gates
 
         Returns:

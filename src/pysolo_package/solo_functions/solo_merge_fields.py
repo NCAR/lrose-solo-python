@@ -4,17 +4,16 @@ from pysolo_package.utils.run_solo import run_solo_function
 from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
-se_ring_zap = aliases['ring_zap']
+se_merge_fields = aliases['merge_fields']
 
-def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_mask=None):
+def merge_fields(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a ring zap operation on a list of data.
+        Performs a TODO on a list of data.
         
         Args:
-            input_list: A list containing float data,
+            input_list_data_1: <TODO>,
+            input_list_data_2: <TODO>,
             bad: A float that represents a missing/invalid data point,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -28,9 +27,8 @@ def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_
     """
 
     args = {
-        "from_km" : DataPair.DataTypeValue(ctypes.c_size_t, from_km),
-        "to_km" : DataPair.DataTypeValue(ctypes.c_size_t, to_km),
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "data1" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data_1),
+        "data2" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data_2),
         "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
@@ -38,10 +36,10 @@ def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
-    return run_solo_function(se_ring_zap, args)
+    return run_solo_function(se_merge_fields, args)
 
 
-def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mask=None):
+def merge_fields_masked(masked_array, boundary_mask=None):
     """ 
         Performs a ring zap operation on a numpy masked array
         
@@ -58,8 +56,4 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-
-    from_km = int(from_km / km_between_gates)
-    to_km = int(to_km / km_between_gates)
-
-    return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_mask = boundary_mask)
+    return masked_op.masked_func(merge_fields, masked_array,  boundary_mask = boundary_mask)

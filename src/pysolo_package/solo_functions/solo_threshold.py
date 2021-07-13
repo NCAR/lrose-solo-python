@@ -1,7 +1,7 @@
 import ctypes
 
 from pysolo_package.utils.run_solo import run_solo_function
-from pysolo_package.utils import radar_structure, DataPair, masked_op
+from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 from pysolo_package.utils.enums import Where
 

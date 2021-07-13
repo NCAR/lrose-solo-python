@@ -2,8 +2,6 @@ import pyart
 from copy import *
 
 import pysolo_package as solo
-from pysolo_package.utils.radar_structure import RayData
-from pysolo_package.utils.enums import Where
 import matplotlib.pyplot as plt
 
 from pathlib import Path

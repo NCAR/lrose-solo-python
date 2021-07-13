@@ -1,7 +1,7 @@
 import ctypes
 from pysolo_package.utils.run_solo import run_solo_function
 
-from pysolo_package.utils import radar_structure, DataPair, masked_op
+from pysolo_package.utils import DataPair, masked_op
 from pysolo_package.utils.function_alias import aliases
 
 se_unfold_first_good_gate = aliases['BB_unfold_first_good_gate']
@@ -20,7 +20,7 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
             ngates_averaged: <TODO>
             last_good_v0: <TODO>
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) boundary_mask_all_true: setting this to True may yield more results in despeckle (default: False).
+            (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
         Returns:
           RayData: object containing resultant 'data' and 'masks' lists.

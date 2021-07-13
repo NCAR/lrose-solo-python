@@ -17,12 +17,12 @@ functions = [
     "copy_bad_flags", # TODO: implement
     "do_clear_bad_flags_array", # TODO: implement
     "despeckle",
-    "fix_vortex_vels", # TODO: implement
+    "fix_vortex_vels", # TODO: test
     "flagged_add", # TODO: implement
     "flag_freckles",
     "flag_glitches",
     "funfold",
-    "merge_fields", # TODO: implement
+    "merge_fields",
     "radial_shear",
     "rain_rate",
     "ring_zap",
