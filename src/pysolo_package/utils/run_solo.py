@@ -1,19 +1,28 @@
+import copy
 import ctypes
 import re
 from pysolo_package.utils import radar_structure, DataPair
 from pysolo_package.utils.function_alias import aliases
 import numpy as np
 
-isArray = re.compile(r"<class '.*\.LP_c_.*'>")
+isArray = re.compile(r"<class '.*\.LP_(c_.*)'>")
 
 
 def array_to_list(input_array, size):
-    """ converts ctype array to python list """
+    """ converts ctypes array to Python list """
     return [input_array[i] for i in range(size)]
 
 
+def listToArray(floats, type):
+    ''' convert Python list to ctypes array '''
+    if floats is None:
+        return None
+    data_length_type = type * len(floats)
+    return ctypes.cast(data_length_type(*floats), ctypes.POINTER(type))
+
+
 def update_boundary_mask(input_list, bad):
-    # update boundary mask for new invalid entries that were replaced 
+    ''' update boundary mask for new invalid entries that were replaced '''
     mask = []
     for i in range(len(input_list)):
         if input_list[i] == np.float32(bad):
@@ -23,82 +32,72 @@ def update_boundary_mask(input_list, bad):
     return mask
 
 
-def newArray(size, type):
-    """ returns an empty float buffer of size """
-    data_length_type = type * size
-    return ctypes.cast(data_length_type(), ctypes.POINTER(type))
-
-
-def listToArray(floats, type):
-    if floats is None:
-        return None
-    data_length_type = type * len(floats)
-    return ctypes.cast(data_length_type(*floats), ctypes.POINTER(type))
-
-
 def run_solo_function(c_func, args):
+    """ 
+        Runs a solo library function from python
+        
+        Args:
+            c_func: a reference to the solo function, from c_types
+            args: a dictionary of {String : DataTypeValue}
+                String is the name of the parameter as it's called from the function
 
-    # Every solo function contains the parameters, "data", "bad", "dgi_clip_gate", and "bad"
-    # so here, just extract those values from the args dict.
+        Returns:
+          RayData: object containing resultant 'data' and 'masks' lists.
+
+    """
+
+    # Obtain input data list, because its size is needed for output data, boundary mask and nGates.
     input_list_data = args["data"].value
+
     bad = args["bad"].value
+
+    # Obtain clipping and boundary mask, if it's none, then change it to defaults.
     dgi_clip_gate = args["dgi_clip_gate"].value
     boundary_mask = args["boundary_mask"].value
-    
-    # none of the solo functions have return types
-    c_func.restype = None
-    # assuming args is in order according to the signature of the C-function, put the *type* of the args into an ordered list
-    c_func.argtypes = [x.type for x in list(args.values())]
 
     # retrieve size of input/output/mask array
     data_length = len(input_list_data)
 
-    # nGates will always be the size of data_length, so update its value to args dict.
+    # nGates will always be the size of data_length, so update its value in args dict.
     args["nGates"].value = data_length
 
     # optional parameters, if None, then set to default values.
     if boundary_mask is None:
-        boundary_mask = [True] * data_length # setting boundary mask to all true here will mean C-function does operation on entire dataset. 
+        args["boundary_mask"].value = [True] * data_length # setting boundary mask to all true here will mean C-function does operation on entire dataset. 
     if dgi_clip_gate is None:
-        args["dgi_clip_gate"].value = data_length # usually makes sense to make dgi to nGates.
-    
+        args["dgi_clip_gate"].value = data_length # clip to the end of the data
 
-    # before running c-functions, all python lists need to be converted to C-type arrays first.
-
-    # create a ctypes array from the input data list, of type 'c_float'
-    input_array = listToArray(input_list_data, ctypes.c_float)
-    # and replace the list to this array in args
-    args["data"].value = input_array
-
-    # se_threshold takes an additional array, thr_data, so create array if needed.
-    if "thr_data" in args:
-        threshold_list_data = args["thr_data"].value
-        threshold_array = listToArray(threshold_list_data, ctypes.c_float)
-        args["thr_data"].value = threshold_array
-
-    # boundary list to array, of type 'c_bool'
-    boundary_array = listToArray(boundary_mask, ctypes.c_bool)
-    args["boundary_mask"].value = boundary_array
-
-    # se_flag functions use bad_flag_masks, so create arrays for those when needed.
-    if "bad_flag_mask" in args:
-        bad_flags_array = listToArray(args["bad_flag_mask"].value, ctypes.c_bool)
-        args["bad_flag_mask"].value = bad_flags_array
-
-    # most functions have "newData", the C-functions take in an empty pointer for
-    # "newData", so create a newArray with specified length and type c_float
+    # newData is an array expected from solo functions that eventually gets filled with values. 
+    # newData must be equal in size as input_data. Initialize it with copying input_data to ensure they are
+    # the same size. Not all solo functions have newData parameter.
     if "newData" in args:
-        output_array = newArray(data_length, ctypes.c_float)
-        args["newData"].value = output_array
+        args["newData"].value = input_list_data.copy()
 
-    # last_good_v0 only used in unfold_first_good_gate
-    if "last_good_v0" in args:
-        last_good_array = listToArray(args["last_good_v0"].value, ctypes.c_float)
-        args["last_good_v0"].value = last_good_array
+    # parallel lists below
+    argtypes = [] # becomes a list of c types expected from C-function call, in order that they are called
+    parameters = [] # becomes a list of values, these values correspond to the types in argtypes.
 
-    # create a list of values to represent the input parameters to call the C-functions
-    # this assumes args is already in order of signature.
-    parameters = [x.value if isArray.search(str(x.type)) else x.type(x.value) for x in args.values()]
+    for i, j in args.items(): # i = key (string of parameter), j = value (DataTypeValue structure with 'type' and 'value')
+        argtypes.append(j.type) # extract c-type & append
+        result = isArray.search(str(j.type)) # check if this type is an array
+        if result: # if so...
+            array_type = result.group(1) # extract what type of array... either a float or bool array.
+            if (array_type == 'c_float'):
+                array = listToArray(j.value, ctypes.c_float) # convert list to array by specifying the list's values and designated type.
+            elif (array_type == 'c_bool'):
+                array = listToArray(j.value, ctypes.c_bool)
+            else: # solo functions don't have any other array tile than floats/bools.
+                raise Exception("Unexpected type")
+            args[i].value = array # finally, update this list to array conversion onto dictionary
+            parameters.append(j.value) # and add this array to the parameter list
+        else:
+            parameters.append(j.type(j.value)) # if not array, simply add to parameter list
+
+    # none of the solo functions have return types
+    c_func.restype = None
+
+    # obtained from iteration above
+    c_func.argtypes = argtypes
 
     # run the actual function here. 
     c_func(*parameters)
@@ -107,15 +106,12 @@ def run_solo_function(c_func, args):
     # updated "newData" with... new data
     # or
     # updated "bad_flag_mask" with new masks
-
     if "newData" in args: # if newData was updated...
         # convert resultant ctypes array back to python list
-        output_list = array_to_list(output_array, data_length)
-        # update the boundary 
-        output_list_mask = update_boundary_mask(output_list, bad)
-        return radar_structure.RayData(output_list, output_list_mask)
+        output_list = array_to_list(args['newData'].value, data_length)
+        return np.ma.masked_values(output_list, bad)
     elif "bad_flag_mask" in args:
-        output_flag_list = array_to_list(bad_flags_array, data_length)
-        return radar_structure.RayData(input_list_data, output_flag_list)
+        output_flag_list = array_to_list(args['bad_flag_mask'].value, data_length)
+        return np.ma.masked_array(data=input_list_data, mask=output_flag_list, fill_value=bad)
 
     raise Exception("Unexpected control flow.")
