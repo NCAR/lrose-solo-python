@@ -46,15 +46,15 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
         input_mask = mask[i]
         if second_data_list != None:
             second_input_data = second_data_list[i]
-            flag = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_mask)
+            func_ma = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_mask)
         else:
             if (usesBadFlags):
                 argsList = list(args)
                 argsList[argsLength] = input_mask
                 args = tuple(argsList)
-            flag = func(input_data, missing, *args, boundary_mask=boundary_mask)
-        output_data.append(flag.data)
-        output_mask.append(flag.mask)
+            func_ma = func(input_data, missing, *args, boundary_mask=boundary_mask)
+        output_data.append(np.ma.getdata(func_ma))
+        output_mask.append(np.ma.getdata(func_ma.mask))
 
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
