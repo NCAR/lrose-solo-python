@@ -10,11 +10,11 @@ aliases = {}
 functions = [
     "assert_bad_flags",
     "assign_value", # TODO: test
-    "bad_flags_logic", # TODO: implement
+    "bad_flags_logic", 
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
     "clear_bad_flags", # TODO: implement
-    "copy_bad_flags", # TODO: implement
+    "copy_bad_flags", 
     "do_clear_bad_flags_array", # TODO: implement
     "despeckle",
     "fix_vortex_vels", # TODO: test

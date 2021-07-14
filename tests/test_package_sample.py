@@ -368,4 +368,23 @@ result = solo.bad_flags_logic(data, bad, where.value, logical.value, scaled_thr1
 expected_bad_flag = [True, False, True, True, True, True, True, False, True]
 assert (masked_to_list_mask(result) == expected_bad_flag)
 
+# test copy bad flags
+data = [3, -3, 5, -3, 7]
+bad = -3
+result = solo.copy_bad_flags(data, bad)
+expected_bad_flag = [False, True, False, True, False]
+assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
+data = [-100, -3, 0, 100, -3, 1000, -3, 3, -2.995]
+bad = -3
+result = solo.copy_bad_flags(data, bad)
+expected_bad_flag = [False, True, False, False, True, False, True, False, False]
+assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
+data = [-100, -1e-20, 0, 100, -1e-20, 1000, -1e-20, 3, -2.995]
+bad = -1e-20
+result = solo.copy_bad_flags(data, bad)
+expected_bad_flag = [False, True, False, False, True, False, True, False, False]
+assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
 print("All tests passed.")

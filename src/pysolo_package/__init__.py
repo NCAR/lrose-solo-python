@@ -18,6 +18,7 @@ from pysolo_package.solo_functions.solo_merge_fields import merge_fields, merge_
 from pysolo_package.solo_functions.solo_assign_value import assign_value, assign_value_masked
 from pysolo_package.solo_functions.solo_assert_bad_flags import assert_bad_flags, assert_bad_flags_masked
 from pysolo_package.solo_functions.solo_bad_flags_logic import bad_flags_logic, bad_flags_logic_masked
+from pysolo_package.solo_functions.solo_copy_bad_flags import copy_bad_flags, copy_bad_flags_masked
 
 
 from pysolo_package.utils.enums import Where, Logical
