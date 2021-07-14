@@ -8,8 +8,8 @@ import ctypes
 aliases = {}
 
 functions = [
-    "assert_bad_flags", # TODO: implement
-    "assign_value", # TODO: implement
+    "assert_bad_flags",
+    "assign_value", # TODO: test
     "bad_flags_logic", # TODO: implement
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
@@ -29,7 +29,7 @@ functions = [
     "set_bad_flags", # TODO: implement
     "threshold_field",
     "remove_ac_motion",
-    "remove_storm_motion", # TODO: implement
+    "remove_storm_motion",
 ]
 
 # from this script file, go up two directories (pysolo_package) then into libs/libSolo...

@@ -7,6 +7,11 @@ import numpy as np
 import pysolo_package as solo
 from pysolo_package.utils.enums import Where
 
+
+def maskedArrayToList(masked):
+    return list(np.ma.getdata(masked))
+    
+
 # test despeckle
 input_data = [3, -3, -3, 5, 5, 5, -3, 5, 5, -3]
 bad = -3
@@ -15,7 +20,7 @@ dgi = 8
 input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
 expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
 result = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
-assert list(np.ma.getdata(result)) == expected_data
+assert maskedArrayToList(result) == expected_data
 
 
 # test ring zap
@@ -27,7 +32,7 @@ dgi = 10
 input_boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
 expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
 result = solo.ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
-assert (list(np.ma.getdata(result)) == expected_data)
+assert (maskedArrayToList(result) == expected_data)
 
 
 # test threshold
@@ -38,7 +43,7 @@ bad = -3
 thr_bad = -5
 input_boundary_mask = [True, True, True, True, True, True, True, True, True, True, True]
 result = solo.threshold(input_data, thr_data, bad, Where.BELOW.value, 50, 0, thr_missing=thr_bad, boundary_mask=input_boundary_mask)
-assert list(np.ma.getdata(result)) == expected_data
+assert maskedArrayToList(result) == expected_data
 
 
 # test flag_glitches
@@ -69,7 +74,7 @@ ns_horiz_wind = 999
 vert_wind = 2.0
 expected_data = [3.0, 4.0, 5.0, 6.0]
 result = solo.unfold_local_wind(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_horiz_wind, ns_horiz_wind, vert_wind, max_pos_folds, max_neg_folds, ngates_averaged)
-assert (list(np.ma.getdata(result)) == expected_data)
+assert (maskedArrayToList(result) == expected_data)
 
 data = [3,-3, -3, 5, 5,-2, -3, 5, 5, -3]
 boundary = [True, False,  True, True, False, True,  True, True, True, False]
@@ -87,7 +92,7 @@ ns_horiz_wind = 999
 vert_wind = 3.0
 expected_data = [3,-3, -3, 5, 5,-2, -3, 5, 5, -3]
 result = solo.unfold_local_wind(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_horiz_wind, ns_horiz_wind, vert_wind, max_pos_folds, max_neg_folds, ngates_averaged, dgi_clip_gate= dgi, boundary_mask = boundary)
-assert (list(np.ma.getdata(result)) == expected_data)
+assert (maskedArrayToList(result) == expected_data)
 
 
 # test unfold_first_good_gate
@@ -101,7 +106,7 @@ dds_radd_eff_unamb_vel = 0.0
 expected_data = [3.0, 4.0, 5.0, 6.0]
 last_good_v0 = [bad]
 result = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 data = [-3, -3, 5, 6]
 input_boundary_mask = [True, True, True, True]
@@ -114,7 +119,7 @@ dds_radd_eff_unamb_vel = 0.0
 expected_data = [-3, -3, 5, 6]
 last_good_v0 = [bad]
 result = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
-assert (list(np.ma.getdata(result)) == expected_data)
+assert (maskedArrayToList(result) == expected_data)
 
 data = [3, 4, 5, 6]
 input_boundary_mask = [True, True, True, True]
@@ -127,7 +132,7 @@ dds_radd_eff_unamb_vel = 0.0
 expected_data = [3, 4, 5, 6]
 last_good_v0 = [9]
 result = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0)
-assert (list(np.ma.getdata(result)) == expected_data)
+assert (maskedArrayToList(result) == expected_data)
 
 data = [3, -3, 5, -16, 7, -3 ,6]
 boundary = [False, False, True, True, False, True, True]
@@ -140,7 +145,7 @@ dds_radd_eff_unamb_vel = 0.0
 expected_data = [3, -3, 5, 2, 7, -3, 6]
 last_good_v0 = [bad]
 result = solo.unfold_first_good_gate(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, boundary_mask = boundary)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 # test radial shear
 seds_gate_diff_interval = 4
@@ -151,7 +156,7 @@ dgi = 8
 boundary_mask = [True, True, True, True, True, True, True, True]
 expected_data = [-3, 4, 4, 4, 7, 8, 9, 10]
 result = solo.radial_shear(data, bad, seds_gate_diff_interval)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 seds_gate_diff_interval = 5
 data = [8, -3, -3, -3, 4, 8, 6, 4, 4, -3, 2, 3]
@@ -161,7 +166,7 @@ dgi = 10
 boundary_mask = [True, True, True, True, True, False, False, False, True, True, True, True]
 expected_data = [0, -3, -3, -3, -3, 8, 6, 4, 4, -3, 2, 3]
 result = solo.radial_shear(data, bad, seds_gate_diff_interval, dgi_clip_gate=dgi)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 # test rain rate
 # for any good values 'g', sets it to g = (1/300) * 10 ^ (0.1 * g * d_const)
@@ -172,7 +177,7 @@ bad_data_value = -3
 boundary_mask = [True, True, True, True, True, True, True, True, True, True, True, True]
 expected_data = [7.924466133117676, -3.0, -3.0, -3.0, 0.1990535855293274, 7.924466133117676, 1.2559431791305542, 0.1990535855293274, 0.1990535855293274, -3.0, 0.03154786676168442, 0.07924465835094452]
 result = solo.rain_rate(data, bad, d_const)
-assert (np.allclose(list(np.ma.getdata(result)), expected_data))
+assert (np.allclose(maskedArrayToList(result), expected_data))
 
 # test remove ac motion
 data = [3,4,5,6]
@@ -190,7 +195,7 @@ nyquist_velocity = 10.0
 clip_gate = nGates
 expected_data = [3, 4, 5, 6]
 result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 
 data = [3,4,-5,6]
@@ -209,7 +214,7 @@ nGates = 4
 clip_gate = nGates
 expected_data = [3, -2, 1, 0]
 result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 import math
 
@@ -232,7 +237,7 @@ nGates = 4
 clip_gate = 2
 expected_data = [-3,9,5,-3]  # no changed 
 result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 
 data = [-3,6,5,-3]
@@ -254,7 +259,7 @@ nGates = 4
 clip_gate = 2
 expected_data = [-3,-1,5,-3]  # no changed 
 result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 
 data = [-4,-3, 5, 8]
@@ -277,7 +282,7 @@ nGates = 4
 clip_gate = 3
 expected_data = [-5,-3,4,8]  # no change 
 result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 # Test merge fields
 data1 = [4, -3, 6, 7, -3]
@@ -285,20 +290,43 @@ data2 = [40, 50, 60, 70, 80]
 bad = -3
 result = solo.merge_fields(data1, data2, bad)
 expected_data = [4, 50, 6, 7, 80]
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 data1 = [-3]
 data2 = [99]
 bad = -3
 result = solo.merge_fields(data1, data2, bad)
 expected_data = [99]
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 data1 = [100]
 data2 = [-3]
 bad = -3
 result = solo.merge_fields(data1, data2, bad)
 expected_data = [100]
-assert (list(np.ma.getdata(result)) == expected_data), list(np.ma.getdata(result))
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
+
+
+# Test assert bad flags
+data = [3, 4, 5, 6, 7]
+bad = -3
+mask = [True, True, True, True, True]
+result = solo.assert_bad_flags(data, bad, mask)
+expected_data = [-3, -3, -3, -3, -3]
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
+
+data = [3, 4, 5, 6, 7]
+bad = -3
+mask = [False, False, False, False, False]
+result = solo.assert_bad_flags(data, bad, mask)
+expected_data = [3, 4, 5, 6, 7]
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
+
+data = [3, 4, 5, 6, 7]
+bad = -3
+mask = [False, True, False, True, False]
+result = solo.assert_bad_flags(data, bad, mask)
+expected_data = [3, -3, 5, -3, 7]
+assert (maskedArrayToList(result) == expected_data), maskedArrayToList(result)
 
 print("All tests passed.")

@@ -130,3 +130,4 @@ src/main.py
 .bat
 build_upload.bat
 tests/results/
+tests/quick.py

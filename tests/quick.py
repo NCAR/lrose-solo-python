@@ -1,9 +1,10 @@
+import ctypes
+import numpy as np
 
-from numpy import product
+data = [4, 5, 6, 7]
+missing = 5
 
+masked = np.ma.masked_values(data, missing)
 
-import re
-isArray = re.compile(r"<class '.*\.LP_c_.*'>")
-test_val = r"<class '__main__.LP_c_float'>"
-if isArray.search(test_val):
-    print("Matched")
+print(np.ma.getdata(masked))
+print(list(np.ma.getmask(masked)))

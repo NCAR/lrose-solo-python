@@ -14,5 +14,7 @@ from pysolo_package.solo_functions.solo_remove_ac_motion import remove_ac_motion
 from pysolo_package.solo_functions.solo_remove_storm_motion import remove_storm_motion, remove_storm_motion_masked
 from pysolo_package.solo_functions.solo_fix_vortex_vels import fix_vortex_vels, fix_vortex_vels_masked
 from pysolo_package.solo_functions.solo_merge_fields import merge_fields, merge_fields_masked
+from pysolo_package.solo_functions.solo_assign_value import assign_value, assign_value_masked
+from pysolo_package.solo_functions.solo_assert_bad_flags import assert_bad_flags, assert_bad_flags_masked
 
 from pysolo_package.utils.enums import Where
