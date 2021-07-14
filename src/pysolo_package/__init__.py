@@ -1,4 +1,5 @@
 # Import all functions that would be used in user space.
+# pylint: disable=W0614
 
 from pysolo_package.solo_functions.solo_despeckle import despeckle, despeckle_masked
 from pysolo_package.solo_functions.solo_ring_zap import ring_zap, ring_zap_masked
@@ -16,5 +17,7 @@ from pysolo_package.solo_functions.solo_fix_vortex_vels import fix_vortex_vels, 
 from pysolo_package.solo_functions.solo_merge_fields import merge_fields, merge_fields_masked
 from pysolo_package.solo_functions.solo_assign_value import assign_value, assign_value_masked
 from pysolo_package.solo_functions.solo_assert_bad_flags import assert_bad_flags, assert_bad_flags_masked
+from pysolo_package.solo_functions.solo_bad_flags_logic import bad_flags_logic, bad_flags_logic_masked
 
-from pysolo_package.utils.enums import Where
+
+from pysolo_package.utils.enums import Where, Logical
