@@ -18,7 +18,7 @@ functions = [
     "do_clear_bad_flags_array", # TODO: implement
     "despeckle",
     "fix_vortex_vels", # TODO: test
-    "flagged_add", # TODO: implement
+    "flagged_add", 
     "flag_freckles",
     "flag_glitches",
     "funfold",

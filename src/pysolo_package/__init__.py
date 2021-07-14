@@ -19,6 +19,8 @@ from pysolo_package.solo_functions.solo_assign_value import assign_value, assign
 from pysolo_package.solo_functions.solo_assert_bad_flags import assert_bad_flags, assert_bad_flags_masked
 from pysolo_package.solo_functions.solo_bad_flags_logic import bad_flags_logic, bad_flags_logic_masked
 from pysolo_package.solo_functions.solo_copy_bad_flags import copy_bad_flags, copy_bad_flags_masked
+from pysolo_package.solo_functions.solo_flagged_add import flagged_add, flagged_add_masked
+from pysolo_package.solo_functions.solo_set_bad_flags import set_bad_flags, set_bad_flags_masked
 
 
 from pysolo_package.utils.enums import Where, Logical

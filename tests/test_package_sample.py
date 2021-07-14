@@ -387,4 +387,60 @@ result = solo.copy_bad_flags(data, bad)
 expected_bad_flag = [False, True, False, False, True, False, True, False, False]
 assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
 
+# test flagged add
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+mask = [True if x % 2 == 0 else False for x in data ]
+f_const = 10
+multiply = True
+bad = -3
+result = solo.flagged_add(data, bad, f_const, multiply, mask)
+expected_data = [1, 20, 3, 40, 5, 60, 7, 80, 9, 100]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
+
+data = [1, 2, -3, 4, -3, 6, 7, -3, 9, -3]
+mask = [True if x % 2 == 0 else False for x in data ]
+f_const = 10
+multiply = True
+bad = -3
+result = solo.flagged_add(data, bad, f_const, multiply, mask)
+expected_data = [1, 20, -3, 40, -3, 60, 7, -3, 9, -3]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
+
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+mask = [True if x % 2 == 0 else False for x in data ]
+f_const = 10
+multiply = False
+bad = -3
+result = solo.flagged_add(data, bad, f_const, multiply, mask)
+expected_data = [1, 12, 3, 14, 5, 16, 7, 18, 9, 20]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
+
+data = [1, 2, -3, 4, -3, 6, 7, -3, 9, -3]
+mask = [True if x % 2 == 0 else False for x in data ]
+f_const = 10
+multiply = False
+bad = -3
+result = solo.flagged_add(data, bad, f_const, multiply, mask)
+expected_data = [1, 12, -3, 14, -3, 16, 7, -3, 9, -3]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
+
+# test set bad flags
+data = [-3, 60, 70, 80, 90, 100, 110, 120, -3]
+scaled_thr1 = 100
+scaled_thr2 = 1000
+where = Where.BELOW
+bad = -3
+result = solo.set_bad_flags(data, bad, where, scaled_thr1, scaled_thr2)
+expected_bad_flag = [False, True, True, True, True, False, False, False, False]
+assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
+data = [-3, 60, 70, 80, -3, 90, 100, 110, 120, -3]
+scaled_thr1 = 70
+scaled_thr2 = 90
+where = Where.BETWEEN
+bad = -3
+result = solo.set_bad_flags(data, bad, where, scaled_thr1, scaled_thr2)
+expected_bad_flag = [False, False, True, True, False, True, False, False, False, False]
+assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
 print("All tests passed.")
