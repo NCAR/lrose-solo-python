@@ -7,15 +7,16 @@ import ctypes
 
 aliases = {}
 
+# list of functions PySolo uses
 functions = [
     "assert_bad_flags",
-    "assign_value", # TODO: test
+    "assign_value",
     "bad_flags_logic", 
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
-    "clear_bad_flags", # TODO: implement
+    "clear_bad_flags",
     "copy_bad_flags", 
-    "do_clear_bad_flags_array", # TODO: implement
+    "do_clear_bad_flags_array",
     "despeckle",
     "flagged_add", 
     "flag_freckles",
@@ -34,40 +35,44 @@ functions = [
 # from this script file, go up two directories (pysolo_package) then into libs/libSolo...
 pysolo_package_dir = Path(__file__).parents[1].absolute()
 
-
+# get appropriate library depending on platform
+# the DLL from Windows has "extern C" so no name mangling occurs.
 if (platform.system() == "Windows"):
     path_to_file = pysolo_package_dir / Path('libs/solo.dll')
     c_lib = ctypes.CDLL(str(path_to_file))
     for function in functions:
         aliases[function] = c_lib["se_" + function]
 
+# Linux, on the other hand, has name manging.
+# Algorithm was required to retrieve the functions from the mangled names.
 else:
     import os
     import re
-    import shelve
 
     temp_dir = pysolo_package_dir / Path("temp")
     shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSolo_18.04.so')
 
-    if not os.path.exists(temp_dir):
-        os.system("mkdir %s" % temp_dir)
-        os.system("readelf -Ws %s > %s" % (shared_lib_path, temp_dir / Path("readelf.txt")))
+    # run readelf to get a list of C-functions with their mangled names, save results to file
+    os.system("mkdir %s" % temp_dir)
+    os.system("readelf -Ws %s > %s" % (shared_lib_path, temp_dir / Path("readelf.txt")))
 
-    shelfFile = shelve.open(str(temp_dir / Path("unmangled_functions")))
+    # read all content from the command
+    content = open(temp_dir / Path("readelf.txt")).read()
 
-    if "mangled" not in shelfFile:
-        content = open(temp_dir / Path("readelf.txt")).read()
-        matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
-        shelfFile["mangled"] = matches
-    else:
-        matches = shelfFile["mangled"]
+    # use regex pattern to discover all mangled functions, retrieve the unmangled name from group
+    matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
 
+    # initialize c_types object for shared library
     c_lib = ctypes.CDLL(str(shared_lib_path))
+    # iterate through matches, check if PySolo uses that function. If so, save to map.
     for match in matches:
         for func in functions:
             if func in match:
                 aliases[func] = c_lib[match]
 
+    # remove command output.
+    os.system("rm -r %s" % temp_dir)
 
+# make sure all the needed functions are mapped
 for func in functions:
     assert func in aliases, func

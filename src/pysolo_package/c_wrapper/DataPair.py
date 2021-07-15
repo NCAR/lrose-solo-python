@@ -1,6 +1,4 @@
-import ctypes
-import numpy as np
-
+# Class to pair up c type and corresponding value
 
 class DataTypeValue:
     def __init__(self, ctype_type, value):

@@ -1,7 +1,12 @@
+"""
+    This module is a wrapper for C-types that runs the C-function based on c-type function object and parameter map.
+"""
+
 import ctypes
 import re
 import numpy as np
 
+# Regex pattern to determine if c-type is a primative or array
 isArray = re.compile(r"<class '.*\.LP_(c_.*)'>")
 
 
@@ -11,7 +16,7 @@ def array_to_list(input_array, size):
 
 
 def list_to_array(floats, type):
-    ''' convert Python list to ctypes array '''
+    """ convert Python list to ctypes array """
     if floats is None:
         return None
     data_length_type = type * len(floats)
@@ -19,7 +24,7 @@ def list_to_array(floats, type):
 
 
 def update_boundary_mask(input_list, bad):
-    ''' update boundary mask for new invalid entries that were replaced '''
+    """ update boundary mask for new invalid entries that were replaced """
     mask = []
     for i in range(len(input_list)):
         if input_list[i] == np.float32(bad):
@@ -37,22 +42,25 @@ def run_solo_function(c_func, args):
             c_func: a reference to the solo function, from c_types
             args: a dictionary of {String : DataTypeValue}
                 String is the name of the parameter as it's called from the function
+                DataTypeValue contains c-types type and corresponding value.
 
         Returns:
           Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
     """
-    
+
     # data list either comes from "data" or "data1" parameters.
+    # data is 1 ray with n gates.
     if "data" not in args:
         if "data1" in args:
             input_list_data = args["data1"].value
         else:
-            raise ValueError("Expected either Data or Data1 as a parameter for solo functions.")
+            # All solo functions have data or data1. If not in parametrs, raise error.
+            raise ValueError(
+                "Expected either Data or Data1 as a parameter for solo functions."
+            )
     else:
         input_list_data = args["data"].value
-
-    # Obtain input data list, because its size is needed for output data, boundary mask and nGates.
 
     bad = args["bad"].value
 
@@ -92,7 +100,7 @@ def run_solo_function(c_func, args):
             elif (array_type == 'c_bool'):
                 array = list_to_array(j.value, ctypes.c_bool)
             else: # solo functions don't have any other array tile than floats/bools.
-                raise Exception("Unexpected type")
+                raise Exception("Unexpected type for array.")
             args[i].value = array # finally, update this list to array conversion onto dictionary
             parameters.append(j.value) # and add this array to the parameter list
         else:
@@ -100,10 +108,8 @@ def run_solo_function(c_func, args):
 
     # none of the solo functions have return types
     c_func.restype = None
-
     # obtained from iteration above
     c_func.argtypes = argtypes
-
     # run the actual function here. 
     c_func(*parameters)
 
@@ -114,9 +120,9 @@ def run_solo_function(c_func, args):
     if "newData" in args: # if newData was updated...
         # convert resultant ctypes array back to python list
         output_list = array_to_list(args['newData'].value, data_length)
+        # create and return masked array
         return np.ma.masked_values(output_list, bad)
     elif "bad_flag_mask" in args:
         output_flag_list = array_to_list(args['bad_flag_mask'].value, data_length)
         return np.ma.masked_array(data=input_list_data, mask=output_flag_list, fill_value=bad)
-
     raise Exception("Unexpected control flow.")

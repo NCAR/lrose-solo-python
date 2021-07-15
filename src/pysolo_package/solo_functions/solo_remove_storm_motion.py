@@ -1,9 +1,9 @@
 import ctypes
 
-from ..utils.run_solo import run_solo_function
+from ..c_wrapper.run_solo import run_solo_function
 
-from ..utils import DataPair, masked_op
-from ..utils.function_alias import aliases
+from ..c_wrapper import DataPair, masked_op
+from ..c_wrapper.function_alias import aliases
 
 se_remove_storm_motion = aliases['remove_storm_motion']
 
