@@ -1,8 +1,8 @@
 import ctypes
 
-from pysolo_package.utils.run_solo import run_solo_function
-from pysolo_package.utils import DataPair, masked_op
-from pysolo_package.utils.function_alias import aliases
+from ..utils.run_solo import run_solo_function
+from ..utils import DataPair, masked_op
+from ..utils.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
 
@@ -19,7 +19,7 @@ def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
         Returns:
-          RayData: object containing resultant 'data' and 'masks' lists.
+          Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,

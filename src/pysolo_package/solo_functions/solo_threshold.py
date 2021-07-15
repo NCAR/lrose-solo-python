@@ -1,9 +1,9 @@
 import ctypes
 
-from pysolo_package.utils.run_solo import run_solo_function
-from pysolo_package.utils import DataPair, masked_op
-from pysolo_package.utils.function_alias import aliases
-from pysolo_package.utils.enums import Where
+from ..utils.run_solo import run_solo_function
+from ..utils import DataPair, masked_op
+from ..utils.function_alias import aliases
+from ..enums import Where
 
 se_threshold = aliases['threshold_field']
 
@@ -24,7 +24,7 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
             (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
         Returns:
-            RayData: object containing resultant 'data' and 'masks' lists.
+            Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
         Throws:
             ValueError: if input_list and input_boundary_mask are not equal in size

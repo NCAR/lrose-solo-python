@@ -1,10 +1,7 @@
 if __name__ == '__main__':
 
-    import numpy as np
-    import timeit
     from pathlib import Path
     import pyart
-    import sys
     from pathlib import Path
 
     path_to_file = Path.cwd() / Path('tests/data/radar_data_c')

@@ -1,28 +1,23 @@
 import ctypes
 
-from pysolo_package.utils.enums import Where
-from pysolo_package.utils.run_solo import run_solo_function
-from pysolo_package.utils import DataPair, masked_op
-from pysolo_package.utils.function_alias import aliases
+from . import run_solo_function
+from . import DataPair, masked_op
+from . import aliases
 
-se_set_bad_flags = aliases['set_bad_flags']
+se_copy_bad_flags = aliases['copy_bad_flags']
 
-def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, boundary_mask=None):
+def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a TODO on a list of data.
         
         Args:
             input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2) [Note: Not inclusive]
-            logical: A 'Logical' enum, AND(0), OR(1), XOR(2)
-            scaled_thr1: Lower bound threshold
-            scaled_thr2: Upper bound threshold
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
         Returns:
-          RayData: object containing resultant 'data' and 'masks' lists.
+          Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
@@ -30,28 +25,19 @@ def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_cli
                       if from_km is less than 0 or if to_km is greater than length of input list.
     """
 
-    if isinstance(where, Where):
-        where = where.value
-
-    if not isinstance(where, int):
-        raise ValueError(f"Expected integer or Where enum for 'where' parameter, received {type(where)}")
-
     args = {
-        "where" : DataPair.DataTypeValue(ctypes.c_int, where),
-        "scaled_thr1" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr1),
-        "scaled_thr2" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr2),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), []),
+        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), [False]*len(input_list_data)),
     }
 
-    return run_solo_function(se_set_bad_flags, args)
+    return run_solo_function(se_copy_bad_flags, args)
 
 
-def set_bad_flags_masked(masked_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
+def copy_bad_flags_masked(masked_array, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -66,4 +52,4 @@ def set_bad_flags_masked(masked_array, where, scaled_thr1, scaled_thr2, boundary
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(set_bad_flags, masked_array, where, scaled_thr1, scaled_thr2, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(copy_bad_flags, masked_array, boundary_mask = boundary_mask, usesBadFlags=True)

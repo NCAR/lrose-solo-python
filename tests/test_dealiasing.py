@@ -3,7 +3,7 @@ import pyart
 import matplotlib.pyplot as plt
 from copy import *
 from pathlib import Path
-import pysolo_package as solo
+import import_package as solo # pylint: disable=import-error
 from datetime import datetime
 
 def main():

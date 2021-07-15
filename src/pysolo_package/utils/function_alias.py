@@ -17,7 +17,6 @@ functions = [
     "copy_bad_flags", 
     "do_clear_bad_flags_array", # TODO: implement
     "despeckle",
-    "fix_vortex_vels", # TODO: test
     "flagged_add", 
     "flag_freckles",
     "flag_glitches",
@@ -26,7 +25,7 @@ functions = [
     "radial_shear",
     "rain_rate",
     "ring_zap",
-    "set_bad_flags", # TODO: implement
+    "set_bad_flags",
     "threshold_field",
     "remove_ac_motion",
     "remove_storm_motion",

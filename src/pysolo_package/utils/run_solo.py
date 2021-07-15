@@ -10,7 +10,7 @@ def array_to_list(input_array, size):
     return [input_array[i] for i in range(size)]
 
 
-def listToArray(floats, type):
+def list_to_array(floats, type):
     ''' convert Python list to ctypes array '''
     if floats is None:
         return None
@@ -39,7 +39,7 @@ def run_solo_function(c_func, args):
                 String is the name of the parameter as it's called from the function
 
         Returns:
-          RayData: object containing resultant 'data' and 'masks' lists.
+          Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
     """
     
@@ -88,9 +88,9 @@ def run_solo_function(c_func, args):
         if result: # if so...
             array_type = result.group(1) # extract what type of array... either a float or bool array.
             if (array_type == 'c_float'):
-                array = listToArray(j.value, ctypes.c_float) # convert list to array by specifying the list's values and designated type.
+                array = list_to_array(j.value, ctypes.c_float) # convert list to array by specifying the list's values and designated type.
             elif (array_type == 'c_bool'):
-                array = listToArray(j.value, ctypes.c_bool)
+                array = list_to_array(j.value, ctypes.c_bool)
             else: # solo functions don't have any other array tile than floats/bools.
                 raise Exception("Unexpected type")
             args[i].value = array # finally, update this list to array conversion onto dictionary

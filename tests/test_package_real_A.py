@@ -4,6 +4,7 @@ import numpy as np
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 from pathlib import Path
+
 import pysolo_package as solo
 
 import shelve
@@ -161,8 +162,8 @@ def checkFromShelf():
 
 checkFromShelf()
 
-graphPlot('ZZ_despeckled')
-graphPlot('ZZ_ring_zapped')
+# graphPlot('ZZ_despeckled')
+# graphPlot('ZZ_ring_zapped')
 # demoThreshold()
 # graphPlot('ZZ_flag_glitch')
 # graphPlot('ZZ_flag_freckles')

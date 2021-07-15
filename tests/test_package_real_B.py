@@ -1,10 +1,9 @@
 import pyart
 from copy import *
-
-import pysolo_package as solo
 import matplotlib.pyplot as plt
-
 from pathlib import Path
+
+import import_package as solo # pylint: disable=import-error
 
 path_to_file = Path.cwd() / Path('tests/data/radar_data_d.nc')
 

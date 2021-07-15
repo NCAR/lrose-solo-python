@@ -1,21 +1,18 @@
 import ctypes
-from ..utils.run_solo import run_solo_function
 
-from ..utils import  DataPair, masked_op
-from ..utils.function_alias import aliases
+from . import run_solo_function
+from . import DataPair, masked_op
+from . import aliases
 
-se_funfold = aliases['funfold']
+se_flagged_add = aliases['flagged_add']
 
-def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
+def flagged_add(input_list_data, bad, f_const, multiply, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a <TODO>
+        Performs a TODO on a list of data.
         
         Args:
-            input_list: A list containing float data,
+            input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            nyquist_velocity: <TODO>, 
-            dds_radd_eff_unamb_vel: <TODO>, 
-            center: <TODO>,
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -29,29 +26,27 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
     """
 
     args = {
+        "f_const" : DataPair.DataTypeValue(ctypes.c_float, f_const),
+        "multiply" : DataPair.DataTypeValue(ctypes.c_bool, multiply),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
         "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "nyquist_velocity" : DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
-        "dds_radd_eff_unamb_vel" : DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
-        "center" : DataPair.DataTypeValue(ctypes.c_float, center),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "flag" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask),
     }
 
-    return run_solo_function(se_funfold, args)
+    return run_solo_function(se_flagged_add, args)
 
 
-def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask=None):
+def flagged_add_masked(masked_array, f_const, multiply, boundary_mask=None):
     """ 
-        Performs a ring zap operation on a numpy masked array
+        Performs a <TODO> operation on a numpy masked array
         
         Args:
             masked_array: A numpy masked array data structure,
-            nyquist_velocity: <TODO>, 
-            dds_radd_eff_unamb_vel: <TODO>, 
-            center: <TODO>,
+            <TODO>
 
         Returns:
             Numpy masked array
@@ -60,5 +55,4 @@ def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_v
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-
-    return masked_op.masked_func(forced_unfolding, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask = boundary_mask)
+    return masked_op.masked_func(flagged_add, masked_array, f_const, multiply, boundary_mask = boundary_mask, usesBadFlags=True)
