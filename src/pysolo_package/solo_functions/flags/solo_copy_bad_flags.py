@@ -8,7 +8,8 @@ se_copy_bad_flags = aliases['copy_bad_flags']
 
 def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a TODO on a list of data.
+        Gives an updated mask based on values in input_list_data that are bad.
+        If input_list_data[i] == bad -> flags[i] = True else flags[i] = False
         
         Args:
             input_list_data: A list containing float data,
@@ -21,8 +22,7 @@ def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None)
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     args = {
@@ -39,11 +39,10 @@ def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None)
 
 def copy_bad_flags_masked(masked_array, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a numpy masked array
+        Gives an updated mask based on values in input_list_data that are bad.
         
         Args:
             masked_array: A numpy masked array data structure,
-            <TODO>
 
         Returns:
             Numpy masked array

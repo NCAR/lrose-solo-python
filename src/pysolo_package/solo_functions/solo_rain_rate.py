@@ -9,12 +9,12 @@ se_rain_rate = aliases['rain_rate']
 
 def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a list of data.
+        Calculates rain_rate in m/s from reflectivity.
         
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            seds_gate_diff_interval: <TODO>
+            d_const: A constant value used from the rain rate calculation.
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -38,15 +38,13 @@ def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=N
     return run_solo_function(se_rain_rate, args)
 
 
-def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
+def rain_rate_masked(masked_array, d_const, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
         Args:
             masked_array: A numpy masked array data structure,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
-            km_between_gates: An integer representing the distance (in km) between gates
+            d_const: A constant value used from the rain rate calculation.
 
         Returns:
             Numpy masked array
@@ -57,4 +55,4 @@ def rain_rate_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """
 
 
-    return masked_op.masked_func(rain_rate, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)
+    return masked_op.masked_func(rain_rate, masked_array, d_const, boundary_mask = boundary_mask)

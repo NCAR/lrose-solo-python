@@ -6,13 +6,16 @@ from . import aliases
 
 se_assign_value = aliases['assign_value']
 
+
 def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a TODO on a list of data.
+        For masked values, assign it to the defined "constant" value
         
         Args:
-            input_list_data_1: <TODO>,
-            bad: A float that represents a missing/invalid data point,
+            input_list_data: Input float list
+            bad: Float representing bad value.
+            constant: Float value representing what masked values should become
+            bad_flag_mask: A mask for input_list marking good or bad values.
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -21,8 +24,7 @@ def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=No
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     args = {
@@ -30,7 +32,6 @@ def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=No
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
         "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
         "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask),
@@ -41,11 +42,11 @@ def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=No
 
 def assign_value_masked(masked_array, constant, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a numpy masked array
+        For masked values, assign it to the defined "constant" value
         
         Args:
             masked_array: A numpy masked array data structure,
-            <TODO>
+            constant: Float value representing what masked values should become
 
         Returns:
             Numpy masked array

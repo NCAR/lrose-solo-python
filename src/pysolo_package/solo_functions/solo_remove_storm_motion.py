@@ -14,7 +14,10 @@ def remove_storm_motion(input_list_data, bad, wind, speed, dgi_dd_rotation_angle
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            seds_gate_diff_interval: <TODO>
+            wind: <TODO>
+            speed: <TODO>
+            dgi_dd_rotation_angle: <TODO>
+            dgi_dd_elevation_angle: <TODO>
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -41,15 +44,16 @@ def remove_storm_motion(input_list_data, bad, wind, speed, dgi_dd_rotation_angle
     return run_solo_function(se_remove_storm_motion, args)
 
 
-def remove_storm_motion_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
+def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
         Args:
             masked_array: A numpy masked array data structure,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
-            km_between_gates: An integer representing the distance (in km) between gates
+            wind: <TODO>
+            speed: <TODO>
+            dgi_dd_rotation_angle: <TODO>
+            dgi_dd_elevation_angle: <TODO>
 
         Returns:
             Numpy masked array
@@ -60,4 +64,4 @@ def remove_storm_motion_masked(masked_array, seds_gate_diff_interval, boundary_m
     """
 
 
-    return masked_op.masked_func(remove_storm_motion, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)
+    return masked_op.masked_func(remove_storm_motion, masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_mask = boundary_mask)

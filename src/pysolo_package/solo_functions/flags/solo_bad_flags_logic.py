@@ -9,8 +9,10 @@ se_bad_flags_logic = aliases['bad_flags_logic']
 
 def bad_flags_logic(input_list_data, bad, where, logical, scaled_thr1, scaled_thr2, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a TODO on a list of data.
-        
+        Performs a logical operation (LOGICAL enum) between bad_flag_mask and a value based on the WHERE enum.
+        Equivalent to:
+        flags[i] = (value[i] > WHERE) {logical operand} (bad_flag_mask[i]):
+
         Args:
             input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
@@ -26,8 +28,7 @@ def bad_flags_logic(input_list_data, bad, where, logical, scaled_thr1, scaled_th
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     if isinstance(where, Where):
@@ -55,11 +56,14 @@ def bad_flags_logic(input_list_data, bad, where, logical, scaled_thr1, scaled_th
 
 def bad_flags_logic_masked(masked_array, where, logical, scaled_thr1, scaled_thr2, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a numpy masked array
+        Performs a logical operation (LOGICAL enum) between bad_flag_mask and a value based on the WHERE enum.
         
         Args:
             masked_array: A numpy masked array data structure,
-            <TODO>
+            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2) [Note: Not inclusive]
+            logical: A 'Logical' enum, AND(0), OR(1), XOR(2)
+            scaled_thr1: Lower bound threshold
+            scaled_thr2: Upper bound threshold
 
         Returns:
             Numpy masked array

@@ -36,8 +36,7 @@ def fix_vortex_vels(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     args = {

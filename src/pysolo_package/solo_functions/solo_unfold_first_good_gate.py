@@ -47,7 +47,6 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
     return run_solo_function(se_unfold_first_good_gate, args)
 
 
-# TODO: what to do with last_good_v0
 def unfold_first_good_gate_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, boundary_mask=None):
     """
         Performs a <TODO> on a numpy masked array

@@ -23,7 +23,6 @@ dgi = 8
 input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
 expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
 result = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
-print(result)
 assert masked_to_list_data(result) == expected_data
 
 
@@ -441,6 +440,23 @@ bad = -3
 result = solo.set_bad_flags(data, bad, where, scaled_thr1, scaled_thr2)
 expected_bad_flag = [False, False, True, True, False, True, False, False, False, False]
 assert (masked_to_list_mask(result) == expected_bad_flag), masked_to_list_mask(result)
+
+# Test assign value
+data = [-3, 60, 70, 80, -3, 90, 100, 110, 120, -3]
+bad = -3
+constant = 800
+mask = [True] * len(data)
+result = solo.assign_value(data, bad, constant, mask)
+expected_data = [800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
+
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+bad = -3
+constant = 800
+mask = [True if x % 2 == 0 else False for x in data ]
+result = solo.assign_value(data, bad, constant, mask)
+expected_data = [1, 800, 3, 800, 5, 800, 7, 800, 9, 800]
+assert (masked_to_list_data(result) == expected_data), masked_to_list_data(result)
 
 # complement = True
 # flag = [True, True, True, True, False, False]

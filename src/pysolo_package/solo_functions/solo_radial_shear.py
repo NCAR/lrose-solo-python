@@ -11,12 +11,12 @@ se_radial_shear = aliases['radial_shear']
 
 def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a list of data.
+        Performs a radial shear, input_list_data is subtracted by an offset of itself
         
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            seds_gate_diff_interval: <TODO>
+            seds_gate_diff_interval: Marks the offset of the data
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -42,13 +42,12 @@ def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=No
 
 def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a numpy masked array
+        Performs a radial shear, masked_array is subtracted by an offset of itself
         
         Args:
             masked_array: A numpy masked array data structure,
-            from_km: An integer for the starting range,
-            to_km: An integer for the ending range,
-            km_between_gates: An integer representing the distance (in km) between gates
+            seds_gate_diff_interval: Marks the offset of the data
+
 
         Returns:
             Numpy masked array

@@ -8,23 +8,21 @@ se_flag_freckles = aliases['flag_freckles']
 
 def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """
-        Performs a <TODO>
+        Routine to remove discountinuities (freckles) from the data.
 
         Args:
-            freckle_threshold: <TODO>
-            freckle_avg_count: <TODO>
             input_list: A list containing float data.
             bad: A float that represents a missing/invalid data point.
-            input_boundary_mask: A list of bools for masking valid/invalid values for input_list
-            bad_flag_mask: <TODO>
+            freckle_threshold: <TODO>
+            freckle_avg_count: <TODO>
+            bad_flag_mask: A mask for input_list marking good or bad values.
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True)
 
         Returns:
             Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
-        Throws:
-            ValueError: if input_list and input_boundary_mask are not equal in size
+
     """
 
     args = {
@@ -43,7 +41,7 @@ def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, ba
 
 def flag_freckles_masked(masked_array, freckle_threshold, freckle_avg_count, boundary_mask=None):
     """ 
-        Performs a deglitch on a numpy masked array
+        routine to remove discountinuities (freckles) from the data.
         
         Args:
             masked_array: A numpy masked array data structure,

@@ -164,7 +164,7 @@ checkFromShelf()
 
 # graphPlot('ZZ_despeckled')
 # graphPlot('ZZ_ring_zapped')
-# demoThreshold()
+demoThreshold()
 # graphPlot('ZZ_flag_glitch')
 # graphPlot('ZZ_flag_freckles')
 # graphPlot('VV_forced_unfolding', 'VV')

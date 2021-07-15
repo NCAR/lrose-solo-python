@@ -62,8 +62,11 @@ def run_solo_function(c_func, args):
     else:
         input_list_data = args["data"].value
 
-    bad = args["bad"].value
-
+    if "bad" in args:
+        bad = args["bad"].value
+    else:
+        bad = 0
+        
     # Obtain clipping and boundary mask, if it's none, then change it to defaults.
     dgi_clip_gate = args["dgi_clip_gate"].value
     boundary_mask = args["boundary_mask"].value

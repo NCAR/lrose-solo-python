@@ -8,10 +8,11 @@ se_clear_bad_flags = aliases['clear_bad_flags']
 # this function is different just enough, so that the regular pattern of implementing functions won't work well.
 def clear_bad_flags(complement, flag):
     """ 
-        Performs a TODO on a list of data.
+        Sets all flags to False. If complement is True, then takes inverse of all flags.
         
         Args:
-            <TODO>
+            complement = Whether to complement masks or not
+            flag = Input masks that are to be set to all False or complemented.
 
         Returns:
           Numpy masked array: Contains an array of data, mask, and fill_value of results.

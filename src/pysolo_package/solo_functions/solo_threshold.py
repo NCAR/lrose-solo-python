@@ -9,7 +9,8 @@ se_threshold = aliases['threshold_field']
 
 def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
-        Performs a <todo>
+        Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values, 
+        then those values are masked for input_list_data.
 
         Args:
             input_list: A list containing float data.
@@ -26,8 +27,7 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
         Returns:
             Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
-        Throws:
-            ValueError: if input_list and input_boundary_mask are not equal in size
+
     """
 
     args = {
@@ -51,7 +51,9 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
 
 def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
     """ 
-        Performs a threshold mask operation on a numpy masked array
+        Performs a threshold mask operation on a numpy masked array (a field)
+        For values in threshold field that are ABOVE, BELOW, or BETWEEN a threshold value,
+        mask the reference field at those values.
         
         Args:
             masked_array: A numpy masked array data structure,

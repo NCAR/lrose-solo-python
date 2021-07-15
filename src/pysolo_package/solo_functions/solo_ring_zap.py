@@ -6,7 +6,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
 
-def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_mask=None):
+def ring_zap(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a ring zap operation on a list of data.
         
@@ -15,17 +15,17 @@ def ring_zap(input_list_data, bad, from_km, to_km, dgi_clip_gate=None, boundary_
             bad: A float that represents a missing/invalid data point,
             from_km: An integer for the starting range,
             to_km: An integer for the ending range,
-            (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
-            (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
+            (optional) km_between_gates: An integer representing the distance (in km) between gates (default: 1 km).
+            (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list).
+            (optional) boundary_mask: Defines region over which operations will be done (default: all True).
 
         Returns:
           Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
-        Throws:
-          ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
     """
+
+    from_km = int(from_km / km_between_gates)
+    to_km = int(to_km / km_between_gates)
 
     args = {
         "from_km" : DataPair.DataTypeValue(ctypes.c_size_t, from_km),

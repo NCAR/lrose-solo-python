@@ -9,13 +9,12 @@ se_set_bad_flags = aliases['set_bad_flags']
 
 def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a TODO on a list of data.
+        Masks values in Where region set by 'where' and 'scaled_thr1/2', otherwise, mask is unchanged.
         
         Args:
             input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
             where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2) [Note: Not inclusive]
-            logical: A 'Logical' enum, AND(0), OR(1), XOR(2)
             scaled_thr1: Lower bound threshold
             scaled_thr2: Upper bound threshold
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
@@ -26,8 +25,7 @@ def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_cli
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     if isinstance(where, Where):
@@ -53,11 +51,13 @@ def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_cli
 
 def set_bad_flags_masked(masked_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
     """ 
-        Performs a <TODO> operation on a numpy masked array
+        Masks values in Where region set by 'where' and 'scaled_thr1/2', otherwise, mask is unchanged.
         
         Args:
             masked_array: A numpy masked array data structure,
-            <TODO>
+            where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2) [Note: Not inclusive]
+            scaled_thr1: Lower bound threshold
+            scaled_thr2: Upper bound threshold
 
         Returns:
             Numpy masked array

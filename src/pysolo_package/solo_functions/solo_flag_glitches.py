@@ -8,7 +8,7 @@ se_flag_glitches = aliases['flag_glitches']
 
 def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """
-        Performs a flag glitches operation on a list of data (a single ray)
+        Routine to remove discountinuities (freckles) from the data.
 
         Args:
             input_list: A list containing float data.
@@ -16,15 +16,14 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
             deglitch_threshold: <TODO>
             deglitch_radius: <TODO>
             deglitch_min_gates: <TODO>
-            input_boundary_mask: A list of bools for masking valid/invalid values for input_list
+            bad_flag_mask: A mask for input_list marking good or bad values.
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True)
 
         Returns:
             Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
-        Throws:
-            ValueError: if input_list and input_boundary_mask are not equal in size
+
     """
 
     args = {
@@ -44,7 +43,7 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
 
 def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):
     """ 
-        Performs a deglitch on a numpy masked array
+        Routine to remove discountinuities (freckles) from the data.
         
         Args:
             masked_array: A numpy masked array data structure,

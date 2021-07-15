@@ -8,11 +8,14 @@ se_flagged_add = aliases['flagged_add']
 
 def flagged_add(input_list_data, bad, f_const, multiply, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a TODO on a list of data.
+        On masked values, add f_const parameter to value in input_list_data.
+        Or multiple f_const if multiply set to true.
         
         Args:
             input_list_data: A list containing float data,
             bad: A float that represents a missing/invalid data point,
+            f_const: Float constant value,
+            multiply: If set to true, masked values will be multiplied by f_const. Otherwise, they will be added.
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
 
@@ -21,8 +24,7 @@ def flagged_add(input_list_data, bad, f_const, multiply, bad_flag_mask, dgi_clip
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     args = {

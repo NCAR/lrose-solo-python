@@ -8,13 +8,13 @@ se_funfold = aliases['funfold']
 
 def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
     """ 
-        Performs a <TODO>
+       Forces all data points to fall within plus or minus the Nyquist
         
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
-            nyquist_velocity: <TODO>, 
-            dds_radd_eff_unamb_vel: <TODO>, 
+            nyquist_velocity: Float value obtained from the radar,
+            dds_radd_eff_unamb_vel: Float value obtained from the radar, 
             center: <TODO>,
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
@@ -24,8 +24,7 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
 
         Throws:
           ValueError: if input_list and input_boundary_mask are not equal in size,
-                      if from_km is greater than to_km,
-                      if from_km is less than 0 or if to_km is greater than length of input list.
+
     """
 
     args = {
@@ -45,12 +44,12 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
 
 def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_mask=None):
     """ 
-        Performs a ring zap operation on a numpy masked array
+       Forces all data points to fall within plus or minus the Nyquist
         
         Args:
             masked_array: A numpy masked array data structure,
-            nyquist_velocity: <TODO>, 
-            dds_radd_eff_unamb_vel: <TODO>, 
+            nyquist_velocity: Float value obtained from the radar,
+            dds_radd_eff_unamb_vel: Float value obtained from the radar, 
             center: <TODO>,
 
         Returns:

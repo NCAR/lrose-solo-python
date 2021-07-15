@@ -21,8 +21,6 @@ def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask
         Returns:
             Numpy masked array: Contains an array of data, mask, and fill_value of results.
 
-        Throws:
-            ValueError: if input_list and input_boundary_mask are not equal in size
     """
 
     args = {
