@@ -131,3 +131,4 @@ src/main.py
 build_upload.bat
 tests/results/
 tests/quick.py
+tests/test.py
