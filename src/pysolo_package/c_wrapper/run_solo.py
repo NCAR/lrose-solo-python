@@ -124,7 +124,8 @@ def run_solo_function(c_func, args):
         # convert resultant ctypes array back to python list
         output_list = array_to_list(args['newData'].value, data_length)
         # create and return masked array
-        return np.ma.masked_values(output_list, bad)
+        output_mask = update_boundary_mask(output_list, bad)
+        return np.ma.masked_array(data=output_list, mask=output_mask, fill_value=bad)
     elif "bad_flag_mask" in args:
         output_flag_list = array_to_list(args['bad_flag_mask'].value, data_length)
         return np.ma.masked_array(data=input_list_data, mask=output_flag_list, fill_value=bad)

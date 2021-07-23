@@ -1,7 +1,6 @@
 from numpy.ma.core import masked_equal
 import pyart
 import numpy as np
-import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 from pathlib import Path
 
@@ -162,9 +161,9 @@ def checkFromShelf():
 
 checkFromShelf()
 
-# graphPlot('ZZ_despeckled')
+graphPlot('ZZ_despeckled')
 # graphPlot('ZZ_ring_zapped')
-demoThreshold()
+# demoThreshold()
 # graphPlot('ZZ_flag_glitch')
 # graphPlot('ZZ_flag_freckles')
 # graphPlot('VV_forced_unfolding', 'VV')

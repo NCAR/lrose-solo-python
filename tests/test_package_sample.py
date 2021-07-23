@@ -14,6 +14,33 @@ def masked_to_list_data(masked):
 def masked_to_list_mask(masked):
     return list(np.ma.getmask(masked)) 
 
+ray_data = [
+[12.48,      23.88, 20.15,      16.07,  17.53,      10.60,      18.55,      18.96,  19.36,  22.45],
+[12.48,      23.89, 20.21,      13.96,   2.57,       6.72,      19.02,      19.74,  19.83,  22.59],
+[12.43,      24.01, 20.18,      12.16,  17.55,      10.74,      18.41,      19.03,  19.05,  22.39],
+[12.42,      24.09, 13.07,      11.42,  17.46,       6.61,      19.05,      19.95,  19.46,  22.57],
+[12.49,      24.07, 11.35,  -32768.00,  17.34,  -32768.00,      17.87,  -32768.00,   8.98,  22.04],
+[12.57,  -32768.00, 19.53,  -32768.00,  16.91,       7.49,  -32768.00,      19.11,  12.85,  22.89]
+]
+
+ray_mask = [
+[False, False, False, False, False, False, False, False, False, False],
+[False, False, False, False, False, False, False, False, False, False],
+[False, False, False, False, False, False, False, False, False, False],
+[False, False, False, False, False, False, False, False, False, False],
+[False, False, False, True,  False, True,  False, True,  False, False],
+[False, True,  False, True,  False, False, True,  False, False, False]            
+]
+
+bad = -32768.00
+
+ma = np.ma.masked_array(data = ray_data, mask = ray_mask, fill_value = bad)
+
+a_speckle = 3
+output_mask = solo.despeckle_masked(ma, a_speckle)
+print(output_mask.all)
+
+
 
 # test despeckle
 input_data = [3, -3, -3, 5, 5, 5, -3, 5, 5, -3]
