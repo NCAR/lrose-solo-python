@@ -1,6 +1,8 @@
 # lrose-solo-python
 Python interface to Solo editing functions
 
+Scientific poster for this project: [Poster PDF](https://raw.githubusercontent.com/NCAR/lrose-solo-python/main/poster/NCAR%20Poster.pdf)
+
 # Install 
 
 ```shell
