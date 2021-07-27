@@ -4,7 +4,7 @@
 
 import numpy as np
 
-import pysolo_package as solo # pylint: disable=import-error
+import pysolo as solo # pylint: disable=import-error
 
 
 def masked_to_list_data(masked):

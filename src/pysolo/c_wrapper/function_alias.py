@@ -32,13 +32,13 @@ functions = [
     "remove_storm_motion",
 ]
 
-# from this script file, go up two directories (pysolo_package) then into libs/libSolo...
-pysolo_package_dir = Path(__file__).parents[1].absolute()
+# from this script file, go up two directories (pysolo) then into libs/libSolo...
+pysolo_dir = Path(__file__).parents[1].absolute()
 
 # get appropriate library depending on platform
 # the DLL from Windows has "extern C" so no name mangling occurs.
 if (platform.system() == "Windows"):
-    path_to_file = pysolo_package_dir / Path('libs/solo.dll')
+    path_to_file = pysolo_dir / Path('libs/solo.dll')
     c_lib = ctypes.CDLL(str(path_to_file))
     for function in functions:
         aliases[function] = c_lib["se_" + function]
@@ -49,7 +49,7 @@ else:
     import os
     import re
 
-    temp_dir = pysolo_package_dir / Path("temp")
+    temp_dir = pysolo_dir / Path("temp")
     shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSolo_18.04.so')
 
     # run readelf to get a list of C-functions with their mangled names, save results to file

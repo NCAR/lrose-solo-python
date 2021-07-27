@@ -1,6 +1,4 @@
-# Import all functions that would be used in user space.
-
-
+# Import all functions
 
 from .solo_functions.solo_despeckle import despeckle, despeckle_masked
 from .solo_functions.solo_ring_zap import ring_zap, ring_zap_masked

@@ -1,10 +1,12 @@
-import ctypes
-import numpy as np
+my_dict = {
+    "apple" : 4,
+    "banana" : 9,
+    "red-cherry": 12
+}
 
-data = [4, 5, 6, 7]
-missing = 5
 
-masked = np.ma.masked_values(data, missing)
+def print_dict(**kargs):
+    print(**kargs)
 
-print(np.ma.getdata(masked))
-print(list(np.ma.getmask(masked)))
+
+print_dict(**my_dict)
