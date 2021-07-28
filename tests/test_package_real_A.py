@@ -33,6 +33,13 @@ thr_2 = 0
 threshold_mask = solo.threshold_masked(radar.fields['ZZ']['data'], radar.fields['VV']['data'], solo.Where.BELOW.value, thr_1, thr_2)
 radar.add_field_like('ZZ', 'ZZ_threshold', threshold_mask, replace_existing=True)
 
+########### [Merge Fields] #############
+# This function works but can't really be demonstrated with this data
+# thr_1 =  -7
+# thr_2 = 0
+# threshold_mask = solo.merge_fields_masked(radar.fields['ZZ']['data'], radar.fields['VV']['data'])
+# radar.add_field_like('ZZ', 'ZZ_merge', threshold_mask, replace_existing=True)
+
 ############# [Deglitch] ##############
 deglitch_threshold = 1
 deglitch_radius = 20
@@ -104,14 +111,14 @@ def graphPlot(plot_field, ref='ZZ'):
     plt.show()
 
 
-def demoThreshold():
+def demoThreshold(test_field):
     display = pyart.graph.RadarMapDisplay(radar)
     fig = plt.figure(figsize=(14, 14))
     ax = fig.add_subplot(221)
     display.plot(field='ZZ', vmin=-20, vmax=10, title="Original (PPI)", cmap='pyart_NWSRef')
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     ax = fig.add_subplot(222)
-    display.plot(field='ZZ_threshold', vmin=-20, vmax=10, title="Threshold (PPI)", cmap='pyart_NWSRef')
+    display.plot(field=test_field, vmin=-20, vmax=10, title=f"{test_field} (PPI)", cmap='pyart_NWSRef')
     display.set_limits((-20, 20), (-5, 25), ax=ax)
     ax = fig.add_subplot(223)
     display.plot(field='VV', vmin=-20, vmax=10, title="Original (VV) (PPI)", cmap='pyart_NWSRef')
@@ -162,12 +169,13 @@ def checkFromShelf():
 checkFromShelf()
 
 graphPlot('ZZ_despeckled')
-# graphPlot('ZZ_ring_zapped')
-# demoThreshold()
-# graphPlot('ZZ_flag_glitch')
-# graphPlot('ZZ_flag_freckles')
-# graphPlot('VV_forced_unfolding', 'VV')
-# graphPlot('VV_unfold_first_good_gate', 'VV')
-# graphPlot('VV_unfold_local_wind', 'VV')
-# graphPlot('ZZ_radial_shear', 'ZZ')
-# graphPlot('VV_rain_rate', 'VV')
+graphPlot('ZZ_ring_zapped')
+demoThreshold('ZZ_threshold')
+# demoThreshold('ZZ_merge')
+graphPlot('ZZ_flag_glitch')
+graphPlot('ZZ_flag_freckles')
+graphPlot('VV_forced_unfolding', 'VV')
+graphPlot('VV_unfold_first_good_gate', 'VV')
+graphPlot('VV_unfold_local_wind', 'VV')
+graphPlot('ZZ_radial_shear', 'ZZ')
+graphPlot('VV_rain_rate', 'VV')
