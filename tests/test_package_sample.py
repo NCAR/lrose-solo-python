@@ -14,6 +14,18 @@ def masked_to_list_data(masked):
 def masked_to_list_mask(masked):
     return list(np.ma.getmask(masked)) 
 
+
+# test despeckle
+input_data = [3, -3, -3, 5, 5, 5, -3, 5, 5, -3]
+bad = -3
+a_speckle = 3
+dgi = 8
+input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
+expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
+result = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
+assert masked_to_list_data(result) == expected_data
+
+
 ray_data = [
 [12.48,      23.88, 20.15,      16.07,  17.53,      10.60,      18.55,      18.96,  19.36,  22.45],
 [12.48,      23.89, 20.21,      13.96,   2.57,       6.72,      19.02,      19.74,  19.83,  22.59],
@@ -33,25 +45,9 @@ ray_mask = [
 ]
 
 bad = -32768.00
-
 ma = np.ma.masked_array(data = ray_data, mask = ray_mask, fill_value = bad)
-
 a_speckle = 3
 output_mask = solo.despeckle_masked(ma, a_speckle)
-print(output_mask.all)
-
-
-
-# test despeckle
-input_data = [3, -3, -3, 5, 5, 5, -3, 5, 5, -3]
-bad = -3
-a_speckle = 3
-dgi = 8
-input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
-expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
-result = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
-assert masked_to_list_data(result) == expected_data
-
 
 # test ring zap
 input_data = [-3, 4, 6, -3, 8, -3, 10, 12, 14, -3, -3]
