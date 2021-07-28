@@ -130,3 +130,4 @@ def run_solo_function(c_func, args):
         output_flag_list = array_to_list(args['bad_flag_mask'].value, data_length)
         return np.ma.masked_array(data=input_list_data, mask=output_flag_list, fill_value=bad)
     raise Exception("Unexpected control flow.")
+    
