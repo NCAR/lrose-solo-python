@@ -22,15 +22,15 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
         Throws:
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    try:
-        # decompose masked array to lists
-        missing = masked_array.fill_value
-        mask = masked_array.mask.tolist()
-        data_list = masked_array.tolist(missing)
 
-    except AttributeError as e:
-        print("Expected a numpy masked array.")
-        print(e)
+
+    if isinstance(masked_array, np.ma.masked_array):
+        raise AttributeError("Expected a numpy masked array type for 'masked_array' parameter, received ", type(masked_array))
+
+    missing = masked_array.fill_value
+    mask = masked_array.mask.tolist()
+    data_list = masked_array.tolist(missing)
+
     
     # initialize lists with data/masks. These will become lists of lists
     output_data = []

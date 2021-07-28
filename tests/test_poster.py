@@ -1,5 +1,5 @@
 import pyart
-import pysolo_package as solo
+import pysolo as solo
 import matplotlib
 import matplotlib.pyplot as plt
 import time
