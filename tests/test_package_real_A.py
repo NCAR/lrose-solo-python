@@ -12,8 +12,6 @@ path_to_file = Path.cwd() / Path('tests/data/radar_data_a.nc')
 
 radar = pyart.io.read(path_to_file)
 
-radar.fields['ZZ']['data']
-
 ############ [Despeckle] ##############
 a_speckle = 2
 ZZ_masked_array = radar.fields['ZZ']['data']
