@@ -72,6 +72,7 @@ class TestFlagGlitches:
 
 
 class TestUnfoldLocalWind:
+    
     def test_short_one(self):
         data = [3, 4, 5, 6]
         bad = -3
@@ -245,14 +246,11 @@ class TestRemoveACMotion():
         ew_velocity = 1
         ns_velocity = 1
         ew_gndspd_corr = 1
-        elevation = math.pi/2.0  # or any multiple of pi help make ac_vel = 0
-        tilt = 0.0  # or any multiple of pi help make ac_vel = 0
-        # Nyquist stuff ...
-        # keep the Nyquist velocity greater than any data value,
-        # to avoid any folding/unfolding
-        nyquist_velocity = 5.0  # causes folding
+        elevation = math.pi/2.0
+        tilt = 0.0
+        nyquist_velocity = 5.0
         clip_gate = 2
-        expected_data = [-3, -1, 5, -3]  # no changed
+        expected_data = [-3, -1, 5, -3]
         dds_radd_eff_unamb_vel = 0.0
         result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
         assert masked_to_list_data(result) == expected_data
@@ -263,16 +261,12 @@ class TestRemoveACMotion():
         vert_velocity = 3
         ew_velocity = 10.0
         ns_velocity = 0.0
-        ew_gndspd_corr = 1  # ac_vel should be 11.0
-        tilt = math.pi/2.0  # or any multiple of pi help make ac_vel = 0
-        elevation = 0.0  # or any multiple of pi help make ac_vel = 0
-        # ac_vel should be unfolded to -1.0
-        # Nyquist stuff ...
-        # keep the Nyquist velocity greater than any data value,
-        # to avoid any folding/unfolding
-        nyquist_velocity = 6.0  # causes folding
+        ew_gndspd_corr = 1
+        tilt = math.pi/2.0
+        elevation = 0.0
+        nyquist_velocity = 6.0
         clip_gate = 3
-        expected_data = [-5, -3, 4, 8]  # no change
+        expected_data = [-5, -3, 4, 8]
         dds_radd_eff_unamb_vel = 0.0
         result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
         assert masked_to_list_data(result) == expected_data
