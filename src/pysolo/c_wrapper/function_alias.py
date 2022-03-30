@@ -11,14 +11,14 @@ aliases = {}
 functions = [
     "assert_bad_flags",
     "assign_value",
-    "bad_flags_logic", 
+    "bad_flags_logic",
     "BB_unfold_first_good_gate",
     "BB_unfold_local_wind",
     "clear_bad_flags",
-    "copy_bad_flags", 
+    "copy_bad_flags",
     "do_clear_bad_flags_array",
     "despeckle",
-    "flagged_add", 
+    "flagged_add",
     "flag_freckles",
     "flag_glitches",
     "funfold",
@@ -38,7 +38,7 @@ pysolo_dir = Path(__file__).parents[1].absolute()
 
 # get appropriate library depending on platform
 # the DLL from Windows has "extern C" so no name mangling occurs.
-if (platform.system() == "Windows"):
+if platform.system() == "Windows":
     path_to_file = pysolo_dir / Path('libs/solo.dll')
     c_lib = ctypes.CDLL(str(path_to_file))
     for function in functions:
@@ -54,11 +54,11 @@ else:
     shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSoloNew.so')
 
     # run readelf to get a list of C-functions with their mangled names, save results to file
-    os.system("mkdir %s" % temp_dir)
-    os.system("readelf -Ws %s > %s" % (shared_lib_path, temp_dir / Path("readelf.txt")))
+    os.system(f"mkdir {temp_dir}")
+    os.system(f"readelf -Ws {shared_lib_path} > {temp_dir / Path('readelf.txt')}")
 
     # read all content from the command
-    content = open(temp_dir / Path("readelf.txt")).read()
+    content = open(temp_dir / Path("readelf.txt"), encoding='utf-8').read()
 
     # use regex pattern to discover all mangled functions, retrieve the unmangled name from group
     matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
@@ -72,7 +72,7 @@ else:
                 aliases[func] = c_lib[match]
 
     # remove command output.
-    os.system("rm -r %s" % temp_dir)
+    os.system(f"rm -r {temp_dir}")
 
 # make sure all the needed functions are mapped
 for func in functions:

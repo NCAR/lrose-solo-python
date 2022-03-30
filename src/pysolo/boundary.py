@@ -15,7 +15,6 @@ def parse_boundary_file(boundary_path: str):
     iterations = int((len(data) - 20) / 8)
 
     i = int.from_bytes(data[:5], byteorder="little", signed=True)
-    ints = struct.unpack("iiffif", data[:24])
     # print("header", ints)
 
     # print("\n{:<8} {:<8} {:<8} {:<8} {:<8}".format(
