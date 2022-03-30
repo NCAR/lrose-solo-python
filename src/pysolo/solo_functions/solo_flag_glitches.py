@@ -41,7 +41,7 @@ def flag_glitches(input_list_data, bad, deglitch_threshold, deglitch_radius, deg
     return run_solo_function(se_flag_glitches, args)
 
 
-def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask=None):
+def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks=None):
     """ 
         Routine to remove discountinuities (freckles) from the data.
         
@@ -60,4 +60,4 @@ def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, degl
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(flag_glitches, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(flag_glitches, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks = boundary_masks, usesBadFlags=True)

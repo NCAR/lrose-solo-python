@@ -72,4 +72,4 @@ def bad_flags_logic_masked(masked_array, where, logical, scaled_thr1, scaled_thr
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(bad_flags_logic, masked_array, where, logical, scaled_thr1, scaled_thr2, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(bad_flags_logic, masked_array, where, logical, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, usesBadFlags=True)

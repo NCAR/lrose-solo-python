@@ -51,4 +51,4 @@ def copy_bad_flags_masked(masked_array, boundary_mask=None):
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(copy_bad_flags, masked_array, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(copy_bad_flags, masked_array, boundary_masks = boundary_masks, usesBadFlags=True)

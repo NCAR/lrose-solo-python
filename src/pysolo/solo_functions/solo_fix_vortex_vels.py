@@ -56,7 +56,7 @@ def fix_vortex_vels(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_
     return run_solo_function(se_fix_vortex_vels, args)
 
 
-def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_mask=None):
+def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_masks=None):
     """ 
         Performs a ring zap operation on a numpy masked array
         
@@ -77,4 +77,4 @@ def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_i
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(fix_vortex_vels, masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_mask = boundary_mask)
+    return masked_op.masked_func(fix_vortex_vels, masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_masks = boundary_masks)

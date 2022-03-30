@@ -41,7 +41,7 @@ def ring_zap(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_clip_
     return run_solo_function(se_ring_zap, args)
 
 
-def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mask=None):
+def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_masks=None):
     """ 
         Performs a ring zap operation on a numpy masked array
         
@@ -62,4 +62,4 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
     from_km = int(from_km / km_between_gates)
     to_km = int(to_km / km_between_gates)
 
-    return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_mask = boundary_mask)
+    return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_masks = boundary_masks)

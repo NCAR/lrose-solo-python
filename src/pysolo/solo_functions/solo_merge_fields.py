@@ -38,7 +38,7 @@ def merge_fields(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=None, 
     return run_solo_function(se_merge_fields, args)
 
 
-def merge_fields_masked(masked_array, reference_masked_array, boundary_mask=None):
+def merge_fields_masked(masked_array, reference_masked_array, boundary_masks=None):
     """ 
         Replaces bad values from input_list_data_1 from values in input_list_data2
         
@@ -53,4 +53,4 @@ def merge_fields_masked(masked_array, reference_masked_array, boundary_mask=None
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(merge_fields, masked_array,  boundary_mask = boundary_mask, second_masked_array=reference_masked_array)
+    return masked_op.masked_func(merge_fields, masked_array,  boundary_masks = boundary_masks, second_masked_array=reference_masked_array)

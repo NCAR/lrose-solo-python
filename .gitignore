@@ -132,3 +132,5 @@ build_upload.bat
 tests/results/
 tests/quick.py
 tests/test.py
+quick-test.png
+*.Identifier

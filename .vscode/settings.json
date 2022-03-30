@@ -2,9 +2,17 @@
     "jupyter.jupyterServerType": "local",
     "python.pythonPath": "C:\\Users\\Marma_na00b8q\\anaconda3\\envs\\solo_env\\python.exe",
     "python.formatting.provider": "autopep8",
-    "terminal.integrated.env.windows": {
-    },
+    "terminal.integrated.env.windows": {},
     "terminal.integrated.fontFamily": "CaskaydiaCove NF",
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "python.formatting.autopep8Args": [
+        "--max-line-length",
+        "200",
+        "--experimental"
+    ],
+    "python.linting.pylintArgs": [
+        "--disable=F0401,C0103,R0903,C0111,R0914,W0232"
+    ]
+
 }

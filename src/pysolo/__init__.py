@@ -23,5 +23,5 @@ from .solo_functions.flags.solo_copy_bad_flags import copy_bad_flags, copy_bad_f
 from .solo_functions.flags.solo_flagged_add import flagged_add, flagged_add_masked
 from .solo_functions.flags.solo_set_bad_flags import set_bad_flags, set_bad_flags_masked
 from .solo_functions.flags.solo_clear_bad_flags import clear_bad_flags
-
+from .boundary import parse_boundary_file, get_boundary_mask
 from .enums import Where, Logical

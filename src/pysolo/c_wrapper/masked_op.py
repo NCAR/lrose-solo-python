@@ -5,14 +5,14 @@
 import numpy as np
 
 
-def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_array=None, usesBadFlags=False):
+def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_array=None, usesBadFlags=False):
     """ 
         Performs a solo function on a 2D masked array.
         
         Args:
             masked_array: A numpy masked array data structure with input data (usually this contains info on a single field),
             args: A list of args, listed in order, as required by the solo function
-            (optional) boundary_mask: A boolean list designating which region to perform the operation. (Default = all True, so entire region is operated on.)
+            (optional) boundary_masks: A boolean list designating which region to perform the operation. (Default = all True, so entire region is operated on.)
             (optional) second_masked_array: Some solo functions do operations on two fields. If so, assign this parameter to the masked array of that other field.
             (optional) usesBadFlags: Some solo functions do operations on masks rather than data. If so, set to true.
 
@@ -23,14 +23,13 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-
-    if isinstance(masked_array, np.ma.masked_array):
-        raise AttributeError("Expected a numpy masked array type for 'masked_array' parameter, received ", type(masked_array))
-
     missing = masked_array.fill_value
     mask = masked_array.mask.tolist()
     data_list = masked_array.tolist(missing)
-
+    if not mask:
+        mask = [False] * len(data_list)
+    if not boundary_masks:
+        boundary_masks = [[True] * len(data_list[0])] * len(data_list)
     
     # initialize lists with data/masks. These will become lists of lists
     output_data = []
@@ -45,11 +44,11 @@ def masked_func(func, masked_array, *args, boundary_mask=None, second_masked_arr
             second_missing = second_masked_array.fill_value
             second_input_data = second_masked_array.tolist(second_missing)[i]
             # in pysolo, second parameter of functions always designates data list for secondary masked list, for functions that have secondary masked arrays.
-            func_ma = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_mask)
+            func_ma = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_masks[i])
         elif usesBadFlags:
-            func_ma = func(input_data, missing, *args, input_mask, boundary_mask=boundary_mask)
+            func_ma = func(input_data, missing, *args, input_mask, boundary_mask=boundary_masks[i])
         else:
-            func_ma = func(input_data, missing, *args, boundary_mask=boundary_mask)
+            func_ma = func(input_data, missing, *args, boundary_mask=boundary_masks[i])
 
         output_data.append(np.ma.getdata(func_ma)) # add data to output list of lists
         output_mask.append(np.ma.getdata(func_ma.mask)) # add mask as well
