@@ -49,7 +49,7 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
     return run_solo_function(se_threshold, args)
 
 
-def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
+def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_masks=None):
     """ 
         Performs a threshold mask operation on a numpy masked array (a field)
         For values in threshold field that are ABOVE, BELOW, or BETWEEN a threshold value,
@@ -70,4 +70,4 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(threshold, masked_array, where, scaled_thr1, scaled_thr2, boundary_mask = boundary_mask, second_masked_array=threshold_array)
+    return masked_op.masked_func(threshold, masked_array, where, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, second_masked_array=threshold_array)

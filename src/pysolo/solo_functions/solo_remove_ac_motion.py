@@ -54,7 +54,7 @@ def remove_ac_motion(input_list_data, bad, vert_velocity, ew_velocity, ns_veloci
     return run_solo_function(se_remove_ac_motion, args)
 
 
-def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_mask=None):
+def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -78,4 +78,4 @@ def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocit
     """
 
 
-    return masked_op.masked_func(remove_ac_motion, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_mask = boundary_mask)
+    return masked_op.masked_func(remove_ac_motion, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks = boundary_masks)

@@ -40,7 +40,7 @@ def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=No
     return run_solo_function(se_radial_shear, args)
 
 
-def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_mask=None):
+def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_masks=None):
     """ 
         Performs a radial shear, masked_array is subtracted by an offset of itself
         
@@ -58,4 +58,4 @@ def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_mask=Non
     """
 
 
-    return masked_op.masked_func(radial_shear, masked_array, seds_gate_diff_interval, boundary_mask = boundary_mask)
+    return masked_op.masked_func(radial_shear, masked_array, seds_gate_diff_interval, boundary_masks = boundary_masks)

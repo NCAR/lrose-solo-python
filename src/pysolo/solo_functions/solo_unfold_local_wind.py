@@ -56,7 +56,7 @@ def unfold_local_wind(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb
     return run_solo_function(se_unfold_local_wind, args)
 
 
-def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_mask=None):
+def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None):
     """
         Performs a <TODO> on a numpy masked array
 
@@ -77,4 +77,4 @@ def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_
             AttributeError: if masked_array arg is not a numpy masked array.
     """
     
-    return masked_op.masked_func(unfold_local_wind, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_mask = boundary_mask)
+    return masked_op.masked_func(unfold_local_wind, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks = boundary_masks)

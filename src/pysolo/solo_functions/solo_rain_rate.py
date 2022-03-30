@@ -38,7 +38,7 @@ def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=N
     return run_solo_function(se_rain_rate, args)
 
 
-def rain_rate_masked(masked_array, d_const, boundary_mask=None):
+def rain_rate_masked(masked_array, d_const, boundary_masks=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -55,4 +55,4 @@ def rain_rate_masked(masked_array, d_const, boundary_mask=None):
     """
 
 
-    return masked_op.masked_func(rain_rate, masked_array, d_const, boundary_mask = boundary_mask)
+    return masked_op.masked_func(rain_rate, masked_array, d_const, boundary_masks = boundary_masks)

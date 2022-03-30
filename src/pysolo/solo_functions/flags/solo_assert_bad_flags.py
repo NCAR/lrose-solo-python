@@ -38,7 +38,7 @@ def assert_bad_flags(input_list_data, bad, bad_flag_mask, dgi_clip_gate=None, bo
     return run_solo_function(se_assert_bad_flags, args)
 
 
-def assert_bad_flags_masked(masked_array, boundary_mask=None):
+def assert_bad_flags_masked(masked_array, boundary_masks=None):
     """ 
         Forces gates to become "bad" value if mask is set to True for that entry, otherwise remains the same
         
@@ -52,4 +52,4 @@ def assert_bad_flags_masked(masked_array, boundary_mask=None):
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(assert_bad_flags, masked_array, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(assert_bad_flags, masked_array, boundary_masks = boundary_masks, usesBadFlags=True)

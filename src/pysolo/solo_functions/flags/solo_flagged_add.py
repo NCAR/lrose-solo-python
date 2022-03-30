@@ -57,4 +57,4 @@ def flagged_add_masked(masked_array, f_const, multiply, boundary_mask=None):
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(flagged_add, masked_array, f_const, multiply, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(flagged_add, masked_array, f_const, multiply, boundary_masks = boundary_masks, usesBadFlags=True)

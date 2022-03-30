@@ -44,7 +44,7 @@ def remove_storm_motion(input_list_data, bad, wind, speed, dgi_dd_rotation_angle
     return run_solo_function(se_remove_storm_motion, args)
 
 
-def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_mask=None):
+def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_masks=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -64,4 +64,4 @@ def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle,
     """
 
 
-    return masked_op.masked_func(remove_storm_motion, masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_mask = boundary_mask)
+    return masked_op.masked_func(remove_storm_motion, masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_masks = boundary_masks)

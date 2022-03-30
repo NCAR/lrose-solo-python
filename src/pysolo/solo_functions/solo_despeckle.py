@@ -36,6 +36,6 @@ def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask
     return run_solo_function(se_despeckle, args)
 
 
-def despeckle_masked(masked_array, a_speckle, boundary_mask=None):
-   return masked_op.masked_func(despeckle, masked_array, a_speckle, boundary_mask)
+def despeckle_masked(masked_array, a_speckle, boundary_masks=None):
+   return masked_op.masked_func(despeckle, masked_array, a_speckle, boundary_masks = boundary_masks)
    

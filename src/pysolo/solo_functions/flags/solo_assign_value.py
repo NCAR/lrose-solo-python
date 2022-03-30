@@ -55,4 +55,4 @@ def assign_value_masked(masked_array, constant, boundary_mask=None):
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    return masked_op.masked_func(assign_value, masked_array, constant, boundary_mask = boundary_mask, usesBadFlags=True)
+    return masked_op.masked_func(assign_value, masked_array, constant, boundary_masks = boundary_masks, usesBadFlags=True)
