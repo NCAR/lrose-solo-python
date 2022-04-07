@@ -34,14 +34,22 @@ def parse_boundary_file(boundary_path: str):
     # print()
     return x_points, y_points
 
+# 0  10
+# 10 0
+# 0  -10
+# -10 0
 
-def get_boundary_mask(radar: pyart.core.Radar, boundary_path: str) -> List[List[bool]]:
 
+def get_boundary_mask_from_file(radar: pyart.core.Radar, boundary_path: str) -> List[List[bool]]:
     x_points, y_points = parse_boundary_file(boundary_path)
+    return get_boundary_mask_from_list(radar, x_points, y_points)
+
+
+def get_boundary_mask_from_list(radar: pyart.core.Radar, x_points: List[int], y_points: List[int]) -> List[List[bool]]:
+
+    # x_points, y_points = ([20, 20, -20, -20], [20, -20, -20, 20])
 
     # boundary mask function returns void
-    # Source code
-    # https://github.com/NCAR/lrose-core/blob/adfcb5e0368f7e8bbf37f107fee70be50a64fed3/codebase/libs/Solo/src/Solo/Boundary.cc#L21
     aliases["get_boundary_mask"].restype = None
 
     # define the boundary mask function's argument types
@@ -101,10 +109,11 @@ def get_boundary_mask(radar: pyart.core.Radar, boundary_path: str) -> List[List[
     if radar.scan_type == 'rhi':
         radar_scan_mode = 3
 
-    if radar.metadata['platform_type'] == 'aircraft_tail':
-        radar_scan_type = 3
-    elif radar.metadata['platform_type'] == 'fixed':
-        radar_scan_type = 9
+    if 'platform_type' in radar.metadata:
+        if radar.metadata['platform_type'] == 'aircraft_tail':
+            radar_scan_type = 3
+        elif radar.metadata['platform_type'] == 'fixed':
+            radar_scan_type = 9
 
     boundary_list_of_lists = []
 

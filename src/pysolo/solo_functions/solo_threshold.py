@@ -1,6 +1,10 @@
 import ctypes
+import pyart
+import numpy as np
+from copy import deepcopy
 
-from ..c_wrapper.run_solo import run_solo_function
+from ..c_wrapper.run_solo import run_solo_function, update_boundary_mask
+from ..c_wrapper.conversions import array_to_list, list_to_array
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 from ..enums import Where
@@ -9,7 +13,7 @@ se_threshold = aliases['threshold_field']
 
 def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
-        Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values, 
+        Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values,
         then those values are masked for input_list_data.
 
         Args:
@@ -21,7 +25,7 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
             scaled_thr2: Upper bound threshold
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) thr_missing: A float that represents a missing/invalid data point for thr_list (default: same value as bad)
-            (optional) first_good_gate: Marks the index of the first "good" value in the input_list (default: 0) 
+            (optional) first_good_gate: Marks the index of the first "good" value in the input_list (default: 0)
             (optional) boundary_mask: this is the masked region bool list where the function will perform its operation (default: all True, so operation performed on entire region).
 
         Returns:
@@ -30,38 +34,81 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
 
     """
 
-    args = {
-        "where" : DataPair.DataTypeValue(ctypes.c_int, where),
-        "scaled_thr1" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr1),
-        "scaled_thr2" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr2),
-        "first_good_gate" : DataPair.DataTypeValue(ctypes.c_int, first_good_gate),
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "thr_data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), threshold_list_data),
-        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
-        "thr_bad" : DataPair.DataTypeValue(ctypes.c_float, thr_missing if thr_missing else bad),
-        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask)
-    }
+    # none of the solo functions have return types
+    se_threshold.restype = None
+    # obtained from iteration above
+    se_threshold.argtypes = [
+        ctypes.c_int,
+        ctypes.c_float,
+        ctypes.c_float,
+        ctypes.c_int,
+        ctypes.POINTER((ctypes.c_float)),
+        ctypes.POINTER((ctypes.c_float)),
+        ctypes.c_size_t,
+        ctypes.POINTER((ctypes.c_float)),
+        ctypes.c_float,
+        ctypes.c_float,
+        ctypes.c_size_t,
+        ctypes.POINTER((ctypes.c_bool)),
+        ctypes.POINTER((ctypes.c_bool))
+    ]
 
-    return run_solo_function(se_threshold, args)
+    newData = deepcopy(input_list_data)
+
+    # run the actual function here.
+    se_threshold(
+        ctypes.c_int(where),
+        ctypes.c_float(scaled_thr1),
+        ctypes.c_float(scaled_thr2),
+        ctypes.c_int(first_good_gate),
+        list_to_array(input_list_data, ctypes.c_float),
+        list_to_array(threshold_list_data, ctypes.c_float),
+        ctypes.c_size_t(len(input_list_data)),
+        list_to_array(newData, ctypes.c_float),
+        ctypes.c_float(bad),
+        ctypes.c_float(bad),
+        ctypes.c_size_t(len(input_list_data)),
+        list_to_array(boundary_mask, ctypes.c_bool),
+        list_to_array(boundary_mask, ctypes.c_bool)
+    )
+
+    output_list = array_to_list(newData, len(input_list_data))
+    # create and return masked array
+    output_mask = update_boundary_mask(output_list, bad)
+    return np.ma.masked_array(data=output_list, mask=output_mask, fill_value=bad)
+
+    # args = {
+    #     "where" : DataPair.DataTypeValue(ctypes.c_int, where),
+    #     "scaled_thr1" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr1),
+    #     "scaled_thr2" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr2),
+    #     "first_good_gate" : DataPair.DataTypeValue(ctypes.c_int, first_good_gate),
+    #     "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+    #     "thr_data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), threshold_list_data),
+    #     "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
+    #     "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+    #     "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
+    #     "thr_bad" : DataPair.DataTypeValue(ctypes.c_float, thr_missing if thr_missing else bad),
+    #     "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+    #     "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+    #     "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask)
+    # }
+
+    # return run_solo_function(se_threshold, args)
 
 
 def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_masks=None):
-    """ 
+    """
         Performs a threshold mask operation on a numpy masked array (a field)
         For values in threshold field that are ABOVE, BELOW, or BETWEEN a threshold value,
         mask the reference field at those values.
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             threshold_array: A numpy masked array data structure for referenced threshold,
             where: A 'Where' enum, ABOVE(0), BELOW(1), BETWEEN(2)
             scaled_thr1: Lower bound threshold
             scaled_thr2: Upper bound threshold
-            
+
         Returns:
             Numpy masked array
 
@@ -71,3 +118,9 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
     """
 
     return masked_op.masked_func(threshold, masked_array, where, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, second_masked_array=threshold_array)
+
+
+def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):
+    
+    threshold_mask = threshold_masked(radar.fields[field]['data'], radar.fields[field_ref]['data'], where.value, scaled_thr1, scaled_thr2, boundary_masks)
+    radar.add_field_like(field, new_field, threshold_mask, replace_existing=True)

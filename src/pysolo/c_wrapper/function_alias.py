@@ -51,7 +51,7 @@ else:
     import re
 
     temp_dir = pysolo_dir / Path("temp")
-    shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSoloNew.so')
+    shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSoloNewer.so')
 
     # run readelf to get a list of C-functions with their mangled names, save results to file
     os.system(f"mkdir {temp_dir}")

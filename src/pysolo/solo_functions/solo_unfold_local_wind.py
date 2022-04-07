@@ -1,12 +1,16 @@
 import ctypes
-from ..c_wrapper.run_solo import run_solo_function
+import pyart
 
+from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 
 se_unfold_local_wind = aliases['BB_unfold_local_wind']
 
-def unfold_local_wind(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind,  ns_wind,  ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, dgi_clip_gate=None, boundary_mask=None):
+
+def unfold_local_wind(
+        input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged,
+        dgi_clip_gate=None, boundary_mask=None):
     """
         Performs a <TODO>
 
@@ -35,28 +39,30 @@ def unfold_local_wind(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb
     """
 
     args = {
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
-        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "nyquist_velocity" : DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
-        "dds_radd_eff_unamb_vel" : DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
-        "azimuth_angle_degrees" : DataPair.DataTypeValue(ctypes.c_float, azimuth_angle_degrees),
-        "elevation_angle_degrees" : DataPair.DataTypeValue(ctypes.c_float, elevation_angle_degrees),
-        "ew_wind" : DataPair.DataTypeValue(ctypes.c_float, ew_wind),
-        "ns_wind" : DataPair.DataTypeValue(ctypes.c_float, ns_wind),
-        "ud_wind" : DataPair.DataTypeValue(ctypes.c_float, ud_wind),
-        "max_pos_folds" : DataPair.DataTypeValue(ctypes.c_int, max_pos_folds),
-        "max_neg_folds" : DataPair.DataTypeValue(ctypes.c_int, max_neg_folds),
-        "ngates_averaged" : DataPair.DataTypeValue(ctypes.c_size_t, ngates_averaged),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "data": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "nGates": DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "nyquist_velocity": DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
+        "dds_radd_eff_unamb_vel": DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
+        "azimuth_angle_degrees": DataPair.DataTypeValue(ctypes.c_float, azimuth_angle_degrees),
+        "elevation_angle_degrees": DataPair.DataTypeValue(ctypes.c_float, elevation_angle_degrees),
+        "ew_wind": DataPair.DataTypeValue(ctypes.c_float, ew_wind),
+        "ns_wind": DataPair.DataTypeValue(ctypes.c_float, ns_wind),
+        "ud_wind": DataPair.DataTypeValue(ctypes.c_float, ud_wind),
+        "max_pos_folds": DataPair.DataTypeValue(ctypes.c_int, max_pos_folds),
+        "max_neg_folds": DataPair.DataTypeValue(ctypes.c_int, max_neg_folds),
+        "ngates_averaged": DataPair.DataTypeValue(ctypes.c_size_t, ngates_averaged),
+        "bad": DataPair.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate": DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
     return run_solo_function(se_unfold_local_wind, args)
 
 
-def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None):
+def unfold_local_wind_masked(
+        masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged,
+        boundary_masks=None):
     """
         Performs a <TODO> on a numpy masked array
 
@@ -76,5 +82,19 @@ def unfold_local_wind_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    
-    return masked_op.masked_func(unfold_local_wind, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks = boundary_masks)
+
+    return masked_op.masked_func_v2(
+        unfold_local_wind, masked_array,
+        {'boundary_mask': boundary_masks, 'azimuth_angle_degrees': azimuth_angle_degrees, 'elevation_angle_degrees': elevation_angle_degrees},
+        {'nyquist_velocity': nyquist_velocity, 'dds_radd_eff_unamb_vel': dds_radd_eff_unamb_vel, 'ew_wind': ew_wind, 'ns_wind': ns_wind, 'ud_wind': ud_wind, 'max_pos_folds': max_pos_folds,
+         'max_neg_folds': max_neg_folds, 'ngates_averaged': ngates_averaged})
+
+
+def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None, sweep=0):
+    nyquist_velocity = radar.get_nyquist_vel(sweep)
+    dds_radd_eff_unamb_vel = 0
+    azimuth_angle_degrees = list(radar.get_azimuth(sweep))
+    elevation_angle_degrees = list(radar.get_elevation(sweep))
+    BB_unfolding_lw_mask = unfold_local_wind_masked(radar.fields[field]['data'], nyquist_velocity, dds_radd_eff_unamb_vel,
+                                                    azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks)
+    radar.add_field_like(field, new_field, BB_unfolding_lw_mask, replace_existing=True)

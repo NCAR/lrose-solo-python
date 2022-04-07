@@ -12,8 +12,13 @@
         "--experimental"
     ],
     "python.linting.pylintArgs": [
-        "--max-line-length=150",
-        "--disable=F0401,C0103,R0903,C0111,R0914,W0232"
-    ]
+        "--max-line-length=200",
+        "--disable=F0401,C0103,R0903,C0111,R0914,W0232,R0913"
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 
 }

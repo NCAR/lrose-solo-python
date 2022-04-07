@@ -1,7 +1,7 @@
 # This file is to test features from the package using PyTest
 
-import numpy as np
 import math
+import numpy as np
 import src.pysolo as solo
 
 

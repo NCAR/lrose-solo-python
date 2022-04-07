@@ -61,5 +61,6 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
 
     from_km = int(from_km / km_between_gates)
     to_km = int(to_km / km_between_gates)
+    return masked_op.masked_func_v2(ring_zap, masked_array, {'boundary_mask': boundary_masks}, {'from_km': from_km, 'to_km': to_km})
 
     return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_masks = boundary_masks)

@@ -1,8 +1,10 @@
 import ctypes
+import pyart
 
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+
 
 se_despeckle = aliases['despeckle']
 
@@ -37,5 +39,10 @@ def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask
 
 
 def despeckle_masked(masked_array, a_speckle, boundary_masks=None):
-   return masked_op.masked_func(despeckle, masked_array, a_speckle, boundary_masks = boundary_masks)
-   
+   return masked_op.masked_func_v2(despeckle, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
+
+
+def despeckle_field(radar: pyart.core.Radar, field: str, new_field: str, a_speckle: int, boundary_masks=None, sweep=0):
+    field_masked_array = radar.fields[field]['data']
+    despeckled_mask = despeckle_masked(field_masked_array, a_speckle, boundary_masks)
+    radar.add_field_like(field, new_field, despeckled_mask, replace_existing=True)
