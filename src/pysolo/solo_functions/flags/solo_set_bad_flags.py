@@ -43,7 +43,7 @@ def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_cli
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), []),
+        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), [False] * len(input_list_data)),
     }
 
     return run_solo_function(se_set_bad_flags, args)

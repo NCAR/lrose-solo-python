@@ -1,4 +1,5 @@
 import ctypes
+import numpy as np
 
 from . import run_solo_function
 from . import DataPair, masked_op
@@ -27,7 +28,7 @@ def assert_bad_flags(input_list_data, bad, bad_flag_mask, dgi_clip_gate=None, bo
 
     args = {
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),

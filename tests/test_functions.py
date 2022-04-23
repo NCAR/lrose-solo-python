@@ -15,6 +15,7 @@ def masked_to_list_mask(masked):
     return list(np.ma.getmask(masked))
 
 
+
 class TestDespeckle():
 
     def test_short(self):

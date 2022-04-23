@@ -72,10 +72,10 @@ def run_solo_function(c_func, args):
         argtypes.append(j.type)  # extract c-type & append
 
         if isinstance(j.value, (list, np.ndarray)):  # if so...
-            if isinstance(j.value[0], float):
-                args[i].value = list_to_array(j.value, ctypes.c_float)  # convert list to array by specifying the list's values and designated type.
-            elif isinstance(j.value[0], bool):
+            if isinstance(j.value[0], bool):
                 args[i].value = list_to_array(j.value, ctypes.c_bool)
+            elif isinstance(j.value[0], (float, int)):
+                args[i].value = list_to_array(j.value, ctypes.c_float)  # convert list to array by specifying the list's values and designated type.
 
             parameters.append(j.value)  # and add this array to the parameter list
         else:

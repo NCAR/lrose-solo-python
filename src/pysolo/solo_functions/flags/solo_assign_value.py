@@ -1,4 +1,5 @@
 import ctypes
+import numpy as np
 
 from . import run_solo_function
 from . import DataPair, masked_op
@@ -30,7 +31,7 @@ def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=No
     args = {
         "constant" : DataPair.DataTypeValue(ctypes.c_float, constant),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
         "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),

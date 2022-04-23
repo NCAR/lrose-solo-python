@@ -134,3 +134,5 @@ tests/quick.py
 tests/test.py
 quick-test.png
 *.Identifier
+results.txt
+temp.dat
