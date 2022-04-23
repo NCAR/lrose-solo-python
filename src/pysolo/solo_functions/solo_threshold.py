@@ -80,4 +80,5 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
 def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):
    
     threshold_mask = threshold_masked(radar.fields[field]['data'], radar.fields[field_ref]['data'], where.value, scaled_thr1, scaled_thr2, boundary_masks)
+    print(threshold_mask.shape)
     radar.add_field_like(field, new_field, threshold_mask, replace_existing=True)

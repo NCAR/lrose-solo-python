@@ -1,6 +1,6 @@
 import ctypes
 import pyart
-
+import numpy as np
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
@@ -27,7 +27,7 @@ def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask
 
     args = {
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "a_speckle" : DataPair.DataTypeValue(ctypes.c_size_t, a_speckle),

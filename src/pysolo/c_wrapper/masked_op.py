@@ -3,6 +3,7 @@
 '''
 
 import numpy as np
+from tqdm import tqdm
 
 
 def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_array=None, usesBadFlags=False):
@@ -26,6 +27,12 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
     missing = masked_array.fill_value
     mask = masked_array.mask.tolist()
     data_list = masked_array.tolist(missing)
+
+    if second_masked_array is not None:
+        second_missing = second_masked_array.fill_value
+        second_mask = second_masked_array.mask.tolist()
+        second_data_list = second_masked_array.tolist(second_missing)
+
     if not mask:
         mask = [False] * len(data_list)
     if not boundary_masks:
@@ -36,15 +43,13 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
     output_mask = []
 
     # iterate through each ray
+    # for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
     for i in range(len(data_list)):
-        # if i % 11 == 0:
-        #     print(i)
         input_data = data_list[i] # gates
         input_mask = mask[i] # mask for gates
 
         if second_masked_array is not None: # if using second masked array, obtain gates for that
-            second_missing = second_masked_array.fill_value
-            second_input_data = second_masked_array.tolist(second_missing)[i]
+            second_input_data = second_data_list[i]
             # in pysolo, second parameter of functions always designates data list for secondary masked list, for functions that have secondary masked arrays.
             func_ma = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_masks[i])
         elif usesBadFlags:

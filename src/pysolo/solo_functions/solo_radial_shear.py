@@ -1,5 +1,5 @@
 import ctypes
-
+import numpy as np
 from pathlib import Path
 
 from ..c_wrapper.run_solo import run_solo_function
@@ -30,7 +30,7 @@ def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=No
     args = {
         "seds_gate_diff_interval" : DataPair.DataTypeValue(ctypes.c_size_t, seds_gate_diff_interval),
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),

@@ -1,15 +1,5 @@
-# void se_fix_vortex_vels(
-# const float* data, 
-# float* newData, 
-# size_t nGates,
-# const float* vs_data, 
-# const float* vl_data,
-#	float vs_xmitted_freq,
-#	float vs_interpulse_time, float vl_interpulse_time,
-#	float bad, size_t dgi_clip_gate, bool* boundary_mask);
-
 import ctypes
-
+import numpy as np
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
@@ -41,7 +31,7 @@ def fix_vortex_vels(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_
 
     args = {
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "vs_data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), vs_data),
         "vl_data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), vl_data),

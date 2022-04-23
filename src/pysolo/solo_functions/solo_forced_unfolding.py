@@ -1,6 +1,6 @@
 import ctypes
 from ..c_wrapper.run_solo import run_solo_function
-
+import numpy as np
 from ..c_wrapper import  DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 
@@ -29,7 +29,7 @@ def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_
 
     args = {
         "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "nyquist_velocity" : DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
         "dds_radd_eff_unamb_vel" : DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),

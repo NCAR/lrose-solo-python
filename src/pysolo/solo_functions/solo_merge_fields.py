@@ -1,5 +1,5 @@
 import ctypes
-
+import numpy as np
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
@@ -28,7 +28,7 @@ def merge_fields(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=None, 
     args = {
         "data1" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data_1),
         "data2" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data_2),
-        "newData" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), None),
+        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
         "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
         "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
