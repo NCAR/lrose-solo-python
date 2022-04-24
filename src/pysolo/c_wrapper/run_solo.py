@@ -3,8 +3,9 @@
 """
 
 import ctypes
-from typing import List
 import numpy as np
+
+from src.pysolo.c_wrapper.hide_output import stdout_redirected
 from .conversions import list_to_array, array_to_list
 # Regex pattern to determine if c-type is a primative or array
 
@@ -58,6 +59,9 @@ def run_solo_function(c_func, args):
     if dgi_clip_gate is None:
         args["dgi_clip_gate"].value = data_length  # clip to the end of the data
 
+    if "bad_flag_mask" in args and args["bad_flag_mask"].value is None:
+        args["bad_flag_mask"].value = [False] * data_length 
+
     # newData is an array expected from solo functions that eventually gets filled with values.
     # newData must be equal in size as input_data. Initialize it with copying input_data to ensure they are
     # the same size. Not all solo functions have newData parameter.
@@ -89,8 +93,10 @@ def run_solo_function(c_func, args):
     # obtained from iteration above
     c_func.argtypes = argtypes
     # run the actual function here.
-    c_func(*parameters)
 
+    with stdout_redirected(to="temp.txt"):
+        c_func(*parameters)
+    
     # running c_func either:
     # updated "newData" with... new data
     # or
