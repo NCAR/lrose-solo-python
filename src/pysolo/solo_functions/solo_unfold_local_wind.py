@@ -1,3 +1,4 @@
+import copy
 import ctypes
 import pyart
 import numpy as np
@@ -85,17 +86,44 @@ def unfold_local_wind_masked(
     """
 
     return masked_op.masked_func_v2(
-        unfold_local_wind, masked_array,
-        {'boundary_mask': boundary_masks, 'azimuth_angle_degrees': azimuth_angle_degrees, 'elevation_angle_degrees': elevation_angle_degrees},
-        {'nyquist_velocity': nyquist_velocity, 'dds_radd_eff_unamb_vel': dds_radd_eff_unamb_vel, 'ew_wind': ew_wind, 'ns_wind': ns_wind, 'ud_wind': ud_wind, 'max_pos_folds': max_pos_folds,
-         'max_neg_folds': max_neg_folds, 'ngates_averaged': ngates_averaged})
+        unfold_local_wind,
+        masked_array,
+        {
+            'boundary_mask': boundary_masks,
+            'azimuth_angle_degrees': azimuth_angle_degrees,
+            'elevation_angle_degrees': elevation_angle_degrees
+        },
+        {
+            'nyquist_velocity': nyquist_velocity,
+            'dds_radd_eff_unamb_vel': dds_radd_eff_unamb_vel,
+            'ew_wind': ew_wind,
+            'ns_wind': ns_wind,
+            'ud_wind': ud_wind,
+            'max_pos_folds': max_pos_folds,
+            'max_neg_folds': max_neg_folds,
+            'ngates_averaged': ngates_averaged
+        }
+    )
 
 
 def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None, sweep=0):
+
+    new_field_data: np.ma.array = radar.fields[field]['data'].copy()
+
+    radar_sweep_data = radar.get_field(sweep, field)
+
     nyquist_velocity = radar.get_nyquist_vel(sweep)
     dds_radd_eff_unamb_vel = 0
     azimuth_angle_degrees = list(radar.get_azimuth(sweep))
     elevation_angle_degrees = list(radar.get_elevation(sweep))
-    BB_unfolding_lw_mask = unfold_local_wind_masked(radar.fields[field]['data'], nyquist_velocity, dds_radd_eff_unamb_vel,
+
+    BB_unfolding_lw_mask = unfold_local_wind_masked(radar_sweep_data, nyquist_velocity, dds_radd_eff_unamb_vel,
                                                     azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks)
-    radar.add_field_like(field, new_field, BB_unfolding_lw_mask, replace_existing=True)
+
+    a = radar.get_slice(sweep)
+
+    for ray in range(a.start, a.stop):
+        new_field_data[ray] = BB_unfolding_lw_mask[ray]
+
+
+    radar.add_field_like(field, new_field, new_field_data, replace_existing=True)
