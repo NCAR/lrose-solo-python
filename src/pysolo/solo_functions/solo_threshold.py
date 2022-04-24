@@ -1,7 +1,6 @@
 import ctypes
 import pyart
 import numpy as np
-from copy import deepcopy
 
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper.conversions import array_to_list, list_to_array
@@ -11,7 +10,7 @@ from ..enums import Where
 
 se_threshold = aliases['threshold_field']
 
-def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
+def threshold(input_list_data, threshold_list_data, bad, where: Where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
         Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values,
         then those values are masked for input_list_data.
@@ -35,7 +34,7 @@ def threshold(input_list_data, threshold_list_data, bad, where, scaled_thr1, sca
     """
 
     args = {
-        "where" : DataPair.DataTypeValue(ctypes.c_int, where),
+        "where" : DataPair.DataTypeValue(ctypes.c_int, where.value),
         "scaled_thr1" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr1),
         "scaled_thr2" : DataPair.DataTypeValue(ctypes.c_float, scaled_thr2),
         "first_good_gate" : DataPair.DataTypeValue(ctypes.c_int, first_good_gate),
@@ -79,6 +78,5 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
 
 def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):
    
-    threshold_mask = threshold_masked(radar.fields[field]['data'], radar.fields[field_ref]['data'], where.value, scaled_thr1, scaled_thr2, boundary_masks)
-    print(threshold_mask.shape)
+    threshold_mask = threshold_masked(radar.fields[field]['data'], radar.fields[field_ref]['data'], where, scaled_thr1, scaled_thr2, boundary_masks)
     radar.add_field_like(field, new_field, threshold_mask, replace_existing=True)
