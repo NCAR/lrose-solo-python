@@ -30,7 +30,6 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
 
     if second_masked_array is not None:
         second_missing = second_masked_array.fill_value
-        second_mask = second_masked_array.mask.tolist()
         second_data_list = second_masked_array.tolist(second_missing)
 
     if not mask:
@@ -43,8 +42,8 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
     output_mask = []
 
     # iterate through each ray
-    # for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
-    for i in range(len(data_list)):
+    for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
+    # for i in range(len(data_list)):
         input_data = data_list[i] # gates
         input_mask = mask[i] # mask for gates
 
@@ -69,11 +68,6 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
 #   var_name: list
 # }
 
-def print_info(name, pay, weather, time, input_data, input_mask):
-    print(f"{name} ({pay} / hr): {weather} @ {time}, magic number is {input_data} ({input_mask})")
-
-def print_food(name, calories, color, isEdible, input_data, input_mask, boundary_mask=None):
-    print(f"{color} {name} has {calories} calories. Is it edible? {isEdible} ({input_data} - {input_mask})")
 
 def masked_func_v2(func, masked_array, iterables, statics):
 
@@ -86,11 +80,11 @@ def masked_func_v2(func, masked_array, iterables, statics):
     missing = masked_array.fill_value
     params_dict['bad'] = missing
 
-    mask = masked_array.mask.tolist()
     data_list = masked_array.tolist(missing)
 
     # iterate through each ray
-    for i in range(len(data_list)):
+    for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
+    # for i in range(len(data_list)):
         params_dict['input_list_data'] = data_list[i]
         # params_dict['input_mask'] = mask[i]
         for key, item in iterables.items():
@@ -106,10 +100,3 @@ def masked_func_v2(func, masked_array, iterables, statics):
     # convert the list of lists, to a 2D masked array
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
-
-if __name__ == "__main__":
-    masked_func_v2(print_info, np.ma.array([1, 2, 3], mask=[0, 0, 1]), {'name': ['jill', 'janice', 'joseph'], 'pay': [4, 5, 6]}, {'weather': 'sunny', 'time': '2:00 PM'})
-    masked_func_v2(print_food, np.ma.array([16, 20, 30], mask=[0, 1, 0], fill_value=-1), 
-        {'name': ['carrot', 'pear', 'french fries'], 'calories': [40, 50, 200], 'color': ['orange', 'green', 'yellow'], 'boundary_mask': [False, False, True]}, 
-        {'isEdible': True}
-    )
