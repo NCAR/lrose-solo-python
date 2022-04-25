@@ -52,7 +52,7 @@ class TestThreshold:
         bad = -3
         thr_bad = -5
         input_boundary_mask = [True, True, True, True, True, True, True, True, True, True, True]
-        result = solo.threshold(input_data, thr_data, bad, solo.Where.BELOW.value, 50, 0, thr_missing=thr_bad, boundary_mask=input_boundary_mask)
+        result = solo.threshold(input_data, thr_data, bad, solo.Where.BELOW, 50, 0, thr_missing=thr_bad, boundary_mask=input_boundary_mask)
         assert masked_to_list_data(result) == expected_data
 
 
