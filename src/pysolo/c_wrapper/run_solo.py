@@ -94,8 +94,10 @@ def run_solo_function(c_func, args):
     c_func.argtypes = argtypes
     # run the actual function here.
 
-    with stdout_redirected(to="temp.txt"):
-        c_func(*parameters)
+    # with stdout_redirected(to="temp.txt"):
+    #     c_func(*parameters)
+
+    c_func(*parameters)
     
     # running c_func either:
     # updated "newData" with... new data
