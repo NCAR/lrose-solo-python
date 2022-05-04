@@ -25,7 +25,7 @@ class TestDespeckle():
         dgi = 8
         input_boundary_mask = [True, True, True, True, True, True, True, True, True, True]
         expected_data = [-3, -3, -3, -3, -3, -3, -3, 5, 5, -3]
-        result = solo.despeckle(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
+        result = solo.despeckle_ray(input_data, bad, a_speckle, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
         assert masked_to_list_data(result) == expected_data
 
 
@@ -39,7 +39,7 @@ class TestRingZap():
         dgi = 10
         input_boundary_mask = [True, True, True, True, False, True, True, True, True, True, True]
         expected_data = [-3, 4, -3, -3, 8, -3, -3, -3, -3, -3, -3]
-        result = solo.ring_zap(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
+        result = solo.ring_zap_ray(input_data, bad, from_km, to_km, dgi_clip_gate=dgi, boundary_mask=input_boundary_mask)
         assert masked_to_list_data(result) == expected_data
 
 
@@ -52,7 +52,7 @@ class TestThreshold:
         bad = -3
         thr_bad = -5
         input_boundary_mask = [True, True, True, True, True, True, True, True, True, True, True]
-        result = solo.threshold(input_data, thr_data, bad, solo.Where.BELOW, 50, 0, thr_missing=thr_bad, boundary_mask=input_boundary_mask)
+        result = solo.threshold_ray(input_data, thr_data, bad, solo.Where.BELOW, 50, 0, thr_missing=thr_bad, boundary_mask=input_boundary_mask)
         assert masked_to_list_data(result) == expected_data
 
 
@@ -67,7 +67,7 @@ class TestFlagGlitches:
         deglitch_radius = 1
         deglitch_min_bins = 3
         expected_bad_flag = [False, False, True, False, True, True, True, True]
-        result = solo.flag_glitches(input_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_bins, input_bad_flag, boundary_mask=input_boundary_mask)
+        result = solo.flag_glitches_ray(input_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_bins, input_bad_flag, boundary_mask=input_boundary_mask)
         assert list(np.ma.getmask(result)) == expected_bad_flag
 
 
@@ -88,7 +88,7 @@ class TestUnfoldLocalWind:
         ns_horiz_wind = 999
         vert_wind = 2.0
         expected_data = [3.0, 4.0, 5.0, 6.0]
-        result = solo.unfold_local_wind(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees,
+        result = solo.unfold_local_wind_ray(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees,
                                         ew_horiz_wind, ns_horiz_wind, vert_wind, max_pos_folds, max_neg_folds, ngates_averaged)
         assert masked_to_list_data(result) == expected_data
 
@@ -108,7 +108,7 @@ class TestUnfoldLocalWind:
         ns_horiz_wind = 999
         vert_wind = 3.0
         expected_data = [3, -3, -3, 5, 5, -2, -3, 5, 5, -3]
-        result = solo.unfold_local_wind(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_horiz_wind,
+        result = solo.unfold_local_wind_ray(data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_horiz_wind,
                                         ns_horiz_wind, vert_wind, max_pos_folds, max_neg_folds, ngates_averaged, dgi_clip_gate=dgi, boundary_mask=boundary)
         assert masked_to_list_data(result) == expected_data
 
@@ -176,7 +176,7 @@ class TestRadialShear:
         data = [-3, 4, 5, 6, 7, 8, 9, 10]
         bad = -3
         expected_data = [-3, 4, 4, 4, 7, 8, 9, 10]
-        result = solo.radial_shear(data, bad, seds_gate_diff_interval)
+        result = solo.radial_shear_ray(data, bad, seds_gate_diff_interval)
         assert masked_to_list_data(result) == expected_data
 
     def test_short_two(self):
@@ -185,7 +185,7 @@ class TestRadialShear:
         bad = -3
         dgi = 10
         expected_data = [0, -3, -3, -3, -3, 8, 6, 4, 4, -3, 2, 3]
-        result = solo.radial_shear(data, bad, seds_gate_diff_interval, dgi_clip_gate=dgi)
+        result = solo.radial_shear_ray(data, bad, seds_gate_diff_interval, dgi_clip_gate=dgi)
         assert masked_to_list_data(result) == expected_data
 
 
@@ -203,7 +203,7 @@ class TestRemoveACMotion():
         nyquist_velocity = 10.0
         expected_data = [3, 4, 5, 6]
         dds_radd_eff_unamb_vel = 0.0
-        result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
+        result = solo.remove_ac_motion_ray(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
         assert masked_to_list_data(result) == expected_data
 
     def test_short_two(self):
@@ -218,7 +218,7 @@ class TestRemoveACMotion():
         nyquist_velocity = 3.2
         expected_data = [3, -2, 1, 0]
         dds_radd_eff_unamb_vel = 0.0
-        result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
+        result = solo.remove_ac_motion_ray(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity)
         assert masked_to_list_data(result) == expected_data
 
     def test_short_three(self):
@@ -237,7 +237,7 @@ class TestRemoveACMotion():
         clip_gate = 2
         expected_data = [-3, 9, 5, -3]  # no changed
         dds_radd_eff_unamb_vel = 0.0
-        result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+        result = solo.remove_ac_motion_ray(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
         assert masked_to_list_data(result) == expected_data
 
     def test_short_four(self):
@@ -253,7 +253,7 @@ class TestRemoveACMotion():
         clip_gate = 2
         expected_data = [-3, -1, 5, -3]
         dds_radd_eff_unamb_vel = 0.0
-        result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+        result = solo.remove_ac_motion_ray(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
         assert masked_to_list_data(result) == expected_data
 
     def test_short_five(self):
@@ -269,7 +269,7 @@ class TestRemoveACMotion():
         clip_gate = 3
         expected_data = [-5, -3, 4, 8]
         dds_radd_eff_unamb_vel = 0.0
-        result = solo.remove_ac_motion(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
+        result = solo.remove_ac_motion_ray(data, bad_flag, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, nyquist_velocity, dgi_clip_gate=clip_gate)
         assert masked_to_list_data(result) == expected_data
 
 
@@ -279,7 +279,7 @@ class TestMergeFields():
         data1 = [4, -3, 6, 7, -3]
         data2 = [40, 50, 60, 70, 80]
         bad = -3
-        result = solo.merge_fields(data1, data2, bad)
+        result = solo.merge_fields_ray(data1, data2, bad)
         expected_data = [4, 50, 6, 7, 80]
         assert masked_to_list_data(result) == expected_data
 
@@ -287,7 +287,7 @@ class TestMergeFields():
         data1 = [-3]
         data2 = [99]
         bad = -3
-        result = solo.merge_fields(data1, data2, bad)
+        result = solo.merge_fields_ray(data1, data2, bad)
         expected_data = [99]
         assert masked_to_list_data(result) == expected_data
 
@@ -295,7 +295,7 @@ class TestMergeFields():
         data1 = [100]
         data2 = [-3]
         bad = -3
-        result = solo.merge_fields(data1, data2, bad)
+        result = solo.merge_fields_ray(data1, data2, bad)
         expected_data = [100]
         assert masked_to_list_data(result) == expected_data
 
