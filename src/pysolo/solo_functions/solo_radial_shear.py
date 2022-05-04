@@ -9,7 +9,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_radial_shear = aliases['radial_shear']
 
-def radial_shear(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=None, boundary_mask=None):
+def radial_shear_ray(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a radial shear, input_list_data is subtracted by an offset of itself
         
@@ -58,4 +58,4 @@ def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_masks=No
     """
 
 
-    return masked_op.masked_func(radial_shear, masked_array, seds_gate_diff_interval, boundary_masks = boundary_masks)
+    return masked_op.masked_func(radial_shear_ray, masked_array, seds_gate_diff_interval, boundary_masks = boundary_masks)

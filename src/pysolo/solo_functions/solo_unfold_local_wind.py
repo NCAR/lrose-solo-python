@@ -10,7 +10,7 @@ from ..c_wrapper.function_alias import aliases
 se_unfold_local_wind = aliases['BB_unfold_local_wind']
 
 
-def unfold_local_wind(
+def unfold_local_wind_ray(
         input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged,
         dgi_clip_gate=None, boundary_mask=None):
     """
@@ -86,7 +86,7 @@ def unfold_local_wind_masked(
     """
 
     return masked_op.masked_func_iterable(
-        unfold_local_wind,
+        unfold_local_wind_ray,
         masked_array,
         {
             'boundary_mask': boundary_masks,

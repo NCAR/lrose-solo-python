@@ -6,7 +6,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_flag_freckles = aliases['flag_freckles']
 
-def flag_freckles(input_list_data, bad, freckle_threshold, freckle_avg_count, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def flag_freckles_ray(input_list_data, bad, freckle_threshold, freckle_avg_count, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """
         Routine to remove discountinuities (freckles) from the data.
 
@@ -57,4 +57,4 @@ def flag_freckles_masked(masked_array, freckle_threshold, freckle_avg_count, bou
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(flag_freckles, masked_array, freckle_threshold, freckle_avg_count, boundary_masks = boundary_masks, usesBadFlags=True)
+    return masked_op.masked_func(flag_freckles_ray, masked_array, freckle_threshold, freckle_avg_count, boundary_masks = boundary_masks, usesBadFlags=True)

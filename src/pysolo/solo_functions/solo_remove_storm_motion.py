@@ -7,7 +7,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_remove_storm_motion = aliases['remove_storm_motion']
 
-def remove_storm_motion(input_list_data, bad, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, dgi_clip_gate=None, boundary_mask=None):
+def remove_storm_motion_ray(input_list_data, bad, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a list of data.
         
@@ -64,4 +64,4 @@ def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle,
     """
 
 
-    return masked_op.masked_func(remove_storm_motion, masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_masks = boundary_masks)
+    return masked_op.masked_func(remove_storm_motion_ray, masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_masks = boundary_masks)

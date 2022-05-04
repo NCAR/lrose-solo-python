@@ -10,7 +10,7 @@ from ..enums import Where
 
 se_threshold = aliases['threshold_field']
 
-def threshold(input_list_data, threshold_list_data, bad, where: Where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
+def threshold_ray(input_list_data, threshold_list_data, bad, where: Where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
     """
         Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values,
         then those values are masked for input_list_data.
@@ -73,7 +73,7 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(threshold, masked_array, where, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, second_masked_array=threshold_array)
+    return masked_op.masked_func(threshold_ray, masked_array, where, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, second_masked_array=threshold_array)
 
 
 def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):

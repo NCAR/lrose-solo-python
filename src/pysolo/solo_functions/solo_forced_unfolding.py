@@ -6,7 +6,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_funfold = aliases['funfold']
 
-def forced_unfolding(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
+def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
     """ 
        Forces all data points to fall within plus or minus the Nyquist
         
@@ -60,4 +60,4 @@ def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_v
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(forced_unfolding, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks = boundary_masks)
+    return masked_op.masked_func(forced_unfolding_ray, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks = boundary_masks)

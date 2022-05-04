@@ -11,7 +11,7 @@ se_remove_ac_motion = aliases['remove_ac_motion']
 
 
 
-def remove_ac_motion(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None, boundary_mask=None):
+def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a <TODO> operation on a list of data.
         
@@ -80,4 +80,4 @@ def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocit
     """
 
 
-    return masked_op.masked_func(remove_ac_motion, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks = boundary_masks)
+    return masked_op.masked_func(remove_ac_motion_ray, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks = boundary_masks)

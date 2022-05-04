@@ -7,7 +7,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_rain_rate = aliases['rain_rate']
 
-def rain_rate(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
+def rain_rate_ray(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Calculates rain_rate in m/s from reflectivity.
         
@@ -55,4 +55,4 @@ def rain_rate_masked(masked_array, d_const, boundary_masks=None):
     """
 
 
-    return masked_op.masked_func(rain_rate, masked_array, d_const, boundary_masks = boundary_masks)
+    return masked_op.masked_func(rain_rate_ray, masked_array, d_const, boundary_masks = boundary_masks)

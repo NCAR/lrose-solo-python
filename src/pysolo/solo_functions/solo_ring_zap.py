@@ -6,7 +6,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_ring_zap = aliases['ring_zap']
 
-def ring_zap(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_clip_gate=None, boundary_mask=None):
+def ring_zap_ray(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_clip_gate=None, boundary_mask=None):
     """ 
         Performs a ring zap operation on a list of data.
         
@@ -61,6 +61,6 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
 
     from_km = int(from_km / km_between_gates)
     to_km = int(to_km / km_between_gates)
-    return masked_op.masked_func_iterable(ring_zap, masked_array, {'boundary_mask': boundary_masks}, {'from_km': from_km, 'to_km': to_km})
+    return masked_op.masked_func_iterable(ring_zap_ray, masked_array, {'boundary_mask': boundary_masks}, {'from_km': from_km, 'to_km': to_km})
 
-    return masked_op.masked_func(ring_zap, masked_array, from_km, to_km, boundary_masks = boundary_masks)
+    return masked_op.masked_func(ring_zap_ray, masked_array, from_km, to_km, boundary_masks = boundary_masks)
