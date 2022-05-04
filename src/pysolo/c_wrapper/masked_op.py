@@ -2,7 +2,6 @@
     This module is a wrapper for run_solo. Allows use of run_solo with 2D masked arrays rather than 1D arrays.
 '''
 
-from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 
@@ -64,11 +63,6 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
 
-# iterables: {
-#   var_name: list,
-#   var_name: list
-# }
-
 
 def masked_func_iterable(func, masked_array, iterables, statics):
 
@@ -101,3 +95,29 @@ def masked_func_iterable(func, masked_array, iterables, statics):
     # convert the list of lists, to a 2D masked array
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
     return output_masked_array
+
+
+class SweepManager:
+
+    def __init__(self, radar, sweep, field, new_field) -> None:
+        self.radar = radar
+        self.sweep = sweep
+        self.field = field
+        self.new_field = new_field
+        self.new_field_data: np.ma.array = radar.fields[field]['data'].copy()
+        self.radar_sweep_data = radar.get_field(sweep, field)
+        self.new_masked_array = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+
+        a = self.radar.get_slice(self.sweep)
+
+        for ray in range(a.start, a.stop):
+            self.new_field_data[ray] = self.new_masked_array[ray]
+
+        self.radar.add_field_like(self.field, self.new_field, self.new_field_data, replace_existing=True)
+
+        print(exc_type, exc_value, exc_tb, sep="\n")

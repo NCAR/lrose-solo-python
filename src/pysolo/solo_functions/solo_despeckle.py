@@ -26,23 +26,23 @@ def despeckle_ray(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_
     """
 
     args = {
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
-        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
-        "a_speckle" : DataPair.DataTypeValue(ctypes.c_size_t, a_speckle),
-        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "data": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "newData": DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
+        "nGates": DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "bad": DataPair.DataTypeValue(ctypes.c_float, bad),
+        "a_speckle": DataPair.DataTypeValue(ctypes.c_size_t, a_speckle),
+        "dgi_clip_gate": DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
     }
 
     return run_solo_function(se_despeckle, args)
 
 
 def despeckle_masked(masked_array, a_speckle, boundary_masks=None):
-   return masked_op.masked_func_iterable(despeckle_ray, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
+    return masked_op.masked_func_iterable(despeckle_ray, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
 
 
 def despeckle_field(radar: pyart.core.Radar, field: str, new_field: str, a_speckle: int, boundary_masks=None, sweep=0):
-    field_masked_array = radar.fields[field]['data']
-    despeckled_mask = despeckle_masked(field_masked_array, a_speckle, boundary_masks)
-    radar.add_field_like(field, new_field, despeckled_mask, replace_existing=True)
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = despeckle_masked(sm.radar_sweep_data, a_speckle, boundary_masks)

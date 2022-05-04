@@ -3,7 +3,6 @@ import pyart
 import numpy as np
 
 from ..c_wrapper.run_solo import run_solo_function
-from ..c_wrapper.conversions import array_to_list, list_to_array
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 from ..enums import Where
@@ -77,6 +76,6 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
 
 
 def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):
-   
-    threshold_mask = threshold_masked(radar.fields[field]['data'], radar.fields[field_ref]['data'], where, scaled_thr1, scaled_thr2, boundary_masks)
-    radar.add_field_like(field, new_field, threshold_mask, replace_existing=True)
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = threshold_masked(sm.radar_sweep_data, radar.get_field(sweep, field_ref), where, scaled_thr1, scaled_thr2, boundary_masks)
