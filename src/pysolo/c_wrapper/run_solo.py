@@ -83,10 +83,7 @@ def run_solo_function(c_func, args):
 
             parameters.append(j.value)  # and add this array to the parameter list
         else:
-            if i == "newData":
-                parameters.append(j.value)  # and add this array to the parameter list
-            else:
-                parameters.append(j.type(j.value))  # if not array, simply add to parameter list
+            parameters.append(j.type(j.value))  # if not array, simply add to parameter list
 
     # none of the solo functions have return types
     c_func.restype = None
@@ -109,7 +106,7 @@ def run_solo_function(c_func, args):
         output_masked_array = np.ma.masked_values(args['newData'].value, bad)
         return output_masked_array
 
-    elif "bad_flag_mask" in args:
+    if "bad_flag_mask" in args:
         output_flag_list = array_to_list(args['bad_flag_mask'].value, data_length)
         return np.ma.masked_array(data=input_list_data, mask=output_flag_list, fill_value=bad)
 

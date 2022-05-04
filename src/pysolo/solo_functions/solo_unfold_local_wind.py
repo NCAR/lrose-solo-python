@@ -85,7 +85,7 @@ def unfold_local_wind_masked(
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func_v2(
+    return masked_op.masked_func_iterable(
         unfold_local_wind,
         masked_array,
         {
@@ -113,7 +113,7 @@ def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str
     radar_sweep_data = radar.get_field(sweep, field)
 
     nyquist_velocity = radar.get_nyquist_vel(sweep)
-    dds_radd_eff_unamb_vel = 0
+    dds_radd_eff_unamb_vel = nyquist_velocity
     azimuth_angle_degrees = list(radar.get_azimuth(sweep))
     elevation_angle_degrees = list(radar.get_elevation(sweep))
 

@@ -5,10 +5,10 @@ def array_to_list(input_array, size):
     return [input_array[i] for i in range(size)]
 
 
-def list_to_array(py_list, type):
+def list_to_array(py_list, type_in_c):
     """ convert Python list to ctypes array """
 
-    a = (type * len(py_list))()
+    a = (type_in_c * len(py_list))()
     a[:] = py_list
 
     return a

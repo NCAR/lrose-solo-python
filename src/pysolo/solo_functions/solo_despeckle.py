@@ -39,7 +39,7 @@ def despeckle(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask
 
 
 def despeckle_masked(masked_array, a_speckle, boundary_masks=None):
-   return masked_op.masked_func_v2(despeckle, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
+   return masked_op.masked_func_iterable(despeckle, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
 
 
 def despeckle_field(radar: pyart.core.Radar, field: str, new_field: str, a_speckle: int, boundary_masks=None, sweep=0):

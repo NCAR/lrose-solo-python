@@ -2,6 +2,7 @@
     This module is a wrapper for run_solo. Allows use of run_solo with 2D masked arrays rather than 1D arrays.
 '''
 
+from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 
@@ -43,11 +44,11 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
 
     # iterate through each ray
     for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
-    # for i in range(len(data_list)):
-        input_data = data_list[i] # gates
-        input_mask = mask[i] # mask for gates
+        # for i in range(len(data_list)):
+        input_data = data_list[i]  # gates
+        input_mask = mask[i]  # mask for gates
 
-        if second_masked_array is not None: # if using second masked array, obtain gates for that
+        if second_masked_array is not None:  # if using second masked array, obtain gates for that
             second_input_data = second_data_list[i]
             # in pysolo, second parameter of functions always designates data list for secondary masked list, for functions that have secondary masked arrays.
             func_ma = func(input_data, second_input_data, missing, *args, boundary_mask=boundary_masks[i])
@@ -56,8 +57,8 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
         else:
             func_ma = func(input_data, missing, *args, boundary_mask=boundary_masks[i])
 
-        output_data.append(np.ma.getdata(func_ma)) # add data to output list of lists
-        output_mask.append(np.ma.getdata(func_ma.mask)) # add mask as well
+        output_data.append(np.ma.getdata(func_ma))  # add data to output list of lists
+        output_mask.append(np.ma.getdata(func_ma.mask))  # add mask as well
 
     # convert the list of lists, to a 2D masked array
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
@@ -69,7 +70,7 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
 # }
 
 
-def masked_func_v2(func, masked_array, iterables, statics):
+def masked_func_iterable(func, masked_array, iterables, statics):
 
     # initialize lists with data/masks. These will become lists of lists
     output_data = []
@@ -80,22 +81,22 @@ def masked_func_v2(func, masked_array, iterables, statics):
     missing = masked_array.fill_value
     params_dict['bad'] = missing
 
+    for key, value in statics.items():
+        params_dict[key] = value
+
     data_list = masked_array.tolist(missing)
 
     # iterate through each ray
     for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
-    # for i in range(len(data_list)):
+        # for i in range(len(data_list)):
         params_dict['input_list_data'] = data_list[i]
-        # params_dict['input_mask'] = mask[i]
-        for key, item in iterables.items():
-            params_dict[key] = None if item is None else item[i]
-        for key, item in statics.items():
-            params_dict[key] = item
+        for key, value in iterables.items():
+            params_dict[key] = None if value is None else value[i]
 
         func_ma = func(**params_dict)
 
-        output_data.append(np.ma.getdata(func_ma)) # add data to output list of lists
-        output_mask.append(np.ma.getdata(func_ma.mask)) # add mask as well
+        output_data.append(np.ma.getdata(func_ma))  # add data to output list of lists
+        output_mask.append(np.ma.getdata(func_ma.mask))  # add mask as well
 
     # convert the list of lists, to a 2D masked array
     output_masked_array = np.ma.masked_array(data=output_data, mask=output_mask, fill_value=missing)
