@@ -23,7 +23,7 @@ def graphPlot(before_field: str, after_field: str):
     display.set_limits((-350, 350), (-350, 350), ax=ax[1])
 
     plt.suptitle(after_field, fontsize=16)
-    plt.savefig('2.png')
+    plt.savefig('outputs/mine_alt.png')
 
 
 print("Stats".center(24, '='))
@@ -80,22 +80,22 @@ for i in tqdm(range(first_sweep_slice.start, first_sweep_slice.stop), desc="Load
 
     VU_ray_data = VU_data_list[i]
 
-    new_masked_array = solo.threshold(VU_ray_data, RHO_ray_data, VU_missing, solo.Where.ABOVE, 1.1, 0)
+    new_masked_array = solo.threshold_ray(VU_ray_data, RHO_ray_data, VU_missing, solo.Where.ABOVE, 1.1, 0)
     VU_ray_data = new_masked_array.tolist(VU_missing)
 
-    new_masked_array = solo.threshold(VU_ray_data, RHO_ray_data, VU_missing, solo.Where.BELOW, 0.8, 0)
+    new_masked_array = solo.threshold_ray(VU_ray_data, RHO_ray_data, VU_missing, solo.Where.BELOW, 0.8, 0)
     VU_ray_data = new_masked_array.tolist(VU_missing)
 
-    new_masked_array = solo.threshold(VU_ray_data, SW_ray_data, VU_missing, solo.Where.ABOVE, 8.0, 0)
+    new_masked_array = solo.threshold_ray(VU_ray_data, SW_ray_data, VU_missing, solo.Where.ABOVE, 8.0, 0)
     VU_ray_data = new_masked_array.tolist(VU_missing)
 
-    new_masked_array = solo.despeckle(VU_ray_data, VU_missing, a_speckle)
+    new_masked_array = solo.despeckle_ray(VU_ray_data, VU_missing, a_speckle)
     VU_ray_data = new_masked_array.tolist(VU_missing)
 
     azimuth_ray = azimuth_angle_degrees[i]
     elevation_ray = elevation_angle_degrees[i]
 
-    new_masked_array = solo.unfold_local_wind(VU_ray_data, VU_missing, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_ray, elevation_ray,
+    new_masked_array = solo.unfold_local_wind_ray(VU_ray_data, VU_missing, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_ray, elevation_ray,
                         ew_wind, ns_wind, ud_wind, BB_max_neg_folds, BB_max_neg_folds, BB_gates_averaged)
 
     VEL_array[i] = new_masked_array
