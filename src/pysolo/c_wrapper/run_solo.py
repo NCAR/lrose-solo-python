@@ -5,7 +5,6 @@
 import ctypes
 import numpy as np
 
-from src.pysolo.c_wrapper.hide_output import stdout_redirected
 from .conversions import list_to_array, array_to_list
 # Regex pattern to determine if c-type is a primative or array
 
