@@ -4,6 +4,8 @@
 import platform
 from pathlib import Path
 import ctypes
+import os
+import re
 
 aliases = {}
 
@@ -39,41 +41,45 @@ pysolo_dir = Path(__file__).parents[1].absolute()
 # get appropriate library depending on platform
 # the DLL from Windows has "extern C" so no name mangling occurs.
 if platform.system() == "Windows":
-    path_to_file = pysolo_dir / Path('libs/solo.dll')
-    c_lib = ctypes.CDLL(str(path_to_file))
-    for function in functions:
-        aliases[function] = c_lib["se_" + function]
+    raise OSError("Windows is not supported for this library")
 
 # Linux, on the other hand, has name manging.
 # Algorithm was required to retrieve the functions from the mangled names.
 else:
-    import os
-    import re
 
-    temp_dir = pysolo_dir / Path("temp")
-    shared_lib_path = Path(__file__).parents[1].absolute() / Path('libs/libSoloNewer.so')
+    def get_lib(relative_path):
+        temp_dir = pysolo_dir / Path("temp")
+        shared_lib_path = Path(__file__).parents[1].absolute() / Path(relative_path)
 
-    # run readelf to get a list of C-functions with their mangled names, save results to file
-    os.system(f"mkdir {temp_dir}")
-    os.system(f"readelf -Ws {shared_lib_path} > {temp_dir / Path('readelf.txt')}")
+        # run readelf to get a list of C-functions with their mangled names, save results to file
+        os.system(f"mkdir {temp_dir}")
+        os.system(f"readelf -Ws {shared_lib_path} > {temp_dir / Path('readelf.txt')}")
 
-    # read all content from the command
-    content = open(temp_dir / Path("readelf.txt"), encoding='utf-8').read()
+        # read all content from the command
+        content = open(temp_dir / Path("readelf.txt"), encoding='utf-8').read()
 
-    # use regex pattern to discover all mangled functions, retrieve the unmangled name from group
-    matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
+        # use regex pattern to discover all mangled functions, retrieve the unmangled name from group
+        matches = re.findall(r'(_Z\w+se_\w+)', content, re.M)
 
-    # initialize c_types object for shared library
-    c_lib = ctypes.CDLL(str(shared_lib_path))
-    # iterate through matches, check if PySolo uses that function. If so, save to map.
-    for match in matches:
-        for func in functions:
-            if func in match:
-                aliases[func] = c_lib[match]
+        # initialize c_types object for shared library
+        c_lib = ctypes.CDLL(str(shared_lib_path))
 
-    # remove command output.
-    os.system(f"rm -r {temp_dir}")
+
+        # iterate through matches, check if PySolo uses that function. If so, save to map.
+        for match in matches:
+            for func in functions:
+                if func in match:
+                    aliases[func] = c_lib[match]
+
+        # remove command output.
+        os.system(f"rm -r {temp_dir}")
+
+    try:
+        get_lib('libs/libSolo_20.04.so')
+    except OSError:
+        get_lib('libs/libSolo_18.04.so')
+
 
 # make sure all the needed functions are mapped
-for func in functions:
-    assert func in aliases, func
+for func_ in functions:
+    assert func_ in aliases, func_
