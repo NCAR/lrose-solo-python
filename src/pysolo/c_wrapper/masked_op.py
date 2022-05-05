@@ -3,8 +3,6 @@
 '''
 
 import numpy as np
-from tqdm import tqdm
-
 
 def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_array=None, usesBadFlags=False):
     """
@@ -42,7 +40,7 @@ def masked_func(func, masked_array, *args, boundary_masks=None, second_masked_ar
     output_mask = []
 
     # iterate through each ray
-    for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
+    for i in range(len(data_list)):
         # for i in range(len(data_list)):
         input_data = data_list[i]  # gates
         input_mask = mask[i]  # mask for gates
@@ -81,8 +79,7 @@ def masked_func_iterable(func, masked_array, iterables, statics):
     data_list = masked_array.tolist(missing)
 
     # iterate through each ray
-    for i in tqdm(range(len(data_list)), desc="Loading...", ascii=False, ncols=150):
-        # for i in range(len(data_list)):
+    for i in range(len(data_list)):
         params_dict['input_list_data'] = data_list[i]
         for key, value in iterables.items():
             params_dict[key] = None if value is None else value[i]
@@ -119,5 +116,3 @@ class SweepManager:
             self.new_field_data[ray] = self.new_masked_array[ray]
 
         self.radar.add_field_like(self.field, self.new_field, self.new_field_data, replace_existing=True)
-
-        print(exc_type, exc_value, exc_tb, sep="\n")
