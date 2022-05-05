@@ -44,7 +44,7 @@ def flag_glitches_ray(input_list_data, bad, deglitch_threshold, deglitch_radius,
 
 
 def flag_glitches_masked(masked_array, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None):
-    """ 
+    """
         Routine to remove discountinuities (freckles) from the data.
 
         Args:

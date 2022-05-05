@@ -68,5 +68,6 @@ def unfold_first_good_gate_masked(masked_array, nyquist_velocity, dds_radd_eff_u
             ModuleNotFoundError: if numpy is not installed
             AttributeError: if masked_array arg is not a numpy masked array.
     """
-    
-    return masked_op.masked_func(unfold_first_good_gate, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, boundary_masks = boundary_masks)
+
+    return masked_op.masked_func(unfold_first_good_gate, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged,
+        last_good_v0, boundary_masks = boundary_masks)

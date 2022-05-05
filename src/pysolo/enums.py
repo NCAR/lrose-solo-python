@@ -5,7 +5,7 @@ class Where(Enum):
     ABOVE = 0
     BELOW = 1
     BETWEEN = 2
-    
+
 # Used by bad_flags_logic
 class Logical(Enum):
     AND = 0

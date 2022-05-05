@@ -59,7 +59,7 @@ def run_solo_function(c_func, args):
         args["dgi_clip_gate"].value = data_length  # clip to the end of the data
 
     if "bad_flag_mask" in args and args["bad_flag_mask"].value is None:
-        args["bad_flag_mask"].value = [False] * data_length 
+        args["bad_flag_mask"].value = [False] * data_length
 
     # newData is an array expected from solo functions that eventually gets filled with values.
     # newData must be equal in size as input_data. Initialize it with copying input_data to ensure they are
@@ -94,7 +94,7 @@ def run_solo_function(c_func, args):
     #     c_func(*parameters)
 
     c_func(*parameters)
-    
+
     # running c_func either:
     # updated "newData" with... new data
     # or

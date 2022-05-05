@@ -2,7 +2,6 @@ import ctypes
 import numpy as np
 import pyart
 
-from src.pysolo.enums import Where
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
@@ -10,9 +9,9 @@ from ..c_wrapper.function_alias import aliases
 se_merge_fields = aliases['merge_fields']
 
 def merge_fields_ray(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+    """
         Replaces bad values from input_list_data_1 from values in input_list_data2
-        
+
         Args:
             input_list_data_1: The list of floats to be modified,
             input_list_data_2: The list of floats that replaces values from input_list_data_1,
@@ -42,9 +41,9 @@ def merge_fields_ray(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=No
 
 
 def merge_fields_masked(masked_array, reference_masked_array, boundary_masks=None):
-    """ 
+    """
         Replaces bad values from input_list_data_1 from values in input_list_data2
-        
+
         Args:
             masked_array: A numpy masked array that is to be modified.
             reference_masked_array: A numpy masked array with values that replace masked_array on bad entries.

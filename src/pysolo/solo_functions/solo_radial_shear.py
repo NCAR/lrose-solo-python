@@ -10,9 +10,9 @@ from ..c_wrapper.function_alias import aliases
 se_radial_shear = aliases['radial_shear']
 
 def radial_shear_ray(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+    """
         Performs a radial shear, input_list_data is subtracted by an offset of itself
-        
+
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
@@ -41,9 +41,9 @@ def radial_shear_ray(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gat
 
 
 def radial_shear_masked(masked_array, seds_gate_diff_interval: int, boundary_masks=None):
-    """ 
+    """
         Performs a radial shear, masked_array is subtracted by an offset of itself
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             seds_gate_diff_interval: Marks the offset of the data

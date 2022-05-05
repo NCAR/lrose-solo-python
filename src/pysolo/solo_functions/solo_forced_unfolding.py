@@ -9,14 +9,14 @@ from ..c_wrapper.function_alias import aliases
 se_funfold = aliases['funfold']
 
 def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+    """
        Forces all data points to fall within plus or minus the Nyquist
-        
+
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
             nyquist_velocity: Float value obtained from the radar,
-            dds_radd_eff_unamb_vel: Float value obtained from the radar, 
+            dds_radd_eff_unamb_vel: Float value obtained from the radar,
             center: <TODO>,
             (optional) dgi_clip_gate: An integer determines the end of the ray (default: length of input_list)
             (optional) boundary_mask: Defines region over which operations will be done. (default: all True).
@@ -45,13 +45,13 @@ def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_un
 
 
 def forced_unfolding_masked(masked_array, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None):
-    """ 
+    """
        Forces all data points to fall within plus or minus the Nyquist
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             nyquist_velocity: Float value obtained from the radar,
-            dds_radd_eff_unamb_vel: Float value obtained from the radar, 
+            dds_radd_eff_unamb_vel: Float value obtained from the radar,
             center: <TODO>,
 
         Returns:

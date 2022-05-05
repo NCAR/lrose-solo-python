@@ -11,10 +11,11 @@ se_remove_ac_motion = aliases['remove_ac_motion']
 
 
 
-def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None,
+        boundary_mask=None):
+    """
         Performs a <TODO> operation on a list of data.
-        
+
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
@@ -57,9 +58,9 @@ def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_ve
 
 
 def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks=None):
-    """ 
+    """
         Performs a <TODO> operation on a numpy masked array
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             vert_velocity: <TODO>
@@ -80,4 +81,5 @@ def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocit
     """
 
 
-    return masked_op.masked_func(remove_ac_motion_ray, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks = boundary_masks)
+    return masked_op.masked_func(remove_ac_motion_ray, masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity,
+        boundary_masks = boundary_masks)

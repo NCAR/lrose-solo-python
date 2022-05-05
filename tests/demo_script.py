@@ -1,7 +1,5 @@
 from pathlib import Path
-import sys
 from matplotlib import pyplot as plt
-import numpy as np
 import pyart
 
 import src.pysolo as solo
@@ -78,11 +76,11 @@ solo.despeckle_field(radar, 'VU', 'VU', a_speckle)  # despeckle VU
 print("unfold local wind")
 solo.unfold_local_wind_fields(radar, 'VU', 'VU', ew_wind, ns_wind, ud_wind, BB_max_pos_folds, BB_max_neg_folds, BB_gates_averaged)  # BB-unfolding of VU
 
-graphPlot("VEL", "VU", "outputs/may3/mine.png")
+graphPlot("VEL", "VU", "outputs/may5/mine.png")
 
 path_to_file = Path.cwd() / Path('tests/data/alex_output.nc')
 
 alex_radar: pyart.core.Radar = pyart.io.read(path_to_file)
 display = pyart.graph.RadarMapDisplay(alex_radar)
 
-graphPlot("VEL", "VU", "outputs/may3/his.png")
+graphPlot("VEL", "VU", "outputs/may5/his.png")

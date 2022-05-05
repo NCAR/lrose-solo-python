@@ -9,9 +9,9 @@ from ..c_wrapper.function_alias import aliases
 se_rain_rate = aliases['rain_rate']
 
 def rain_rate_ray(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+    """
         Calculates rain_rate in m/s from reflectivity.
-        
+
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
@@ -40,9 +40,9 @@ def rain_rate_ray(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_ma
 
 
 def rain_rate_masked(masked_array, d_const: float, boundary_masks=None):
-    """ 
+    """
         Performs a <TODO> operation on a numpy masked array
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             d_const: A constant value used from the rain rate calculation.

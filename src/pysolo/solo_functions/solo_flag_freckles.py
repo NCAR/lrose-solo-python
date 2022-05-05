@@ -41,9 +41,9 @@ def flag_freckles_ray(input_list_data, bad, freckle_threshold, freckle_avg_count
 
 
 def flag_freckles_masked(masked_array, freckle_threshold: float, freckle_avg_count: int, boundary_masks=None):
-    """ 
+    """
         routine to remove discountinuities (freckles) from the data.
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             bad_flag_mask: A list of lists,

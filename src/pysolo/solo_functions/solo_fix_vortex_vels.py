@@ -7,9 +7,9 @@ from ..c_wrapper.function_alias import aliases
 se_fix_vortex_vels = aliases['fix_vortex_vels']
 
 def fix_vortex_vels_ray(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, dgi_clip_gate=None, boundary_mask=None):
-    """ 
+    """
         Performs a TODO on a list of data.
-        
+
         Args:
             input_list: A list containing float data,
             bad: A float that represents a missing/invalid data point,
@@ -47,9 +47,9 @@ def fix_vortex_vels_ray(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq,
 
 
 def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_masks=None):
-    """ 
+    """
         Performs a ring zap operation on a numpy masked array
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             vs_data: <TODO>
