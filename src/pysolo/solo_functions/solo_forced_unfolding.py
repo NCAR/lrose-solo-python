@@ -1,6 +1,8 @@
 import ctypes
-from ..c_wrapper.run_solo import run_solo_function
+import pyart
 import numpy as np
+
+from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import  DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 
@@ -42,7 +44,7 @@ def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_un
     return run_solo_function(se_funfold, args)
 
 
-def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks=None):
+def forced_unfolding_masked(masked_array, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None):
     """ 
        Forces all data points to fall within plus or minus the Nyquist
         
@@ -61,3 +63,10 @@ def forced_unfolding_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_v
     """
 
     return masked_op.masked_func(forced_unfolding_ray, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks = boundary_masks)
+
+
+def forced_unfolding_field(radar: pyart.core.Radar, field: str, new_field: str, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None, sweep=0):
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        nyquist_velocity = sm.radar.get_nyquist_vel(sweep)
+        sm.new_masked_array = forced_unfolding_masked(sm.radar_sweep_data, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks)

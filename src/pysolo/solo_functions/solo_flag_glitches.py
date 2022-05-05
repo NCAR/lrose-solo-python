@@ -1,10 +1,12 @@
 import ctypes
-from ..c_wrapper.run_solo import run_solo_function
+import pyart
 
+from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 
 se_flag_glitches = aliases['flag_glitches']
+
 
 def flag_glitches_ray(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
     """
@@ -27,24 +29,24 @@ def flag_glitches_ray(input_list_data, bad, deglitch_threshold, deglitch_radius,
     """
 
     args = {
-        "deglitch_threshold" : DataPair.DataTypeValue(ctypes.c_float, deglitch_threshold),
-        "deglitch_radius" : DataPair.DataTypeValue(ctypes.c_int, deglitch_radius),
-        "deglitch_min_gates" : DataPair.DataTypeValue(ctypes.c_int, deglitch_min_gates),
-        "data" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "nGates" : DataPair.DataTypeValue(ctypes.c_size_t, None),
-        "bad" : DataPair.DataTypeValue(ctypes.c_float, bad),
-        "dgi_clip_gate" : DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
-        "boundary_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
-        "bad_flag_mask" : DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask)
+        "deglitch_threshold": DataPair.DataTypeValue(ctypes.c_float, deglitch_threshold),
+        "deglitch_radius": DataPair.DataTypeValue(ctypes.c_int, deglitch_radius),
+        "deglitch_min_gates": DataPair.DataTypeValue(ctypes.c_int, deglitch_min_gates),
+        "data": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
+        "nGates": DataPair.DataTypeValue(ctypes.c_size_t, None),
+        "bad": DataPair.DataTypeValue(ctypes.c_float, bad),
+        "dgi_clip_gate": DataPair.DataTypeValue(ctypes.c_size_t, dgi_clip_gate),
+        "boundary_mask": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), boundary_mask),
+        "bad_flag_mask": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_bool), bad_flag_mask)
     }
 
     return run_solo_function(se_flag_glitches, args)
 
 
-def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks=None):
+def flag_glitches_masked(masked_array, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None):
     """ 
         Routine to remove discountinuities (freckles) from the data.
-        
+
         Args:
             masked_array: A numpy masked array data structure,
             bad_flag_mask: A list of lists,
@@ -60,4 +62,9 @@ def flag_glitches_masked(masked_array, deglitch_threshold, deglitch_radius, degl
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-    return masked_op.masked_func(flag_glitches_ray, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks = boundary_masks, usesBadFlags=True)
+    return masked_op.masked_func(flag_glitches_ray, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks=boundary_masks, usesBadFlags=True)
+
+
+def flag_glitches_field(radar: pyart.core.Radar, field: str, new_field: str, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None, sweep=0):
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = flag_glitches_masked(sm.radar_sweep_data, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks)

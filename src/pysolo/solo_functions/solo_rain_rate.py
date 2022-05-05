@@ -1,7 +1,8 @@
 import ctypes
 import numpy as np
-from ..c_wrapper.run_solo import run_solo_function
+import pyart
 
+from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
 
@@ -38,7 +39,7 @@ def rain_rate_ray(input_list_data, bad, d_const, dgi_clip_gate=None, boundary_ma
     return run_solo_function(se_rain_rate, args)
 
 
-def rain_rate_masked(masked_array, d_const, boundary_masks=None):
+def rain_rate_masked(masked_array, d_const: float, boundary_masks=None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         
@@ -56,3 +57,9 @@ def rain_rate_masked(masked_array, d_const, boundary_masks=None):
 
 
     return masked_op.masked_func(rain_rate_ray, masked_array, d_const, boundary_masks = boundary_masks)
+
+
+def rain_rate_field(radar: pyart.core.Radar, field: str, new_field: str, d_const: float, boundary_masks=None, sweep=0):
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = rain_rate_masked(sm.radar_sweep_data, d_const, boundary_masks)

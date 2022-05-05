@@ -1,6 +1,6 @@
 import ctypes
 import numpy as np
-from pathlib import Path
+import pyart
 
 from ..c_wrapper.run_solo import run_solo_function
 
@@ -40,7 +40,7 @@ def radial_shear_ray(input_list_data, bad, seds_gate_diff_interval, dgi_clip_gat
     return run_solo_function(se_radial_shear, args)
 
 
-def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_masks=None):
+def radial_shear_masked(masked_array, seds_gate_diff_interval: int, boundary_masks=None):
     """ 
         Performs a radial shear, masked_array is subtracted by an offset of itself
         
@@ -57,5 +57,10 @@ def radial_shear_masked(masked_array, seds_gate_diff_interval, boundary_masks=No
             AttributeError: if masked_array arg is not a numpy masked array.
     """
 
-
     return masked_op.masked_func(radial_shear_ray, masked_array, seds_gate_diff_interval, boundary_masks = boundary_masks)
+
+
+def radial_shear_field(radar: pyart.core.Radar, field: str, new_field: str, seds_gate_diff_interval: int, boundary_masks=None, sweep=0):
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = radial_shear_masked(sm.radar_sweep_data, seds_gate_diff_interval, boundary_masks)

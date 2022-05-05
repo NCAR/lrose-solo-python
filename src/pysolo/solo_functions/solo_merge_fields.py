@@ -1,5 +1,8 @@
 import ctypes
 import numpy as np
+import pyart
+
+from src.pysolo.enums import Where
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
@@ -54,3 +57,9 @@ def merge_fields_masked(masked_array, reference_masked_array, boundary_masks=Non
             AttributeError: if masked_array arg is not a numpy masked array.
     """
     return masked_op.masked_func(merge_fields_ray, masked_array,  boundary_masks = boundary_masks, second_masked_array=reference_masked_array)
+
+
+def merge_fields_field(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, boundary_masks=None, sweep=0):
+
+    with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
+        sm.new_masked_array = merge_fields_masked(sm.radar_sweep_data, radar.get_field(sweep, field_ref), boundary_masks)
