@@ -50,7 +50,7 @@ class TestPlots:
     ############ [Despeckle] ##############
 
     def test_despeckle(self):
-        a_speckle = 5
+        a_speckle = 2
         solo.despeckle_field(self.radar, self.reflectivity_field, f'{self.reflectivity_field}_despeckled', a_speckle)
         self.graphPlot(f'{self.reflectivity_field}_despeckled')
 
@@ -164,6 +164,6 @@ path_to_file = Path.cwd() / Path('tests/data/radar_data_b.nc')
 
 starttime = timeit.default_timer()
 print("Starting...")
-tp = TestPlots(path_to_file, 'reflectivity', 'velocity', False)
-tp.all()
+tp = TestPlots(path_to_file, 'reflectivity', 'velocity', True)
+tp.test_despeckle()
 print("Finished:", timeit.default_timer() - starttime)

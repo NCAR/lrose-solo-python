@@ -28,17 +28,18 @@ radar: pyart.core.Radar = pyart.io.read(path_to_file)
 display = pyart.graph.RadarMapDisplay(radar)
 
 
-def graphPlot(before_field: str, after_field: str, output_file_name=None):
+def graphPlot(before_field: str, after_field: str, output_file_name=None, title=None):
+
     _, ax = plt.subplots(ncols=2, figsize=(14, 7))
 
-    display.plot_ppi(field=after_field, title=after_field, cmap='pyart_NWSVel', sweep=0, ax=ax[0])
+    display.plot_ppi(field=after_field, title=after_field, cmap='pyart_NWSVel', sweep=0, ax=ax[0], vmin=-40, vmax=40)
     display.set_limits((-350, 350), (-350, 350), ax=ax[0])
 
-    display.plot_ppi(field=before_field, title=before_field, cmap='pyart_NWSVel', sweep=0, ax=ax[1])
+    display.plot_ppi(field=before_field, title=before_field, cmap='pyart_NWSVel', sweep=0, ax=ax[1], vmin=-40, vmax=40)
     display.set_limits((-350, 350), (-350, 350), ax=ax[1])
 
-    plt.suptitle(after_field, fontsize=16)
-    # plt.show()
+    plt.suptitle(title, fontsize=16)
+    plt.show()
     if output_file_name:
         print(f"Saving figure to {output_file_name}...")
         plt.savefig(output_file_name)
@@ -55,11 +56,10 @@ BB_max_neg_folds = 1    # BB-max-neg-folds is 1
 ew_wind = 7.5           # ew-wind is 7.5
 ns_wind = 13.0          # ns-wind is 13.0
 ud_wind = 0             # unused
-a_speckle = 1           # a-speckle is 1 gates
-BB_gates_averaged = 20  # BB-gates-averaged is 20 gates
+a_speckle = 10           # a-speckle is 1 gates
+BB_gates_averaged = 200  # BB-gates-averaged is 20 gates
 
 radar.add_field_like('VEL', 'VU', radar.fields['VEL']['data'].copy())  # copy VEL to VU
-
 
 print("threshold 1")
 solo.threshold_fields(radar, 'VU', 'RHO', 'VU', solo.Where.ABOVE, 1.1, 0)  # threshold VU on RHO above 1.1
@@ -73,14 +73,26 @@ solo.threshold_fields(radar, 'VU', 'SW', 'VU', solo.Where.ABOVE, 8.0, 0)  # thre
 print("despeckle")
 solo.despeckle_field(radar, 'VU', 'VU', a_speckle)  # despeckle VU
 
-print("unfold local wind")
-solo.unfold_local_wind_fields(radar, 'VU', 'VU', ew_wind, ns_wind, ud_wind, BB_max_pos_folds, BB_max_neg_folds, BB_gates_averaged)  # BB-unfolding of VU
+# print("unfold local wind")
+# solo.unfold_local_wind_fields(radar, 'VU', 'VU', ew_wind, ns_wind, ud_wind, BB_max_pos_folds, BB_max_neg_folds, BB_gates_averaged)  # BB-unfolding of VU
 
-graphPlot("VEL", "VU", "outputs/may5/mine.png")
+graphPlot("VEL", "VU", "outputs/may5/mine.png", "PySolo")
+exit(0)
 
 path_to_file = Path.cwd() / Path('tests/data/alex_output.nc')
 
 alex_radar: pyart.core.Radar = pyart.io.read(path_to_file)
 display = pyart.graph.RadarMapDisplay(alex_radar)
 
-graphPlot("VEL", "VU", "outputs/may5/his.png")
+# graphPlot("VEL", "VU", "outputs/may5/his.png", "Alex")
+
+my_list = radar.get_field(0, 'VU').tolist()
+alex_list = alex_radar.get_field(0, 'VU').tolist()
+
+assert len(my_list) == len(alex_list)
+
+for i in range(len(my_list)):
+    for j in range(len(alex_list)):
+        if my_list[i][j] != alex_list[i][j]:
+            print(f"Ray {i}, Gate {j}, PySolo: {my_list[i][j]}, Alex: {alex_list[i][j]}")
+    input()
