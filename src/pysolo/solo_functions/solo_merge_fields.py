@@ -1,14 +1,17 @@
 import ctypes
+from typing import List
+
 import numpy as np
 import pyart
 
-from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+from ..c_wrapper.run_solo import run_solo_function
 
 se_merge_fields = aliases['merge_fields']
 
-def merge_fields_ray(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=None, boundary_mask=None):
+
+def merge_fields_ray(input_list_data_1: List, input_list_data_2, bad: float, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Replaces bad values from input_list_data_1 from values in input_list_data2
 
@@ -40,7 +43,7 @@ def merge_fields_ray(input_list_data_1, input_list_data_2, bad, dgi_clip_gate=No
     return run_solo_function(se_merge_fields, args)
 
 
-def merge_fields_masked(masked_array, reference_masked_array, boundary_masks=None):
+def merge_fields_masked(masked_array, reference_masked_array, boundary_masks: List = None):
     """
         Replaces bad values from input_list_data_1 from values in input_list_data2
 
@@ -58,7 +61,7 @@ def merge_fields_masked(masked_array, reference_masked_array, boundary_masks=Non
     return masked_op.masked_func(merge_fields_ray, masked_array,  boundary_masks = boundary_masks, second_masked_array=reference_masked_array)
 
 
-def merge_fields_field(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, boundary_masks=None, sweep=0):
+def merge_fields_field(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         sm.new_masked_array = merge_fields_masked(sm.radar_sweep_data, radar.get_field(sweep, field_ref), boundary_masks)

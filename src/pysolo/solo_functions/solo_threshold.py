@@ -1,4 +1,5 @@
 import ctypes
+from typing import List
 import pyart
 import numpy as np
 
@@ -9,7 +10,7 @@ from ..enums import Where
 
 se_threshold = aliases['threshold_field']
 
-def threshold_ray(input_list_data, threshold_list_data, bad, where: Where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, thr_missing=None, first_good_gate=0, boundary_mask=None):
+def threshold_ray(input_list_data: List, threshold_list_data, bad: float, where: Where, scaled_thr1, scaled_thr2, dgi_clip_gate: int = None, thr_missing=None, first_good_gate=0, boundary_mask: List = None):
     """
         Performs a threshold comparison on two lists of floats. If threshold_list_data has values ABOVE, BELOW, or BETWEEN the threshold values,
         then those values are masked for input_list_data.
@@ -51,7 +52,7 @@ def threshold_ray(input_list_data, threshold_list_data, bad, where: Where, scale
     return run_solo_function(se_threshold, args)
 
 
-def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_thr2, boundary_masks=None):
+def threshold_masked(masked_array, threshold_array, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks: List = None):
     """
         Performs a threshold mask operation on a numpy masked array (a field)
         For values in threshold field that are ABOVE, BELOW, or BETWEEN a threshold value,
@@ -75,7 +76,7 @@ def threshold_masked(masked_array, threshold_array, where, scaled_thr1, scaled_t
     return masked_op.masked_func(threshold_ray, masked_array, where, scaled_thr1, scaled_thr2, boundary_masks = boundary_masks, second_masked_array=threshold_array)
 
 
-def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep=0):
+def threshold_fields(radar: pyart.core.Radar, field: str, field_ref: str, new_field: str, where: Where, scaled_thr1: int, scaled_thr2: int, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         sm.new_masked_array = threshold_masked(sm.radar_sweep_data, radar.get_field(sweep, field_ref), where, scaled_thr1, scaled_thr2, boundary_masks)

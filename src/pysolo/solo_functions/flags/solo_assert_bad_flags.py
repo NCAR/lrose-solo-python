@@ -1,13 +1,13 @@
 import ctypes
+from typing import List
+
 import numpy as np
 
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, aliases, masked_op, run_solo_function
 
 se_assert_bad_flags = aliases['assert_bad_flags']
 
-def assert_bad_flags(input_list_data, bad, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def assert_bad_flags(input_list_data: List, bad: float, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         Forces gates to become "bad" value if mask is set to True for that entry, otherwise remains the same
         
@@ -39,7 +39,7 @@ def assert_bad_flags(input_list_data, bad, bad_flag_mask, dgi_clip_gate=None, bo
     return run_solo_function(se_assert_bad_flags, args)
 
 
-def assert_bad_flags_masked(masked_array, boundary_masks=None):
+def assert_bad_flags_masked(masked_array, boundary_masks: List = None):
     """ 
         Forces gates to become "bad" value if mask is set to True for that entry, otherwise remains the same
         

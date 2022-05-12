@@ -1,5 +1,7 @@
 import ctypes
 import pyart
+from typing import List
+
 
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
@@ -8,7 +10,7 @@ from ..c_wrapper.function_alias import aliases
 se_flag_glitches = aliases['flag_glitches']
 
 
-def flag_glitches_ray(input_list_data, bad, deglitch_threshold, deglitch_radius, deglitch_min_gates, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def flag_glitches_ray(input_list_data: List, bad: float, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Routine to remove discountinuities (freckles) from the data.
 
@@ -43,7 +45,7 @@ def flag_glitches_ray(input_list_data, bad, deglitch_threshold, deglitch_radius,
     return run_solo_function(se_flag_glitches, args)
 
 
-def flag_glitches_masked(masked_array, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None):
+def flag_glitches_masked(masked_array, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks: List = None):
     """
         Routine to remove discountinuities (freckles) from the data.
 
@@ -65,6 +67,6 @@ def flag_glitches_masked(masked_array, deglitch_threshold: float, deglitch_radiu
     return masked_op.masked_func(flag_glitches_ray, masked_array, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks=boundary_masks, usesBadFlags=True)
 
 
-def flag_glitches_field(radar: pyart.core.Radar, field: str, new_field: str, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None, sweep=0):
+def flag_glitches_field(radar: pyart.core.Radar, field: str, new_field: str, deglitch_threshold: float, deglitch_radius: int, deglitch_min_gates: int, boundary_masks=None, sweep: int = 0):
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         sm.new_masked_array = flag_glitches_masked(sm.radar_sweep_data, deglitch_threshold, deglitch_radius, deglitch_min_gates, boundary_masks)

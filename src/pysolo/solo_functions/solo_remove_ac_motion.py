@@ -1,4 +1,5 @@
 import ctypes
+from typing import List
 
 import numpy as np
 
@@ -11,8 +12,8 @@ se_remove_ac_motion = aliases['remove_ac_motion']
 
 
 
-def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, dgi_clip_gate=None,
-        boundary_mask=None):
+def remove_ac_motion_ray(input_list_data: List, bad: float, vert_velocity: float, ew_velocity: float, ns_velocity: float, ew_gndspd_corr: float, tilt: float, elevation: float, dds_radd_eff_unamb_vel: float, seds_nyquist_velocity: float, dgi_clip_gate: int = None,
+        boundary_mask: List = None):
     """
         Performs a <TODO> operation on a list of data.
 
@@ -57,7 +58,7 @@ def remove_ac_motion_ray(input_list_data, bad, vert_velocity, ew_velocity, ns_ve
     return run_solo_function(se_remove_ac_motion, args)
 
 
-def remove_ac_motion_masked(masked_array, vert_velocity, ew_velocity, ns_velocity, ew_gndspd_corr, tilt, elevation, dds_radd_eff_unamb_vel, seds_nyquist_velocity, boundary_masks=None):
+def remove_ac_motion_masked(masked_array, vert_velocity: float, ew_velocity: float, ns_velocity: float, ew_gndspd_corr: float, tilt: float, elevation: float, dds_radd_eff_unamb_vel: float, seds_nyquist_velocity: float, boundary_masks: List = None):
     """
         Performs a <TODO> operation on a numpy masked array
 

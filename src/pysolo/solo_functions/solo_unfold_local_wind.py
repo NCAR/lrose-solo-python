@@ -1,4 +1,5 @@
 import ctypes
+from typing import List
 import pyart
 import numpy as np
 
@@ -9,9 +10,8 @@ from ..c_wrapper.function_alias import aliases
 se_unfold_local_wind = aliases['BB_unfold_local_wind']
 
 
-def unfold_local_wind_ray(
-        input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged,
-        dgi_clip_gate=None, boundary_mask=None):
+def unfold_local_wind_ray(input_list_data, bad: float, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, azimuth_angle_degrees: float, elevation_angle_degrees: float, ew_wind: float,
+                          ns_wind: float, ud_wind: float, max_pos_folds: int, max_neg_folds: int, ngates_averaged: int, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Performs a <TODO>
 
@@ -41,7 +41,7 @@ def unfold_local_wind_ray(
 
     args = {
         "data": DataPair.DataTypeValue(ctypes.POINTER(ctypes.c_float), input_list_data),
-        "newData" : DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
+        "newData": DataPair.DataTypeValue(np.ctypeslib.ndpointer(ctypes.c_float, flags="C_CONTIGUOUS"), None),
         "nGates": DataPair.DataTypeValue(ctypes.c_size_t, None),
         "nyquist_velocity": DataPair.DataTypeValue(ctypes.c_float, nyquist_velocity),
         "dds_radd_eff_unamb_vel": DataPair.DataTypeValue(ctypes.c_float, dds_radd_eff_unamb_vel),
@@ -62,8 +62,8 @@ def unfold_local_wind_ray(
 
 
 def unfold_local_wind_masked(
-        masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged,
-        boundary_masks=None):
+        masked_array, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, azimuth_angle_degrees: float, elevation_angle_degrees: float, ew_wind: float, ns_wind: float, ud_wind: float,
+        max_pos_folds: int, max_neg_folds: int, ngates_averaged: int, boundary_masks: List = None):
     """
         Performs a <TODO> on a numpy masked array
 
@@ -105,7 +105,7 @@ def unfold_local_wind_masked(
     )
 
 
-def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None, sweep=0):
+def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         print(sm)
@@ -115,4 +115,4 @@ def unfold_local_wind_fields(radar: pyart.core.Radar, field: str, new_field: str
         elevation_angle_degrees = list(sm.radar.get_elevation(sm.sweep))
 
         sm.new_masked_array = unfold_local_wind_masked(sm.radar_sweep_data, nyquist_velocity, dds_radd_eff_unamb_vel,
-                                                    azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks)
+                                                       azimuth_angle_degrees, elevation_angle_degrees, ew_wind, ns_wind, ud_wind, max_pos_folds, max_neg_folds, ngates_averaged, boundary_masks)

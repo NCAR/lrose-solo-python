@@ -1,4 +1,5 @@
 import ctypes
+from typing import List
 import numpy as np
 from ..c_wrapper.run_solo import run_solo_function
 
@@ -7,7 +8,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_unfold_first_good_gate = aliases['BB_unfold_first_good_gate']
 
-def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, dgi_clip_gate=None, boundary_mask=None):
+def unfold_first_good_gate(input_list_data: List, bad: float, nyquist_velocity, dds_radd_eff_unamb_vel: float, max_pos_folds: int, max_neg_folds: int, ngates_averaged: int, last_good_v0, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Performs a <TODO>
 
@@ -48,7 +49,7 @@ def unfold_first_good_gate(input_list_data, bad, nyquist_velocity, dds_radd_eff_
     return run_solo_function(se_unfold_first_good_gate, args)
 
 
-def unfold_first_good_gate_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, max_pos_folds, max_neg_folds, ngates_averaged, last_good_v0, boundary_masks=None):
+def unfold_first_good_gate_masked(masked_array, nyquist_velocity, dds_radd_eff_unamb_vel: float, max_pos_folds: int, max_neg_folds: int, ngates_averaged: int, last_good_v0, boundary_masks: List = None):
     """
         Performs a <TODO> on a numpy masked array
 

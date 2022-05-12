@@ -1,4 +1,5 @@
 import ctypes
+from typing import List
 import numpy as np
 from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
@@ -6,7 +7,7 @@ from ..c_wrapper.function_alias import aliases
 
 se_fix_vortex_vels = aliases['fix_vortex_vels']
 
-def fix_vortex_vels_ray(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, dgi_clip_gate=None, boundary_mask=None):
+def fix_vortex_vels_ray(input_list_data: List, bad: float, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Performs a TODO on a list of data.
 
@@ -46,7 +47,7 @@ def fix_vortex_vels_ray(input_list_data, bad, vs_data, vl_data, vs_xmitted_freq,
     return run_solo_function(se_fix_vortex_vels, args)
 
 
-def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_masks=None):
+def fix_vortex_vels_masked(masked_array, vs_data, vl_data, vs_xmitted_freq, vs_interpulse_time, vl_interpulse_time, boundary_masks: List = None):
     """
         Performs a ring zap operation on a numpy masked array
 

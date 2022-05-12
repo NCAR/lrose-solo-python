@@ -1,13 +1,11 @@
 import ctypes
+from typing import List
 
-from . import Where
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, Where, aliases, masked_op, run_solo_function
 
 se_bad_flags_logic = aliases['bad_flags_logic']
 
-def bad_flags_logic(input_list_data, bad, where, logical, scaled_thr1, scaled_thr2, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def bad_flags_logic(input_list_data: List, bad: float, where, logical, scaled_thr1, scaled_thr2, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         Performs a logical operation (LOGICAL enum) between bad_flag_mask and a value based on the WHERE enum.
         Equivalent to:
@@ -54,7 +52,7 @@ def bad_flags_logic(input_list_data, bad, where, logical, scaled_thr1, scaled_th
     return run_solo_function(se_bad_flags_logic, args)
 
 
-def bad_flags_logic_masked(masked_array, where, logical, scaled_thr1, scaled_thr2, boundary_mask=None):
+def bad_flags_logic_masked(masked_array, where, logical, scaled_thr1, scaled_thr2, boundary_mask: List = None):
     """ 
         Performs a logical operation (LOGICAL enum) between bad_flag_mask and a value based on the WHERE enum.
         

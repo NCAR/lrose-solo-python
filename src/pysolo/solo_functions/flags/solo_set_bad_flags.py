@@ -1,13 +1,11 @@
 import ctypes
+from typing import List
 
-from . import Where
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, Where, aliases, masked_op, run_solo_function
 
 se_set_bad_flags = aliases['set_bad_flags']
 
-def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_clip_gate=None, boundary_mask=None):
+def set_bad_flags(input_list_data: List, bad: float, where, scaled_thr1, scaled_thr2, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         Masks values in Where region set by 'where' and 'scaled_thr1/2', otherwise, mask is unchanged.
         
@@ -49,7 +47,7 @@ def set_bad_flags(input_list_data, bad, where, scaled_thr1, scaled_thr2, dgi_cli
     return run_solo_function(se_set_bad_flags, args)
 
 
-def set_bad_flags_masked(masked_array, where, scaled_thr1, scaled_thr2, boundary_mask=None):
+def set_bad_flags_masked(masked_array, where, scaled_thr1, scaled_thr2, boundary_mask: List = None):
     """ 
         Masks values in Where region set by 'where' and 'scaled_thr1/2', otherwise, mask is unchanged.
         

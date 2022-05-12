@@ -1,7 +1,7 @@
 import ctypes
+from typing import List
 
-from . import list_to_array, array_to_list
-from . import aliases
+from . import aliases, array_to_list, list_to_array
 
 se_clear_bad_flags = aliases['clear_bad_flags']
 

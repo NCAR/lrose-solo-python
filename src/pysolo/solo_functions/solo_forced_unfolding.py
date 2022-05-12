@@ -1,14 +1,17 @@
 import ctypes
-import pyart
-import numpy as np
+from typing import List
 
-from ..c_wrapper.run_solo import run_solo_function
-from ..c_wrapper import  DataPair, masked_op
+import numpy as np
+import pyart
+
+from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+from ..c_wrapper.run_solo import run_solo_function
 
 se_funfold = aliases['funfold']
 
-def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_unamb_vel, center, dgi_clip_gate=None, boundary_mask=None):
+
+def forced_unfolding_ray(input_list_data: List, bad: float, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, center: float, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
        Forces all data points to fall within plus or minus the Nyquist
 
@@ -44,7 +47,7 @@ def forced_unfolding_ray(input_list_data, bad, nyquist_velocity, dds_radd_eff_un
     return run_solo_function(se_funfold, args)
 
 
-def forced_unfolding_masked(masked_array, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None):
+def forced_unfolding_masked(masked_array, nyquist_velocity: float, dds_radd_eff_unamb_vel: float, center: float, boundary_masks: List = None):
     """
        Forces all data points to fall within plus or minus the Nyquist
 
@@ -65,7 +68,7 @@ def forced_unfolding_masked(masked_array, nyquist_velocity: float, dds_radd_eff_
     return masked_op.masked_func(forced_unfolding_ray, masked_array, nyquist_velocity, dds_radd_eff_unamb_vel, center, boundary_masks = boundary_masks)
 
 
-def forced_unfolding_field(radar: pyart.core.Radar, field: str, new_field: str, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None, sweep=0):
+def forced_unfolding_field(radar: pyart.core.Radar, field: str, new_field: str, dds_radd_eff_unamb_vel: float, center: float, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         nyquist_velocity = sm.radar.get_nyquist_vel(sweep)

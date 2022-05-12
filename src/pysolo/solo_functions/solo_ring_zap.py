@@ -1,15 +1,17 @@
 import ctypes
+from typing import List
+
 import numpy as np
 import pyart
 
-from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+from ..c_wrapper.run_solo import run_solo_function
 
 se_ring_zap = aliases['ring_zap']
 
 
-def ring_zap_ray(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_clip_gate=None, boundary_mask=None):
+def ring_zap_ray(input_list_data: List, bad: float, from_km: int, to_km: int, km_between_gates=1, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Performs a ring zap operation on a list of data.
 
@@ -44,7 +46,7 @@ def ring_zap_ray(input_list_data, bad, from_km, to_km, km_between_gates=1, dgi_c
     return run_solo_function(se_ring_zap, args)
 
 
-def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_masks=None):
+def ring_zap_masked(masked_array, from_km: int, to_km: int, km_between_gates, boundary_masks: List = None):
     """
         Performs a ring zap operation on a numpy masked array
 
@@ -67,7 +69,7 @@ def ring_zap_masked(masked_array, from_km, to_km, km_between_gates, boundary_mas
     return masked_op.masked_func(ring_zap_ray, masked_array, from_km, to_km, boundary_masks=boundary_masks)
 
 
-def ring_zap_fields(radar: pyart.core.Radar, field: str, new_field: str, from_km: int, to_km: int, boundary_masks=None, sweep=0):
+def ring_zap_fields(radar: pyart.core.Radar, field: str, new_field: str, from_km: int, to_km: int, boundary_masks=None, sweep: int = 0):
     kilometers_between_gates = radar.range['meters_between_gates'] / 1000
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:

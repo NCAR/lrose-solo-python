@@ -1,13 +1,13 @@
 import ctypes
+from typing import List
+
 import numpy as np
 
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, aliases, masked_op, run_solo_function
 
 se_flagged_add = aliases['flagged_add']
 
-def flagged_add(input_list_data, bad, f_const, multiply, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def flagged_add(input_list_data: List, bad: float, f_const, multiply, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         On masked values, add f_const parameter to value in input_list_data.
         Or multiple f_const if multiply set to true.
@@ -43,7 +43,7 @@ def flagged_add(input_list_data, bad, f_const, multiply, bad_flag_mask, dgi_clip
     return run_solo_function(se_flagged_add, args)
 
 
-def flagged_add_masked(masked_array, f_const, multiply, boundary_mask=None):
+def flagged_add_masked(masked_array, f_const, multiply, boundary_mask: List = None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         

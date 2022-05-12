@@ -1,13 +1,15 @@
 import ctypes
+from typing import List
+
 import numpy as np
-from ..c_wrapper.run_solo import run_solo_function
 
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+from ..c_wrapper.run_solo import run_solo_function
 
 se_remove_storm_motion = aliases['remove_storm_motion']
 
-def remove_storm_motion_ray(input_list_data, bad, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, dgi_clip_gate=None, boundary_mask=None):
+def remove_storm_motion_ray(input_list_data: List, bad: float, wind: float, speed: float, dgi_dd_rotation_angle: float, dgi_dd_elevation_angle: float, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         Performs a <TODO> operation on a list of data.
         
@@ -44,7 +46,7 @@ def remove_storm_motion_ray(input_list_data, bad, wind, speed, dgi_dd_rotation_a
     return run_solo_function(se_remove_storm_motion, args)
 
 
-def remove_storm_motion_masked(masked_array, wind, speed, dgi_dd_rotation_angle, dgi_dd_elevation_angle, boundary_masks=None):
+def remove_storm_motion_masked(masked_array, wind: float, speed: float, dgi_dd_rotation_angle: float, dgi_dd_elevation_angle: float, boundary_masks: List = None):
     """ 
         Performs a <TODO> operation on a numpy masked array
         

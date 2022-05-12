@@ -1,12 +1,11 @@
 import ctypes
+from typing import List
 
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, aliases, masked_op, run_solo_function
 
 se_copy_bad_flags = aliases['copy_bad_flags']
 
-def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None):
+def copy_bad_flags(input_list_data: List, bad: float, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         Gives an updated mask based on values in input_list_data that are bad.
         If input_list_data[i] == bad -> flags[i] = True else flags[i] = False
@@ -37,7 +36,7 @@ def copy_bad_flags(input_list_data, bad, dgi_clip_gate=None, boundary_mask=None)
     return run_solo_function(se_copy_bad_flags, args)
 
 
-def copy_bad_flags_masked(masked_array, boundary_mask=None):
+def copy_bad_flags_masked(masked_array, boundary_mask: List = None):
     """ 
         Gives an updated mask based on values in input_list_data that are bad.
         

@@ -1,13 +1,15 @@
 import ctypes
+from typing import List
+
 import pyart
 
-from ..c_wrapper.run_solo import run_solo_function
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
+from ..c_wrapper.run_solo import run_solo_function
 
 se_flag_freckles = aliases['flag_freckles']
 
-def flag_freckles_ray(input_list_data, bad, freckle_threshold, freckle_avg_count, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def flag_freckles_ray(input_list_data: List, bad: float, freckle_threshold: float, freckle_avg_count: int, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Routine to remove discountinuities (freckles) from the data.
 
@@ -40,7 +42,7 @@ def flag_freckles_ray(input_list_data, bad, freckle_threshold, freckle_avg_count
     return run_solo_function(se_flag_freckles, args)
 
 
-def flag_freckles_masked(masked_array, freckle_threshold: float, freckle_avg_count: int, boundary_masks=None):
+def flag_freckles_masked(masked_array, freckle_threshold: float, freckle_avg_count: int, boundary_masks: List = None):
     """
         routine to remove discountinuities (freckles) from the data.
 
@@ -61,7 +63,7 @@ def flag_freckles_masked(masked_array, freckle_threshold: float, freckle_avg_cou
     return masked_op.masked_func(flag_freckles_ray, masked_array, freckle_threshold, freckle_avg_count, boundary_masks = boundary_masks, usesBadFlags=True)
 
 
-def flag_freckles_field(radar: pyart.core.Radar, field: str, new_field: str, freckle_threshold: float, freckle_avg_count: int, boundary_masks=None, sweep=0):
+def flag_freckles_field(radar: pyart.core.Radar, field: str, new_field: str, freckle_threshold: float, freckle_avg_count: int, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         sm.new_masked_array = flag_freckles_masked(sm.radar_sweep_data, freckle_threshold, freckle_avg_count, boundary_masks)

@@ -1,14 +1,14 @@
 import ctypes
+from typing import List
+
 import numpy as np
 
-from . import run_solo_function
-from . import DataPair, masked_op
-from . import aliases
+from . import DataPair, aliases, masked_op, run_solo_function
 
 se_assign_value = aliases['assign_value']
 
 
-def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=None, boundary_mask=None):
+def assign_value(input_list_data: List, bad: float, constant, bad_flag_mask, dgi_clip_gate: int = None, boundary_mask: List = None):
     """ 
         For masked values, assign it to the defined "constant" value
         
@@ -41,7 +41,7 @@ def assign_value(input_list_data, bad, constant, bad_flag_mask, dgi_clip_gate=No
     return run_solo_function(se_assign_value, args)
 
 
-def assign_value_masked(masked_array, constant, boundary_mask=None):
+def assign_value_masked(masked_array, constant, boundary_mask: List = None):
     """ 
         For masked values, assign it to the defined "constant" value
         

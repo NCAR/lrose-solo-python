@@ -1,15 +1,17 @@
 import ctypes
-import pyart
+from typing import List
+
 import numpy as np
-from ..c_wrapper.run_solo import run_solo_function
+import pyart
+
 from ..c_wrapper import DataPair, masked_op
 from ..c_wrapper.function_alias import aliases
-
+from ..c_wrapper.run_solo import run_solo_function
 
 se_despeckle = aliases['despeckle']
 
 
-def despeckle_ray(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_mask=None):
+def despeckle_ray(input_list_data: List, bad: bool, a_speckle: int, dgi_clip_gate: int = None, boundary_mask: List = None):
     """
         Performs a despeckle operation on a list of data (a single ray)
 
@@ -38,11 +40,11 @@ def despeckle_ray(input_list_data, bad, a_speckle, dgi_clip_gate=None, boundary_
     return run_solo_function(se_despeckle, args)
 
 
-def despeckle_masked(masked_array, a_speckle, boundary_masks=None):
+def despeckle_masked(masked_array, a_speckle: int, boundary_masks=None):
     return masked_op.masked_func_iterable(despeckle_ray, masked_array, {'boundary_mask': boundary_masks}, {'a_speckle': a_speckle})
 
 
-def despeckle_field(radar: pyart.core.Radar, field: str, new_field: str, a_speckle: int, boundary_masks=None, sweep=0):
+def despeckle_field(radar: pyart.core.Radar, field: str, new_field: str, a_speckle: int, boundary_masks=None, sweep: int = 0):
 
     with masked_op.SweepManager(radar, sweep, field, new_field) as sm:
         sm.new_masked_array = despeckle_masked(sm.radar_sweep_data, a_speckle, boundary_masks)
