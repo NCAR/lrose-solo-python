@@ -102,7 +102,7 @@ def run_solo_function(c_func, args):
 
     if "newData" in args:  # if newData was updated...
         # convert resultant ctypes array back to python list
-        output_masked_array = np.ma.masked_values(args['newData'].value, bad)
+        output_masked_array = np.ma.masked_values(args['newData'].value, bad, shrink=False)
         return output_masked_array
 
     if "bad_flag_mask" in args:
